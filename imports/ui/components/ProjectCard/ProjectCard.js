@@ -1,33 +1,39 @@
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment/moment';
 import { NavLink } from 'react-router-dom';
 
-import './EmployeeCard.scss';
+// collection
+import Projects from '../../../api/projects/projects';
 
-const EmployeeCard = ({ user }) => (
+import './ProjectCard.scss';
+
+const ProjectCard = ({ project }) => (
   <div className="col-xs-12 col-sm-6 col-md-4 emp-card">
     <div className="image-flip">
       <div className="mainflip">
         <div className="frontside">
-          <NavLink to={user ? `/employee/${user._id}` : `/employee`}>
+          <NavLink to={project ? `/project/${project._id}` : `/project`}>
             <div className="card">
               <div className="card-body text-center">
                 <p>
                   <img
                     className="img-fluid"
-                    src="/img/avatar_placeholder.png"
+                    src="/img/project_placeholder.png"
                     alt="card image"
                   />
                 </p>
                 <h4 className="card-title text-info">
-                  {user ? user.profile.fullName : ''}
-                  &nbsp;
-                  <span className="badge badge-pill badge-warning">
-                    {user.profile.jobLevel}
-                  </span>
+                  {project ? project.projectName : ''}
                 </h4>
-                <p className="card-text">{user ? user.profile.email : ''}</p>
+                <p className="card-text">
+                  {project
+                    ? `${moment(project.startDate).format(
+                        'MMM DD, YYYY'
+                      )} - ${moment(project.endDate).format('MMM DD, YYYY')}`
+                    : ''}
+                </p>
               </div>
             </div>
           </NavLink>
@@ -37,8 +43,8 @@ const EmployeeCard = ({ user }) => (
   </div>
 );
 
-EmployeeCard.propTypes = {
-  user: PropTypes.objectOf(Meteor.user),
+ProjectCard.propTypes = {
+  project: PropTypes.object,
 };
 
-export default EmployeeCard;
+export default ProjectCard;

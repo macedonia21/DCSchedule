@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // collection
-import Counters from '../../../api/counters/counters';
+import Projects from '../../../api/projects/projects';
 
 // remote example (if using ddp)
 /*
@@ -13,12 +13,12 @@ import Users from '../../../api/remote/users';
 */
 
 // components
-import EmployeeCard from '../../components/EmployeeCard';
-import EmployeeAddCard from '../../components/EmployeeAddCard';
+import ProjectCard from '../../components/ProjectCard';
+import ProjectAddCard from '../../components/ProjectAddCard';
 
-import './EmployeeList.scss';
+import './ProjectList.scss';
 
-class EmployeeList extends React.Component {
+class ProjectList extends React.Component {
   componentWillMount() {
     if (!this.props.loggedIn && !Meteor.userId) {
       return this.props.history.push('/login');
@@ -34,20 +34,20 @@ class EmployeeList extends React.Component {
   }
 
   render() {
-    const { loggedIn, usersReady, users } = this.props;
+    const { loggedIn, projectsReady, projects } = this.props;
 
     if (!loggedIn) {
       return null;
     }
     return (
       <div className="employee-page">
-        <h1 className="mb-4">Employees</h1>
+        <h1 className="mb-4">Projects</h1>
         <div className="container">
           <div className="row">
-            <EmployeeAddCard />
-            {usersReady &&
-              _.map(users, user => {
-                return <EmployeeCard user={user} key={user._id} />;
+            <ProjectAddCard />
+            {projectsReady &&
+              _.map(projects, project => {
+                return <ProjectCard project={project} key={project._id} />;
               })}
           </div>
         </div>
@@ -56,27 +56,27 @@ class EmployeeList extends React.Component {
   }
 }
 
-EmployeeList.defaultProps = {
+ProjectList.defaultProps = {
   // users: null, remote example (if using ddp)
-  users: null,
+  projects: null,
 };
 
-EmployeeList.propTypes = {
+ProjectList.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
-  usersReady: PropTypes.bool.isRequired,
-  users: Meteor.user() ? PropTypes.array.isRequired : () => null,
+  projectsReady: PropTypes.bool.isRequired,
+  projects: Projects ? PropTypes.array.isRequired : () => null,
 };
 
 export default withTracker(() => {
-  const usersSub = Meteor.subscribe('users.all'); // publication needs to be set on remote server
-  const users = Meteor.users.find().fetch();
-  const usersReady = usersSub.ready() && !!users;
+  const projectsSub = Meteor.subscribe('projects.all'); // publication needs to be set on remote server
+  const projects = Projects.find().fetch();
+  const projectsReady = projectsSub.ready() && !!projects;
 
   return {
-    usersReady,
-    users,
+    projectsReady,
+    projects,
   };
-})(EmployeeList);
+})(ProjectList);

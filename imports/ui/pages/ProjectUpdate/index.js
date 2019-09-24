@@ -1,3 +1,3 @@
-import ProjectCreate from './ProjectCreate.js';
+import ProjectUpdate from './ProjectUpdate.js';
 
-export default ProjectCreate;
+export default ProjectUpdate;

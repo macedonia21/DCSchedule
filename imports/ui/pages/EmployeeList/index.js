@@ -1,3 +1,3 @@
-import AllEmployee from './AllEmployee.js';
+import EmployeeList from './EmployeeList.js';
 
-export default AllEmployee;
+export default EmployeeList;

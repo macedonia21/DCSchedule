@@ -11,4 +11,8 @@ import '../../api/users/hooks.js';
 import '../../api/counters/methods.js';
 import '../../api/counters/publications.js';
 
+// projects api
+import '../../api/projects/publications.js';
+
 // import another api
+import '../../api/method.js';

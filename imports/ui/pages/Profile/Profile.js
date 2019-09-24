@@ -95,20 +95,17 @@ Profile.propTypes = {
 
 export default withTracker(() => {
   // remote example (if using ddp)
-  /*
-  const usersSub = Remote.subscribe('users.friends'); // publication needs to be set on remote server
-  const users = Users.find().fetch();
+  const usersSub = Meteor.subscribe('users.all'); // publication needs to be set on remote server
+  const users = Meteor.users.find().fetch();
   const usersReady = usersSub.ready() && !!users;
-  */
 
   // counters example
   const countersSub = Meteor.subscribe('counters.user');
   const counter = Counters.findOne({ _id: Meteor.userId() });
   const countersReady = countersSub.ready() && !!counter;
   return {
-    // remote example (if using ddp)
-    // usersReady,
-    // users,
+    usersReady,
+    users,
     countersReady,
     counter,
   };

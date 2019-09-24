@@ -18,3 +18,19 @@ $theme-colors: (
 #Mongol {
   background-color: black;
 }
+
+@font-face {
+  font-family: 'Nunito-Regular';
+  src: url('/font/Nunito-Regular.ttf');
+}
+@font-face {
+  font-family: 'Nunito-Bold';
+  src: url('/font/Nunito-ExtraBold.ttf');
+}
+
+body {
+  font-family: 'Nunito-Regular', sans-serif;
+  background: rgb(61,106,239);
+  background-image: linear-gradient( 109.6deg,  rgba(61,106,239,1) 11.2%, rgba(122,14,190,1) 70.2% );
+  min-height: 100vh;
+}

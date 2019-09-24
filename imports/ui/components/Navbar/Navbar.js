@@ -34,11 +34,30 @@ const SearchBar = () => (
 
 const LoggedInNav = () => (
   <>
-    <SearchBar key="searchbar" />
     <li className="nav-item">
-      <NavLink to="/profile">
+      <NavLink to="/employee">
         <button type="button" className="dropdown-item">
-          Profile
+          Employee
+        </button>
+      </NavLink>
+    </li>
+    <li className="nav-item">
+      <div className="dropdown-divider" />
+    </li>
+    <li className="nav-item">
+      <NavLink to="/project">
+        <button type="button" className="dropdown-item">
+          Project
+        </button>
+      </NavLink>
+    </li>
+    <li className="nav-item">
+      <div className="dropdown-divider" />
+    </li>
+    <li className="nav-item">
+      <NavLink to="/report">
+        <button type="button" className="dropdown-item">
+          Report
         </button>
       </NavLink>
     </li>
@@ -74,10 +93,10 @@ Status.propTypes = {
 };
 
 const Navbar = ({ loggedIn }) => (
-  <nav className="navbar navbar-expand-lg navbar-light bg-light">
+  <nav className="navbar navbar-expand-lg navbar-light">
     <Status loggedIn={loggedIn} />
     <span className="navbar-brand" href="#">
-      <NavLink to="/">Brand</NavLink>
+      <NavLink to="/">DC Resource Schedule</NavLink>
     </span>
     <button
       className="navbar-toggler"

@@ -1,43 +1,29 @@
 import { Meteor } from 'meteor/meteor';
+import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
-import TagsInput from 'react-tagsinput';
 import { NotificationManager } from 'react-notifications';
 
 // import components
 
 // import styles
-import './EmployeeCreate.scss';
+import './ProjectCreate.scss';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-notifications/lib/notifications.css';
 
-class CreateEmployee extends React.Component {
+class ProjectCreate extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: '',
-      password: '',
-      profile: {
-        firstName: '',
-        lastName: '',
-        vnName: '',
-        entCode: 'VN1C',
-        country: 'Vietnam',
-        joinDate: new Date(),
-        base: 'HCM',
-        empType: 'Permanent',
-        indicator: '',
-        indAlignment: '',
-        costCenter: 'TI:SAP Solutions',
-        portfolios: 'Enterprise Technology and Performance',
-        offering: 'SAP',
-        posTitle: 'C',
-        jobLevel: 'C',
-        gender: 'M',
-        talents: [],
-        hPW: 40,
-        counsellor: '',
+      project: {
+        projectName: '',
+        engagementCode: '',
+        _pmId: '',
+        startDate: new Date(),
+        endDate: new Date(),
+        status: 'Presales',
+        remark: '',
       },
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -59,8 +45,8 @@ class CreateEmployee extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    const { email, password, profile } = this.state;
-    Meteor.call('employee.create', email, password, profile, (err, res) => {
+    const { project } = this.state;
+    Meteor.call('project.create', project, (err, res) => {
       if (err) {
         NotificationManager.error(
           `Cannot create: ${err.message}`,
@@ -68,15 +54,15 @@ class CreateEmployee extends React.Component {
           3000
         );
       } else {
-        NotificationManager.success('New employee is created', 'Success', 3000);
-        return this.props.history.push('/employee');
+        NotificationManager.success('New project is created', 'Success', 3000);
+        return this.props.history.push('/project');
       }
     });
   }
 
   render() {
-    const { loggedIn } = this.props;
-    const { email, password, profile } = this.state;
+    const { loggedIn, usersReady, users } = this.props;
+    const { project } = this.state;
 
     if (!loggedIn) {
       return null;
@@ -84,58 +70,28 @@ class CreateEmployee extends React.Component {
 
     return (
       <section className="create-employee-page">
-        <div className="card mx-auto" style={{ maxWidth: '80%' }}>
+        <div className="card mx-auto" style={{ maxWidth: '28rem' }}>
           <div className="card-header">
             <div className="card-body">
-              <h1 className="card-title text-center">Create Employee</h1>
+              <h1 className="card-title text-center">Create Project</h1>
               <form onSubmit={this.handleSubmit}>
                 {/* <!-- First Col --> */}
                 <div className="row">
-                  <div className="col-md-4">
-                    {/* <!-- Email --> */}
+                  <div className="col-md-12">
+                    {/* <!-- Project Name --> */}
                     <div className="form-group">
-                      <label htmlFor="email">E-Mail Address</label>
+                      <label htmlFor="projectname">Project Name</label>
                       <input
-                        id="email"
-                        type="email"
-                        className="form-control"
-                        name="email"
-                        value={email}
-                        onChange={e => this.setState({ email: e.target.value })}
-                        required
-                      />
-                    </div>
-
-                    {/* <!-- Password --> */}
-                    <div className="form-group">
-                      <label htmlFor="password">Password</label>
-                      <input
-                        id="password"
-                        type="password"
-                        className="form-control"
-                        name="password"
-                        value={password}
-                        onChange={e =>
-                          this.setState({ password: e.target.value })
-                        }
-                        required
-                      />
-                    </div>
-
-                    {/* <!-- First Name --> */}
-                    <div className="form-group">
-                      <label htmlFor="firstname">First Name</label>
-                      <input
-                        id="firstname"
+                        id="projectname"
                         type="text"
                         className="form-control"
-                        name="firstname"
-                        value={profile.firstName}
+                        name="projectname"
+                        value={project.projectName}
                         onChange={e =>
                           this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              firstName: e.target.value,
+                            project: {
+                              ...this.state.project,
+                              projectName: e.target.value,
                             },
                           })
                         }
@@ -143,20 +99,20 @@ class CreateEmployee extends React.Component {
                       />
                     </div>
 
-                    {/* <!-- Last Name --> */}
+                    {/* <!-- Engagement Code --> */}
                     <div className="form-group">
-                      <label htmlFor="lastname">Last Name</label>
+                      <label htmlFor="engagementcode">Engagement Code</label>
                       <input
-                        id="lastname"
+                        id="engagementcode"
                         type="text"
                         className="form-control"
-                        name="lastname"
-                        value={profile.lastName}
+                        name="engagementcode"
+                        value={project.engagementCode}
                         onChange={e =>
                           this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              lastName: e.target.value,
+                            project: {
+                              ...this.state.project,
+                              engagementCode: e.target.value,
                             },
                           })
                         }
@@ -164,338 +120,123 @@ class CreateEmployee extends React.Component {
                       />
                     </div>
 
-                    {/* <!-- VN Name --> */}
+                    {/* <!-- Project Manager --> */}
                     <div className="form-group">
-                      <label htmlFor="vnname">Vietnamese Name</label>
-                      <input
-                        id="vnname"
-                        type="text"
-                        className="form-control"
-                        name="vnname"
-                        value={profile.vnName}
-                        onChange={e =>
-                          this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              vnName: e.target.value,
-                            },
-                          })
-                        }
-                        required
-                      />
-                    </div>
-
-                    {/* <!-- Gender --> */}
-                    <div className="form-group">
-                      <label htmlFor="gender">Gender</label>
+                      <label htmlFor="pmid">Project Manager</label>
                       <select
-                        id="gender"
+                        id="pmid"
                         type="text"
                         className="form-control"
-                        name="gender"
-                        defaultValue={profile.gender}
+                        name="pmid"
+                        defaultValue={project._pmId}
                         onChange={e =>
                           this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              gender: e.target.value,
+                            project: {
+                              ...this.state.project,
+                              _pmId: e.target.value,
                             },
                           })
                         }
                         required
                       >
-                        <option value="M">Male</option>
-                        <option value="F">Female</option>
+                        <option value="" key="0" disabled>
+                          Select Project Manager
+                        </option>
+                        {_.map(users, user => {
+                          return (
+                            <option value={user._id} key={user._id}>
+                              {user.profile.fullName}
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
-                  </div>
 
-                  {/* <!-- Second Col --> */}
-                  <div className="col-md-4">
-                    {/* <!-- Join Date --> */}
+                    {/* <!-- Start Date --> */}
                     <div className="form-group">
-                      <label htmlFor="joindate">Join Date</label>
+                      <label htmlFor="startdate">Start Date</label>
                       <DatePicker
                         className="form-control"
-                        selected={profile.joinDate}
+                        selected={project.startDate}
                         onChange={date =>
                           this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              joinDate: date,
+                            project: {
+                              ...this.state.project,
+                              startDate: date,
                             },
                           })
                         }
+                        maxDate={project.endDate}
                         dateFormat="MMM dd, yyyy"
                       />
                     </div>
 
-                    {/* <!-- Talents --> */}
+                    {/* <!-- End Date --> */}
                     <div className="form-group">
-                      <label htmlFor="talents">Capabilities</label>
-                      <TagsInput
-                        id="talents"
+                      <label htmlFor="enddate">End Date</label>
+                      <DatePicker
                         className="form-control"
-                        value={profile.talents}
-                        onChange={tags =>
+                        selected={project.endDate}
+                        onChange={date =>
                           this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              talents: tags,
+                            project: {
+                              ...this.state.project,
+                              endDate: date,
                             },
                           })
                         }
+                        minDate={project.startDate}
+                        dateFormat="MMM dd, yyyy"
                       />
                     </div>
 
-                    {/* <!-- Position Title --> */}
+                    {/* <!-- Status --> */}
                     <div className="form-group">
-                      <label htmlFor="postitle">Position Title</label>
+                      <label htmlFor="status">Status</label>
                       <select
-                        id="postitle"
+                        id="status"
                         type="text"
                         className="form-control"
-                        name="postitle"
-                        defaultValue={profile.posTitle}
+                        name="status"
+                        defaultValue={project.status}
                         onChange={e =>
                           this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              posTitle: e.target.value,
+                            project: {
+                              ...this.state.project,
+                              status: e.target.value,
                             },
                           })
                         }
                         required
                       >
-                        <option value="BA">Business Analysis</option>
-                        <option value="C">Consultant</option>
-                        <option value="SC">Senior Consultant</option>
-                        <option value="M">Manager</option>
-                        <option value="SM">Senior Manager</option>
+                        <option value="Presales">Presales</option>
+                        <option value="Kick-off">Kick-off</option>
+                        <option value="Blueprint">Blueprint</option>
+                        <option value="Realization">Realization</option>
+                        <option value="SIT">SIT</option>
+                        <option value="UAT">UAT</option>
+                        <option value="Go-live">Go-live</option>
+                        <option value="Go-live Support">Go-live Support</option>
                       </select>
                     </div>
 
-                    {/* <!-- Job Level --> */}
+                    {/* <!-- Remark --> */}
                     <div className="form-group">
-                      <label htmlFor="joblevel">Job Level</label>
-                      <select
-                        id="joblevel"
-                        type="text"
-                        className="form-control"
-                        name="joblevel"
-                        defaultValue={profile.jobLevel}
-                        onChange={e =>
-                          this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              jobLevel: e.target.value,
-                            },
-                          })
-                        }
-                        required
-                      >
-                        <option value="BA">Business Analysis</option>
-                        <option value="C">Consultant</option>
-                        <option value="SC">Senior Consultant</option>
-                        <option value="M">Manager</option>
-                        <option value="SM">Senior Manager</option>
-                      </select>
-                    </div>
-
-                    {/* <!-- Base --> */}
-                    <div className="form-group">
-                      <label htmlFor="base">Base</label>
-                      <select
-                        id="base"
-                        type="text"
-                        className="form-control"
-                        name="base"
-                        defaultValue={profile.base}
-                        onChange={e =>
-                          this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              base: e.target.value,
-                            },
-                          })
-                        }
-                        required
-                      >
-                        <option value="HCM">Ho Chi Minh</option>
-                        <option value="HN">Ha Noi</option>
-                      </select>
-                    </div>
-
-                    {/* <!-- Entity Code --> */}
-                    <div className="form-group">
-                      <label htmlFor="entcode">Entity Code</label>
-                      <select
-                        id="entcode"
-                        type="text"
-                        className="form-control"
-                        name="entcode"
-                        defaultValue={profile.entCode}
-                        onChange={e =>
-                          this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              entCode: e.target.value,
-                            },
-                          })
-                        }
-                        required
-                      >
-                        <option value="VN1C">VN1C</option>
-                        <option value="VN1C">VN2C</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* <!-- Third Col --> */}
-                  <div className="col-md-4">
-                    {/* <!-- Country --> */}
-                    <div className="form-group">
-                      <label htmlFor="country">Country</label>
-                      <select
-                        id="country"
-                        type="text"
-                        className="form-control"
-                        name="country"
-                        defaultValue={profile.country}
-                        onChange={e =>
-                          this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              country: e.target.value,
-                            },
-                          })
-                        }
-                        required
-                        disabled
-                      >
-                        <option value="Brunei">Brunei</option>
-                        <option value="Guam">Guam</option>
-                        <option value="Indonesia">Indonesia</option>
-                        <option value="Malaysia">Malaysia</option>
-                        <option value="Philippines">Philippines</option>
-                        <option value="Singapore">Singapore</option>
-                        <option value="Thailand">Thailand</option>
-                        <option value="Vietnam">Vietnam</option>
-                      </select>
-                    </div>
-
-                    {/* <!-- Employment Type --> */}
-                    <div className="form-group">
-                      <label htmlFor="emptype">Employment Type</label>
-                      <select
-                        id="emptype"
-                        type="text"
-                        className="form-control"
-                        name="emptype"
-                        defaultValue={profile.empType}
-                        onChange={e => {
-                          this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              empType: e.target.value,
-                            },
-                          });
-                          if (profile.empType === 'Permanent') {
-                            profile.hPW = 40;
-                          }
-                        }}
-                        required
-                      >
-                        <option value="Permanent">Permanent</option>
-                        <option value="Contractor">Contractor</option>
-                      </select>
-                    </div>
-
-                    {/* <!-- Hours Per Week --> */}
-                    <div className="form-group">
-                      <label htmlFor="hpw">Hours Per Week</label>
+                      <label htmlFor="remark">Remark</label>
                       <input
-                        id="hpw"
-                        type="number"
-                        className="form-control"
-                        name="hpw"
-                        value={profile.hPW}
-                        onChange={e =>
-                          this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              hPW: parseInt(e.target.value),
-                            },
-                          })
-                        }
-                        required
-                        disabled={profile.empType === 'Permanent'}
-                      />
-                    </div>
-
-                    {/* <!-- Cost Center --> */}
-                    <div className="form-group">
-                      <label htmlFor="costcenter">Cost Center</label>
-                      <input
-                        id="costcenter"
+                        id="remark"
                         type="text"
                         className="form-control"
-                        name="costcenter"
-                        value={profile.costCenter}
+                        name="remark"
+                        value={project.remark || ''}
                         onChange={e =>
                           this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              costCenter: e.target.value,
+                            project: {
+                              ...this.state.project,
+                              remark: e.target.value,
                             },
                           })
                         }
-                        required
-                        disabled
-                      />
-                    </div>
-
-                    {/* <!-- Portfolios --> */}
-                    <div className="form-group">
-                      <label htmlFor="portfolios">Portfolios</label>
-                      <input
-                        id="portfolios"
-                        type="text"
-                        className="form-control"
-                        name="portfolios"
-                        value={profile.portfolios}
-                        onChange={e =>
-                          this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              portfolios: e.target.value,
-                            },
-                          })
-                        }
-                        required
-                        disabled
-                      />
-                    </div>
-
-                    {/* <!-- Offering --> */}
-                    <div className="form-group">
-                      <label htmlFor="offering">Offering</label>
-                      <input
-                        id="offering"
-                        type="text"
-                        className="form-control"
-                        name="offering"
-                        value={profile.offering}
-                        onChange={e =>
-                          this.setState({
-                            profile: {
-                              ...this.state.profile,
-                              offering: e.target.value,
-                            },
-                          })
-                        }
-                        required
-                        disabled
                       />
                     </div>
                   </div>
@@ -517,11 +258,27 @@ class CreateEmployee extends React.Component {
   }
 }
 
-CreateEmployee.propTypes = {
+ProjectCreate.defaultProps = {
+  // users: null, remote example (if using ddp)
+  users: null,
+};
+
+ProjectCreate.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+  usersReady: PropTypes.bool.isRequired,
+  users: Meteor.user() ? PropTypes.array.isRequired : () => null,
 };
 
-export default CreateEmployee;
+export default withTracker(() => {
+  const usersSub = Meteor.subscribe('users.all'); // publication needs to be set on remote server
+  const users = Meteor.users.find().fetch();
+  const usersReady = usersSub.ready() && !!users;
+
+  return {
+    usersReady,
+    users,
+  };
+})(ProjectCreate);

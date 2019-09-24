@@ -1,3 +1,3 @@
-import Text from './Text.js';
+import EmployeeCard from './EmployeeCard.js';
 
-export default Text;
+export default EmployeeCard;

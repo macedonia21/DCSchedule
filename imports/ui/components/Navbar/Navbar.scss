@@ -1,22 +1,25 @@
 .navbar {
-  background-color: #444;
+  font-family: 'Nunito-Regular', sans-serif;
+  background-color: transparent;
   * {
     :hover,
-    :active {
+    :active,
+    :focus {
       text-decoration: none;
+      background-color: transparent;
     }
   }
   a {
-    color: #666;
+    color: #fff;
   }
   .active {
-    color: #007bff;
+    color: #fff;
+    font-family: 'Nunito-Bold', sans-serif;
   }
   .navbar-brand a {
-    color: #666;
+    color: #fff;
   }
-  .dropdown-item:active {
-    color: #212529;
-    background-color: #fff;
+  .dropdown-item {
+    color: #fff;
   }
 }

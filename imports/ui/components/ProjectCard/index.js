@@ -1,3 +1,3 @@
-import EmployeeCard from './EmployeeCard.js';
+import ProjectCard from './ProjectCard.js';
 
-export default EmployeeCard;
+export default ProjectCard;

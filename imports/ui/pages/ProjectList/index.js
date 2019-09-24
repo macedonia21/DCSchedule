@@ -1,3 +1,3 @@
-import EmployeeList from './EmployeeList.js';
+import ProjectList from './ProjectList.js';
 
-export default EmployeeList;
+export default ProjectList;

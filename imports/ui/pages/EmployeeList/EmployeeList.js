@@ -14,11 +14,11 @@ import Users from '../../../api/remote/users';
 
 // components
 import EmployeeCard from '../../components/EmployeeCard';
-import AddEmployeeCard from '../../components/AddEmployeeCard';
+import EmployeeAddCard from '../../components/EmployeeAddCard';
 
-import './AllEmployee.scss';
+import './EmployeeList.scss';
 
-class AllEmployee extends React.Component {
+class EmployeeList extends React.Component {
   componentWillMount() {
     if (!this.props.loggedIn && !Meteor.userId) {
       return this.props.history.push('/login');
@@ -44,7 +44,7 @@ class AllEmployee extends React.Component {
         <h1 className="mb-4">Employees</h1>
         <div className="container">
           <div className="row">
-            <AddEmployeeCard />
+            <EmployeeAddCard />
             {usersReady &&
               _.map(users, user => {
                 return <EmployeeCard user={user} key={user._id} />;
@@ -56,12 +56,12 @@ class AllEmployee extends React.Component {
   }
 }
 
-AllEmployee.defaultProps = {
+EmployeeList.defaultProps = {
   // users: null, remote example (if using ddp)
   users: null,
 };
 
-AllEmployee.propTypes = {
+EmployeeList.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
@@ -79,4 +79,4 @@ export default withTracker(() => {
     usersReady,
     users,
   };
-})(AllEmployee);
+})(EmployeeList);

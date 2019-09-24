@@ -2,14 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import './EmployeeAddCard.scss';
+import './ProjectAddCard.scss';
 
-const AddEmployeeCard = () => (
+const ProjectAddCard = () => (
   <div className="col-xs-12 col-sm-6 col-md-4 emp-card">
     <div className="image-flip">
       <div className="mainflip">
         <div className="frontside">
-          <NavLink to="/employee/create">
+          <NavLink to="/project/create">
             <div className="card">
               <div className="card-body text-center">
                 <p>
@@ -19,8 +19,8 @@ const AddEmployeeCard = () => (
                     alt="card image"
                   />
                 </p>
-                <h4 className="card-title">Create New Employee</h4>
-                <p className="card-text">Click to create employee</p>
+                <h4 className="card-title">Create New Project</h4>
+                <p className="card-text">Click to create project</p>
               </div>
             </div>
           </NavLink>
@@ -30,4 +30,4 @@ const AddEmployeeCard = () => (
   </div>
 );
 
-export default AddEmployeeCard;
+export default ProjectAddCard;

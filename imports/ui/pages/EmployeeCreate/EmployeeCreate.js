@@ -36,6 +36,8 @@ class CreateEmployee extends React.Component {
         jobLevel: 'C',
         gender: 'M',
         talents: [],
+        hPW: 40,
+        counsellor: '',
       },
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -58,7 +60,7 @@ class CreateEmployee extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     const { email, password, profile } = this.state;
-    Meteor.call('create.employee', email, password, profile, (err, res) => {
+    Meteor.call('employee.create', email, password, profile, (err, res) => {
       if (err) {
         NotificationManager.error(
           `Cannot create: ${err.message}`,
@@ -371,6 +373,12 @@ class CreateEmployee extends React.Component {
                         required
                         disabled
                       >
+                        <option value="Brunei">Brunei</option>
+                        <option value="Guam">Guam</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Singapore">Singapore</option>
                         <option value="Thailand">Thailand</option>
                         <option value="Vietnam">Vietnam</option>
                       </select>
@@ -379,22 +387,49 @@ class CreateEmployee extends React.Component {
                     {/* <!-- Employment Type --> */}
                     <div className="form-group">
                       <label htmlFor="emptype">Employment Type</label>
-                      <input
+                      <select
                         id="emptype"
                         type="text"
                         className="form-control"
                         name="emptype"
-                        value={profile.empType}
-                        onChange={e =>
+                        defaultValue={profile.empType}
+                        onChange={e => {
                           this.setState({
                             profile: {
                               ...this.state.profile,
                               empType: e.target.value,
                             },
+                          });
+                          if (profile.empType === 'Permanent') {
+                            profile.hPW = 40;
+                          }
+                        }}
+                        required
+                      >
+                        <option value="Permanent">Permanent</option>
+                        <option value="Contractor">Contractor</option>
+                      </select>
+                    </div>
+
+                    {/* <!-- Hours Per Week --> */}
+                    <div className="form-group">
+                      <label htmlFor="hpw">Hours Per Week</label>
+                      <input
+                        id="hpw"
+                        type="number"
+                        className="form-control"
+                        name="hpw"
+                        value={profile.hPW}
+                        onChange={e =>
+                          this.setState({
+                            profile: {
+                              ...this.state.profile,
+                              hPW: parseInt(e.target.value),
+                            },
                           })
                         }
                         required
-                        disabled
+                        disabled={profile.empType === 'Permanent'}
                       />
                     </div>
 
@@ -415,6 +450,7 @@ class CreateEmployee extends React.Component {
                             },
                           })
                         }
+                        required
                         disabled
                       />
                     </div>
@@ -436,6 +472,7 @@ class CreateEmployee extends React.Component {
                             },
                           })
                         }
+                        required
                         disabled
                       />
                     </div>
@@ -468,7 +505,7 @@ class CreateEmployee extends React.Component {
                     type="submit"
                     className="btn btn-primary btn-block mb-2"
                   >
-                    Sign up
+                    Create
                   </button>
                 </div>
               </form>

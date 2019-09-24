@@ -54,21 +54,11 @@ class Login extends React.Component {
       <section className="login-page">
         <div className="card mx-auto" style={{ maxWidth: '28rem' }}>
           <div className="card-header">
-            <div className="brand">
-              <div className="text-center">
-                <img
-                  className="rounded-circle"
-                  src="https://via.placeholder.com/150x150"
-                  alt="logo"
-                />
-              </div>
-            </div>
             <div className="card-body">
-              <h4 className="card-title">Login</h4>
+              <h1 className="card-title text-center">Login</h1>
               <form onSubmit={this.handleSubmit}>
                 <div className="form-group">
                   <label htmlFor="email">E-Mail Address</label>
-
                   <input
                     id="email"
                     type="email"
@@ -104,15 +94,8 @@ class Login extends React.Component {
                   </button>
                   {errMsg && <Alert errMsg={errMsg} />}
                 </div>
-                <div className="margin-top20">
-                  Don&apos;t have an account?{' '}
-                  <NavLink to="/signup">Create one</NavLink>
-                </div>
               </form>
             </div>
-          </div>
-          <div className="footer text-center">
-            &copy; {new Date().getFullYear()}
           </div>
         </div>
       </section>

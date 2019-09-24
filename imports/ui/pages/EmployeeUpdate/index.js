@@ -1,3 +1,3 @@
-import CreateEmployee from './CreateEmployee.js';
+import EmployeeUpdate from './EmployeeUpdate.js';
 
-export default CreateEmployee;
+export default EmployeeUpdate;

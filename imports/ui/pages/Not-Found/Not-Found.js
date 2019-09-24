@@ -4,9 +4,7 @@ import './Not-Found.scss';
 
 const NotFound = () => (
   <div className="not-found-page">
-    <div className="alert alert-secondary" role="alert">
-      Page Not Found
-    </div>
+    <h1>404 Page Not Found</h1>
   </div>
 );
 
