@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { check, Match } from 'meteor/check';
+import { Roles } from 'meteor/alanning:roles';
 
 import Projects from './projects/projects.js';
 
@@ -32,11 +33,14 @@ if (Meteor.isServer) {
       });
 
       try {
-        Accounts.createUser({
+        const _id = Accounts.createUser({
           email,
           password,
           profile,
         });
+        if (_id) {
+          Roles.addUsersToRoles(_id, ['user'], Roles.GLOBAL_GROUP);
+        }
       } catch (e) {
         throw new Meteor.Error(e.message);
       }

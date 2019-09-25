@@ -1,3 +1,3 @@
-import ProjectList from './ProjectList.js';
+import ProjectAssignment from './ProjectAssignment.js';
 
-export default ProjectList;
+export default ProjectAssignment;

@@ -2,12 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
+import { NotificationManager } from 'react-notifications';
 
 // import components
 import Alert from '../../components/Alert';
 
 // import styles
 import './Login.scss';
+import 'react-notifications/lib/notifications.css';
 
 class Login extends React.Component {
   constructor(props) {
@@ -15,20 +17,19 @@ class Login extends React.Component {
     this.state = {
       email: '',
       password: '',
-      errMsg: null,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentWillMount() {
     if (this.props.loggedIn) {
-      return this.props.history.push('/profile');
+      return this.props.history.push('/project');
     }
   }
 
   shouldComponentUpdate(nextProps) {
     if (nextProps.loggedIn) {
-      nextProps.history.push('/profile');
+      nextProps.history.push('/project');
       return false;
     }
     return true;
@@ -39,17 +40,17 @@ class Login extends React.Component {
     const { email, password } = this.state;
     Meteor.loginWithPassword(email, password, err => {
       if (err) {
-        this.setState({ errMsg: err.reason });
-        return console.log(err);
+        NotificationManager.error(`Cannot login: ${err.reason}`, 'Error', 3000);
       }
+      this.setState({ password: '' });
     });
   }
+
   render() {
     if (this.props.loggedIn) {
       return null;
     }
 
-    const { errMsg } = this.state;
     return (
       <section className="login-page">
         <div className="card mx-auto" style={{ maxWidth: '28rem' }}>
@@ -92,7 +93,6 @@ class Login extends React.Component {
                   >
                     Login
                   </button>
-                  {errMsg && <Alert errMsg={errMsg} />}
                 </div>
               </form>
             </div>

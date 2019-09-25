@@ -3,7 +3,6 @@
  */
 
 import { Accounts } from 'meteor/accounts-base';
-import Counters from '../../api/counters/counters.js';
 
 Accounts.onCreateUser((options, user) => {
   // Use provided profile in options, or create an empty object
@@ -33,10 +32,6 @@ Accounts.onCreateUser((options, user) => {
   user.profile.hPW = options.profile.hPW;
   user.profile._counsellorId = options.profile._counsellorId;
   user.profile.email = options.email;
-  // Roles
-  if (options.isUser) {
-    user.roles = ['user'];
-  }
   // Returns the user object
   return user;
 });

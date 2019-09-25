@@ -37,7 +37,7 @@ class CreateEmployee extends React.Component {
         gender: 'M',
         talents: [],
         hPW: 40,
-        counsellor: '',
+        _counsellorId: '',
       },
     };
     this.handleSubmit = this.handleSubmit.bind(this);

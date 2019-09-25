@@ -29,8 +29,12 @@ $theme-colors: (
 }
 
 body {
-  font-family: 'Nunito-Regular', sans-serif;
+  font-family: 'Nunito-Regular', sans-serif !important;
   background: rgb(61,106,239);
   background-image: linear-gradient( 109.6deg,  rgba(61,106,239,1) 11.2%, rgba(122,14,190,1) 70.2% );
   min-height: 100vh;
+}
+
+.notification-message.title, .notification-message.message {
+  font-family: 'Nunito-Regular', sans-serif;
 }

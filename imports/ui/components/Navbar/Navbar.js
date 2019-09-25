@@ -8,12 +8,11 @@ import './Navbar.scss';
 const PublicNav = () => [
   <li key="login" className="nav-item">
     <span className="nav-link">
-      <NavLink to="/login">Login</NavLink>
-    </span>
-  </li>,
-  <li key="signup" className="nav-item">
-    <span className="nav-link">
-      <NavLink to="/signup">Signup</NavLink>
+      <NavLink to="/login">
+        <button type="button" className="dropdown-item">
+          Login
+        </button>
+      </NavLink>
     </span>
   </li>,
 ];

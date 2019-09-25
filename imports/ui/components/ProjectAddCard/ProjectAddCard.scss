@@ -1,10 +1,9 @@
-.emp-card {
+.proj-card {
   * {
     :hover,
     :active,
     :focus {
       text-decoration: none;
-      background-color: transparent;
     }
   }
   .card {
@@ -48,7 +47,7 @@
     position: relative;
     //-webkit-transform: rotateY(0deg);
     //-ms-transform: rotateY(0deg);
-    z-index: 2;
+    z-index: 1;
     margin-bottom: 30px;
   }
 

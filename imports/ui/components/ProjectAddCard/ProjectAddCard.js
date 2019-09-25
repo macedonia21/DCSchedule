@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import './ProjectAddCard.scss';
 
 const ProjectAddCard = () => (
-  <div className="col-xs-12 col-sm-6 col-md-4 emp-card">
+  <div className="col-xs-12 col-sm-6 col-md-4 proj-card">
     <div className="image-flip">
       <div className="mainflip">
         <div className="frontside">

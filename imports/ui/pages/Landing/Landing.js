@@ -6,13 +6,13 @@ import './Landing.scss';
 class Landing extends React.Component {
   componentWillMount() {
     if (this.props.loggedIn) {
-      return this.props.history.push('/profile');
+      return this.props.history.push('/project');
     }
   }
 
   shouldComponentUpdate(nextProps) {
     if (nextProps.loggedIn) {
-      nextProps.history.push('/profile');
+      nextProps.history.push('/project');
       return false;
     }
     return true;
@@ -24,7 +24,14 @@ class Landing extends React.Component {
     }
     return (
       <div className="landing-page">
-        <h1>Landing Page</h1>
+        <h1 className="text-center text-brand">
+          DC
+          <br />
+          Resource
+          <br />
+          Schedule
+        </h1>
+        <div className="landing-image col-md-12" />
       </div>
     );
   }

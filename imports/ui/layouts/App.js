@@ -22,6 +22,7 @@ import EmployeeUpdate from '../pages/EmployeeUpdate';
 import ProjectList from '../pages/ProjectList';
 import ProjectCreate from '../pages/ProjectCreate';
 import ProjectUpdate from '../pages/ProjectUpdate';
+import ProjectAssignment from '../pages/ProjectAssignment';
 import NotFound from '../pages/Not-Found';
 import RecoverPassword from '../pages/RecoverPassword';
 import ResetPassword from '../pages/ResetPassword';
@@ -40,7 +41,6 @@ const App = props => (
       <Switch>
         <PropsRoute exact path="/" component={Landing} {...props} />
         <PropsRoute path="/login" component={Login} {...props} />
-        <PropsRoute path="/signup" component={Signup} {...props} />
         <PropsRoute exact path="/profile" component={Profile} {...props} />
         <PropsRoute exact path="/profile/:_id" component={Profile} {...props} />
         <PropsRoute
@@ -72,6 +72,12 @@ const App = props => (
           exact
           path="/project/:_id"
           component={ProjectUpdate}
+          {...props}
+        />
+        <PropsRoute
+          exact
+          path="/project/assignment/:_id"
+          component={ProjectAssignment}
           {...props}
         />
         <PropsRoute

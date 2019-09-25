@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker';
 import TagsInput from 'react-tagsinput';
 import { _ } from 'underscore';
 import { NotificationManager } from 'react-notifications';
+import moment from 'moment/moment';
 
 // import components
 
