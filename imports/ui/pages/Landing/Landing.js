@@ -1,18 +1,20 @@
+import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import PropTypes from 'prop-types';
+import { NavLink } from 'react-router-dom';
 
 import './Landing.scss';
 
 class Landing extends React.Component {
   componentWillMount() {
-    if (this.props.loggedIn) {
-      return this.props.history.push('/project');
+    if (this.props.loggedIn || Meteor.user()) {
+      return this.props.history.push('/report');
     }
   }
 
   shouldComponentUpdate(nextProps) {
-    if (nextProps.loggedIn) {
-      nextProps.history.push('/project');
+    if (nextProps.loggedIn || Meteor.user()) {
+      nextProps.history.push('/report');
       return false;
     }
     return true;
@@ -24,14 +26,23 @@ class Landing extends React.Component {
     }
     return (
       <div className="landing-page">
-        <h1 className="text-center text-brand">
-          DC
-          <br />
-          Resource
-          <br />
-          Schedule
-        </h1>
-        <div className="landing-image col-md-12" />
+        <div className="container">
+          <div className="row landing-image">
+            <div className="col-lg-8" />
+            <div className="col-lg-4 text-center title-col">
+              <div>
+                <h1>
+                  Welcome to
+                  <br />
+                  DC Resource Schedule
+                </h1>
+                <NavLink role="button" className="btn btn-primary" to="/login">
+                  Login
+                </NavLink>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

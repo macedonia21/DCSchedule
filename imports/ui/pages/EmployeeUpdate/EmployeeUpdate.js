@@ -211,6 +211,7 @@ class EmployeeUpdate extends React.Component {
                           id="talents"
                           className="form-control"
                           value={user.profile.talents}
+                          maxTags={3}
                           onChange={tags => {
                             this.setState({
                               isChanged: true,
@@ -248,12 +249,12 @@ class EmployeeUpdate extends React.Component {
                       {/* <!-- Job Level --> */}
                       <div className="form-group">
                         <label htmlFor="joblevel">Job Level</label>
-                        <select
+                        <input
                           id="joblevel"
                           type="text"
                           className="form-control"
                           name="joblevel"
-                          defaultValue={user.profile.jobLevel}
+                          value={user.profile.jobLevel}
                           onChange={e => {
                             this.setState({
                               isChanged: true,
@@ -261,13 +262,7 @@ class EmployeeUpdate extends React.Component {
                             user.profile.jobLevel = e.target.value;
                           }}
                           required
-                        >
-                          <option value="BA">Business Analysis</option>
-                          <option value="C">Consultant</option>
-                          <option value="SC">Senior Consultant</option>
-                          <option value="M">Manager</option>
-                          <option value="SM">Senior Manager</option>
-                        </select>
+                        />
                       </div>
 
                       {/* <!-- Base --> */}

@@ -4,6 +4,7 @@ import { check, Match } from 'meteor/check';
 import { Roles } from 'meteor/alanning:roles';
 
 import Projects from './projects/projects.js';
+import Assignments from './assignments/assignments.js';
 
 if (Meteor.isServer) {
   Meteor.methods({
@@ -145,6 +146,37 @@ if (Meteor.isServer) {
             },
           }
         );
+      } catch (e) {
+        throw new Meteor.Error(e.message);
+      }
+    },
+    'assignment.create'(assignment) {
+      check(assignment, {
+        _employeeId: String,
+        _projectId: String,
+        startDate: Date,
+        endDate: Date,
+        availableDate: Date,
+        percent: Number,
+        level: String,
+        role: String,
+        talents: Match.Maybe([String]),
+        remark: String,
+      });
+
+      try {
+        Assignments.insert(assignment);
+      } catch (e) {
+        throw new Meteor.Error(e.message);
+      }
+    },
+    'assignment.delete'(_id) {
+      check(_id, String);
+
+      try {
+        Assignments.remove({
+          _id,
+        });
       } catch (e) {
         throw new Meteor.Error(e.message);
       }

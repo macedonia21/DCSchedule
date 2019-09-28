@@ -16,11 +16,11 @@ allowImageOrigin.forEach(o => BrowserPolicy.content.allowImageOrigin(o));
 /**
  * allowed scripts
  */
-// const allowScriptOrigin = [''];
-// allowScriptOrigin.forEach(o => BrowserPolicy.content.allowScriptOrigin(o));
+const allowScriptOrigin = ['www.gstatic.com'];
+allowScriptOrigin.forEach(o => BrowserPolicy.content.allowScriptOrigin(o));
 
 /**
  * allowed styles
  */
-// const allowStyleOrigin = [''];
-// allowStyleOrigin.forEach(o => BrowserPolicy.content.allowStyleOrigin(o));
+const allowStyleOrigin = ['www.gstatic.com'];
+allowStyleOrigin.forEach(o => BrowserPolicy.content.allowStyleOrigin(o));

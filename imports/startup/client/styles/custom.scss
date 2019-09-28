@@ -27,6 +27,11 @@ $theme-colors: (
   font-family: 'Nunito-Bold';
   src: url('/font/Nunito-ExtraBold.ttf');
 }
+@font-face {
+  font-family: 'Roboto';
+  //src: url('/font/Roboto-Regular.ttf');
+  src: url('/font/Nunito-Regular.ttf');
+}
 
 body {
   font-family: 'Nunito-Regular', sans-serif !important;

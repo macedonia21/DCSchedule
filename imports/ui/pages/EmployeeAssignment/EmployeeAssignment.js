@@ -16,11 +16,49 @@ import Assignments from '../../../api/assignments/assignments';
 import ProjectCard from '../../components/ProjectCard';
 import EmployeeCard from '../../components/EmployeeCard';
 
-import './ProjectAssignment.scss';
+import './EmployeeAssignment.scss';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-notifications/lib/notifications.css';
 
-class ProjectAssignment extends React.Component {
+// functions
+function getDateRange(startDate, stopDate) {
+  const dateRange = new Array();
+
+  const startDateObj = moment(startDate);
+  const stopDateObj = moment(stopDate);
+
+  let currentDate = startDateObj;
+
+  while (currentDate.isSameOrBefore(stopDateObj, 'day')) {
+    dateRange.push(new Date(currentDate));
+    currentDate = moment(currentDate).add(1, 'd');
+  }
+  return dateRange;
+}
+
+function findEmployeeProjectFromAssignments(projects, employeeAssignments) {
+  let returnProject = null;
+
+  const currentAssignment = _.find(employeeAssignments, assignment => {
+    const startDate = moment(assignment.startDate);
+    const endDate = moment(assignment.endDate);
+    const currentDate = moment(new Date());
+    return (
+      startDate.isSameOrBefore(currentDate, 'day') &&
+      endDate.isSameOrAfter(currentDate, 'day')
+    );
+  });
+
+  if (currentAssignment) {
+    returnProject = _.findWhere(projects, {
+      _id: currentAssignment._projectId,
+    });
+  }
+
+  return returnProject;
+}
+
+class EmployeeAssignment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -42,6 +80,10 @@ class ProjectAssignment extends React.Component {
       chartData: {
         data: {},
         height: 210,
+        heightRow: 226,
+        calendarData: {},
+        calendarHeight: 170,
+        calendarHeightRow: 186,
       },
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -92,23 +134,28 @@ class ProjectAssignment extends React.Component {
     const {
       loggedIn,
       projectsReady,
+      projects,
       project,
       usersReady,
-      users,
       user,
       assignmentsReady,
-      projectAssignments,
+      employeeAssignments,
     } = this.props;
     const { newAssignment, isDefaultSet, chartData } = this.state;
 
-    if (project && !isDefaultSet.set) {
+    if (user && !isDefaultSet.set) {
       isDefaultSet.set = true;
-      newAssignment._projectId = project._id;
-      newAssignment.startDate = project.startDate;
-      newAssignment.endDate = project.endDate;
+      newAssignment._employeeId = user._id;
     }
 
-    if (projectAssignments) {
+    // Chart Date
+    const chartCalendarDataDeclare = [
+      { type: 'date', id: 'Date' },
+      { type: 'number', id: 'Percent' },
+    ];
+    let chartCalendarDataItems = [];
+
+    if (employeeAssignments) {
       const chartDataDeclare = [
         { type: 'string', label: 'Task ID' },
         { type: 'string', label: 'Task Name' },
@@ -125,14 +172,14 @@ class ProjectAssignment extends React.Component {
           label: 'Dependencies',
         },
       ];
-      const chartDataItems = _.map(projectAssignments, assignment => {
-        const assignedUser = _.findWhere(users, {
-          _id: assignment._employeeId,
+      const chartDataItems = _.map(employeeAssignments, assignment => {
+        const assignedProject = _.findWhere(projects, {
+          _id: assignment._projectId,
         });
         return [
           assignment._id,
-          assignedUser.profile.fullName,
-          assignedUser.profile.fullName,
+          assignedProject.projectName,
+          assignedProject.projectName,
           assignment.startDate,
           assignment.endDate,
           null,
@@ -145,26 +192,97 @@ class ProjectAssignment extends React.Component {
       chartDataCombine = _.union(chartDataCombine, chartDataItems);
       chartData.data = chartDataCombine;
 
-      const assignmentChartHeight = (_.size(projectAssignments) + 1) * 40;
-      chartData.height < assignmentChartHeight
-        ? (chartData.height = assignmentChartHeight)
-        : () => null;
+      const assignmentChartHeight = (_.size(employeeAssignments) + 1) * 40;
+      if (chartData.height < assignmentChartHeight) {
+        chartData.height = assignmentChartHeight;
+        chartData.heightRow = assignmentChartHeight + 16;
+      }
+
+      chartCalendarDataItems = _.map(
+        _.values(
+          _.groupBy(
+            _.flatten(
+              _.map(employeeAssignments, assignment => {
+                const dateRange = getDateRange(
+                  assignment.startDate,
+                  assignment.endDate
+                );
+                return _.map(dateRange, date => {
+                  return [
+                    new Date(
+                      date.getFullYear(),
+                      date.getMonth(),
+                      date.getDate()
+                    ),
+                    assignment.percent,
+                  ];
+                });
+              }),
+              true
+            ),
+            item => {
+              return item[0];
+            }
+          )
+        ),
+        day => {
+          return [
+            day[0][0],
+            _.reduce(
+              _.map(day, item => {
+                return item[1];
+              }),
+              (memo, item) => {
+                return memo + item;
+              },
+              0
+            ),
+          ];
+        }
+      );
     }
+
+    let chartCalendarDataCombine = [];
+    chartCalendarDataCombine.push(chartCalendarDataDeclare);
+    if (_.size(chartCalendarDataItems) > 0) {
+      chartCalendarDataCombine = _.union(
+        chartCalendarDataCombine,
+        chartCalendarDataItems
+      );
+    }
+
+    let assignmentCalendarChartHeight = 170;
+    if (_.size(chartCalendarDataItems) > 1) {
+      assignmentCalendarChartHeight =
+        _.size(
+          _.uniq(
+            _.map(chartCalendarDataItems, item => {
+              return item[0].getFullYear();
+            })
+          )
+        ) *
+          150 +
+        20;
+    }
+    chartData.calendarHeight = assignmentCalendarChartHeight;
+    chartData.calendarHeightRow = assignmentCalendarChartHeight + 16;
+
+    chartData.calendarData = chartCalendarDataCombine;
 
     if (!loggedIn) {
       return null;
     }
     return (
-      <div className="project-assignment-page">
+      <div className="employee-assignment-page">
         <h1 className="mb-4">
-          {projectsReady ? `Project ${project.projectName}` : `Project`}
+          {user ? `Assign ${user.profile.fullName}` : `Assign`}
         </h1>
         <div className="container">
           <div className="row">
             {projectsReady && usersReady && assignmentsReady && (
               <>
-                <ProjectCard project={project} key={project._id} />
                 <EmployeeCard user={user} key={user._id} />
+                {project && <ProjectCard project={project} key={project._id} />}
 
                 <div className="col-xs-12 col-sm-12 col-md-12 new-assignment-card">
                   <div className="image-flip">
@@ -197,29 +315,12 @@ class ProjectAssignment extends React.Component {
                                         className="form-control"
                                         name="employeeid"
                                         defaultValue={newAssignment._employeeId}
-                                        onChange={e =>
-                                          this.setState({
-                                            newAssignment: {
-                                              ...this.state.newAssignment,
-                                              _employeeId: e.target.value,
-                                            },
-                                          })
-                                        }
+                                        disabled
                                         required
                                       >
-                                        <option value="" key="0" disabled>
-                                          Select Employee
+                                        <option value={user._id} key={user._id}>
+                                          {user.profile.fullName}
                                         </option>
-                                        {_.map(users, user => {
-                                          return (
-                                            <option
-                                              value={user._id}
-                                              key={user._id}
-                                            >
-                                              {user.profile.fullName}
-                                            </option>
-                                          );
-                                        })}
                                       </select>
                                     </div>
 
@@ -232,15 +333,29 @@ class ProjectAssignment extends React.Component {
                                         className="form-control"
                                         name="projectid"
                                         defaultValue={newAssignment._projectId}
-                                        disabled
+                                        onChange={e =>
+                                          this.setState({
+                                            newAssignment: {
+                                              ...this.state.newAssignment,
+                                              _projectId: e.target.value,
+                                            },
+                                          })
+                                        }
                                         required
                                       >
-                                        <option
-                                          value={project._id}
-                                          key={project._id}
-                                        >
-                                          {project.projectName}
+                                        <option value="" key="0" disabled>
+                                          Select Project
                                         </option>
+                                        {_.map(projects, project => {
+                                          return (
+                                            <option
+                                              value={project._id}
+                                              key={project._id}
+                                            >
+                                              {project.projectName}
+                                            </option>
+                                          );
+                                        })}
                                       </select>
                                     </div>
 
@@ -445,7 +560,8 @@ class ProjectAssignment extends React.Component {
                   </div>
                 </div>
 
-                <div className="col-xs-12 col-sm-12 col-md-12 project-assignment-card">
+                {/* <!-- Remark --> */}
+                <div className="col-xs-12 col-sm-12 col-md-12 employee-assignment-card">
                   <div className="image-flip">
                     <div className="mainflip">
                       <div className="frontside">
@@ -458,20 +574,20 @@ class ProjectAssignment extends React.Component {
                               aria-expanded="false"
                               aria-controls="collapseProjAssignments"
                             >
-                              Project Assignments
+                              Employee Assignments
                             </h1>
                             <div
                               className="collapse"
                               id="collapseProjAssignments"
                             >
-                              {_.map(projectAssignments, assignment => {
-                                const assignedUser = _.findWhere(users, {
-                                  _id: assignment._employeeId,
+                              {_.map(employeeAssignments, assignment => {
+                                const assignedProject = _.findWhere(projects, {
+                                  _id: assignment._projectId,
                                 });
                                 return (
                                   <div className="row" key={assignment._id}>
                                     <div className="col-md-2 pb-2 pt-2">
-                                      {assignedUser.profile.fullName}
+                                      {assignedProject.projectName}
                                     </div>
                                     <div className="col-md-3 pb-2 pt-2">
                                       {`${moment(assignment.startDate).format(
@@ -530,9 +646,44 @@ class ProjectAssignment extends React.Component {
                                 );
                               })}
                             </div>
-                            <div className="row" key="0">
+                            <div
+                              className="row"
+                              key="0"
+                              style={{ height: chartData.calendarHeightRow }}
+                            >
                               <div className="col-md-12 pb-2 pt-2">
-                                {_.size(projectAssignments) > 0 && (
+                                <Chart
+                                  width="auto"
+                                  height={`${chartData.calendarHeight}px`}
+                                  chartType="Calendar"
+                                  loader={<div>Chart loading...</div>}
+                                  data={chartData.calendarData}
+                                  options={{
+                                    title: 'Employee Calendar',
+                                    calendar: {
+                                      yearLabel: {
+                                        fontName: 'Roboto',
+                                      },
+                                      dayOfWeekLabel: {
+                                        fontName: 'Roboto',
+                                      },
+                                      monthLabel: {
+                                        fontName: 'Roboto',
+                                      },
+                                    },
+                                    colorAxis: { minValue: 0 },
+                                  }}
+                                  rootProps={{ 'data-testid': '1' }}
+                                />
+                              </div>
+                            </div>
+                            <div
+                              className="row"
+                              key="1"
+                              style={{ height: chartData.heightRow }}
+                            >
+                              <div className="col-md-12 pb-2 pt-2">
+                                {_.size(employeeAssignments) > 0 && (
                                   <Chart
                                     width="100%"
                                     height={`${chartData.height}px`}
@@ -545,7 +696,7 @@ class ProjectAssignment extends React.Component {
                                         trackHeight: 40,
                                       },
                                     }}
-                                    rootProps={{ 'data-testid': '1' }}
+                                    rootProps={{ 'data-testid': '2' }}
                                   />
                                 )}
                               </div>
@@ -565,63 +716,58 @@ class ProjectAssignment extends React.Component {
   }
 }
 
-ProjectAssignment.defaultProps = {
+EmployeeAssignment.defaultProps = {
   // users: null, remote example (if using ddp)
+  projects: null,
   project: null,
-  users: null,
   user: null,
-  projectAssignments: null,
+  employeeAssignments: null,
 };
 
-ProjectAssignment.propTypes = {
+EmployeeAssignment.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
   projectsReady: PropTypes.bool.isRequired,
+  projects: Projects ? PropTypes.array.isRequired : () => null,
   project: PropTypes.object,
   usersReady: PropTypes.bool.isRequired,
-  users: Meteor.user() ? PropTypes.array.isRequired : () => null,
   user: PropTypes.object,
   assignmentsReady: PropTypes.bool.isRequired,
-  projectAssignments: Assignments ? PropTypes.array : () => null,
+  employeeAssignments: Assignments ? PropTypes.array : () => null,
 };
 
 export default withTracker(props => {
   const projectsSub = Meteor.subscribe('projects.all'); // publication needs to be set on remote server
   const projects = Projects.find().fetch();
-  const project = _.findWhere(projects, { _id: props.match.params._id });
   const projectsReady = projectsSub.ready() && !!projects;
 
   const usersSub = Meteor.subscribe('users.all'); // publication needs to be set on remote server
   const users = Meteor.users.find().fetch();
-  const user = project ? _.findWhere(users, { _id: project._pmId }) : null;
+  const user = _.findWhere(users, { _id: props.match.params._id });
   const usersReady = usersSub.ready() && !!users;
 
   const assignmentsSub = Meteor.subscribe('assignments.all'); // publication needs to be set on remote server
   const assignments = Assignments.find().fetch();
-  const projectAssignments = project
-    ? _.sortBy(
-        _.sortBy(
-          _.where(assignments, { _projectId: project._id }),
-          assignment => {
-            return assignment.startDate;
-          }
-        ),
-        assignment => {
-          return assignment._employeeId;
-        }
-      )
+  const employeeAssignments = user
+    ? _.sortBy(_.where(assignments, { _employeeId: user._id }), assignment => {
+        return assignment.startDate;
+      })
     : null;
-  const assignmentsReady = assignmentsSub.ready() && !!projectAssignments;
+  const project =
+    projectsReady && employeeAssignments
+      ? findEmployeeProjectFromAssignments(projects, employeeAssignments)
+      : null;
+  const assignmentsReady = assignmentsSub.ready() && !!employeeAssignments;
 
   return {
     projectsReady,
+    projects,
     project,
     usersReady,
-    users,
     user,
     assignmentsReady,
-    projectAssignments,
+    employeeAssignments,
   };
-})(ProjectAssignment);
+})(EmployeeAssignment);

@@ -28,7 +28,7 @@ johanbrook:publication-collector  # Test a Meteor publication by collecting its 
 fourseven:scss
 fortawesome:fontawesome
 
-browser-policy@1.1.0
+browser-policy
 aldeed:collection2@3.0.0
 matb33:collection-hooks
 # msavin:mongol

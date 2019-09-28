@@ -14,15 +14,18 @@ import Navbar from '../components/Navbar';
 // import routes
 import Landing from '../pages/Landing';
 import Login from '../pages/Login';
-import Signup from '../pages/Signup';
 import Profile from '../pages/Profile';
 import EmployeeList from '../pages/EmployeeList';
 import EmployeeCreate from '../pages/EmployeeCreate';
 import EmployeeUpdate from '../pages/EmployeeUpdate';
+import EmployeeAssignment from '../pages/EmployeeAssignment';
+
 import ProjectList from '../pages/ProjectList';
 import ProjectCreate from '../pages/ProjectCreate';
 import ProjectUpdate from '../pages/ProjectUpdate';
 import ProjectAssignment from '../pages/ProjectAssignment';
+
+import Report from '../pages/Report';
 import NotFound from '../pages/Not-Found';
 import RecoverPassword from '../pages/RecoverPassword';
 import ResetPassword from '../pages/ResetPassword';
@@ -61,6 +64,12 @@ const App = props => (
           component={EmployeeUpdate}
           {...props}
         />
+        <PropsRoute
+          exact
+          path="/employee/assignment/:_id"
+          component={EmployeeAssignment}
+          {...props}
+        />
         <PropsRoute exact path="/project" component={ProjectList} {...props} />
         <PropsRoute
           exact
@@ -80,6 +89,7 @@ const App = props => (
           component={ProjectAssignment}
           {...props}
         />
+        <PropsRoute exact path="/report" component={Report} {...props} />
         <PropsRoute
           path="/recover-password"
           component={RecoverPassword}

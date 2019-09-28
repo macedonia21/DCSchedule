@@ -14,5 +14,8 @@ import '../../api/counters/publications.js';
 // projects api
 import '../../api/projects/publications.js';
 
+// assignments api
+import '../../api/assignments/publications.js';
+
 // import another api
 import '../../api/method.js';

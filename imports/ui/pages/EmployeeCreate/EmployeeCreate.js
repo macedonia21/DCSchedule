@@ -89,8 +89,8 @@ class CreateEmployee extends React.Component {
             <div className="card-body">
               <h1 className="card-title text-center">Create Employee</h1>
               <form onSubmit={this.handleSubmit}>
-                {/* <!-- First Col --> */}
                 <div className="row">
+                  {/* <!-- First Col --> */}
                   <div className="col-md-4">
                     {/* <!-- Email --> */}
                     <div className="form-group">
@@ -237,6 +237,7 @@ class CreateEmployee extends React.Component {
                         id="talents"
                         className="form-control"
                         value={profile.talents}
+                        maxTags={3}
                         onChange={tags =>
                           this.setState({
                             profile: {
@@ -278,12 +279,12 @@ class CreateEmployee extends React.Component {
                     {/* <!-- Job Level --> */}
                     <div className="form-group">
                       <label htmlFor="joblevel">Job Level</label>
-                      <select
+                      <input
                         id="joblevel"
                         type="text"
                         className="form-control"
                         name="joblevel"
-                        defaultValue={profile.jobLevel}
+                        value={profile.jobLevel}
                         onChange={e =>
                           this.setState({
                             profile: {
@@ -293,13 +294,7 @@ class CreateEmployee extends React.Component {
                           })
                         }
                         required
-                      >
-                        <option value="BA">Business Analysis</option>
-                        <option value="C">Consultant</option>
-                        <option value="SC">Senior Consultant</option>
-                        <option value="M">Manager</option>
-                        <option value="SM">Senior Manager</option>
-                      </select>
+                      />
                     </div>
 
                     {/* <!-- Base --> */}
@@ -346,7 +341,7 @@ class CreateEmployee extends React.Component {
                         required
                       >
                         <option value="VN1C">VN1C</option>
-                        <option value="VN1C">VN2C</option>
+                        <option value="VN2C">VN2C</option>
                       </select>
                     </div>
                   </div>
