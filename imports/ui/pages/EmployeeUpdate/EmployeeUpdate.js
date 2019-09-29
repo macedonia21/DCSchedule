@@ -74,8 +74,8 @@ class EmployeeUpdate extends React.Component {
               <h1 className="card-title text-center">Employee Profile</h1>
               {usersReady && (
                 <form onSubmit={this.handleSubmit}>
-                  {/* <!-- First Col --> */}
                   <div className="row">
+                    {/* <!-- First Col --> */}
                     <div className="col-md-4">
                       {/* <!-- Email --> */}
                       <div className="form-group">
@@ -99,7 +99,7 @@ class EmployeeUpdate extends React.Component {
                           type="password"
                           className="form-control"
                           name="password"
-                          value="dummypass"
+                          value=""
                           required
                           disabled
                         />

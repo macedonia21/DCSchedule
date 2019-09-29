@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment/moment';
 import numeral from 'numeral';
 import { Chart } from 'react-google-charts';
+import { NavLink } from 'react-router-dom';
 
 // collection
 import Projects from '../../../api/projects/projects';
@@ -15,6 +16,7 @@ import Assignments from '../../../api/assignments/assignments';
 
 import './Report.scss';
 import 'react-datepicker/dist/react-datepicker.css';
+import Navbar from '../../components/Navbar/Navbar';
 
 // functions
 function getDateRange(startDate, stopDate) {
@@ -167,6 +169,131 @@ function getChartBenchByLevelDataItems(unassignedUsers) {
   });
 }
 
+function getUnassignedEmployeesDetails(
+  startDate,
+  endDate,
+  unassignedUsers,
+  assignments
+) {
+  return _.map(unassignedUsers, user => {
+    const startDateObj = moment(startDate);
+    const endDateObj = moment(endDate);
+
+    // Find last assignment
+    const lastAssignment = _.max(
+      _.filter(assignments, assignment => {
+        const assignEndDateObj = moment(assignment.endDate);
+        return (
+          assignEndDateObj.isBefore(startDateObj) &&
+          assignment._employeeId === user._id
+        );
+      }),
+      assignment => {
+        return assignment.endDate;
+      }
+    );
+
+    // Find next assignment
+    const nextAssignment = _.min(
+      _.filter(assignments, assignment => {
+        const assignStartDateObj = moment(assignment.startDate);
+        return (
+          assignStartDateObj.isAfter(endDateObj) &&
+          assignment._employeeId === user._id
+        );
+      }),
+      assignment => {
+        return assignment.startDate;
+      }
+    );
+
+    return {
+      ...user,
+      lastAssign: lastAssignment.endDate
+        ? `On bench from ${moment(lastAssignment.endDate)
+            .add(1, 'days')
+            .format('MMM DD, YYYY')}`
+        : 'No assignment before',
+      nextAssign: nextAssignment.startDate
+        ? `Next assignment ${moment(nextAssignment.startDate).format(
+            'MMM DD, YYYY'
+          )}`
+        : 'No next assignment',
+      nextAssignTextClass: nextAssignment.startDate
+        ? ''
+        : 'text-danger bold-text',
+    };
+  });
+}
+
+function getAboutToUnassignedEmployeesDetails(
+  assignments,
+  unassignedUsers,
+  users,
+  startDate,
+  endDate
+) {
+  const currentDateObj = moment();
+  const startDateObj = moment(startDate);
+  const endDateObj = moment(endDate);
+
+  // Find assignments of currently assigned user with current or future assignments
+  const currentOrFututeAssignments = _.reject(assignments, assignment => {
+    const assignEndDateObj = moment(assignment.endDate);
+    return (
+      _.contains(_.pluck(unassignedUsers, '_id'), assignment._employeeId) ||
+      assignEndDateObj.isSameOrBefore(currentDateObj, 'day')
+    );
+  });
+
+  // Find users from currentOrFututeAssignments
+  return _.filter(
+    _.map(
+      _.filter(users, user => {
+        return _.contains(
+          _.uniq(_.pluck(currentOrFututeAssignments, '_employeeId')),
+          user._id
+        );
+      }),
+      user => {
+        const currentOrFututeAssignmentsOfUser = _.filter(
+          currentOrFututeAssignments,
+          assignment => {
+            return assignment._employeeId === user._id;
+          }
+        );
+
+        const furthestAssignmentOfUser = _.max(
+          currentOrFututeAssignmentsOfUser,
+          assignment => {
+            return assignment.endDate;
+          }
+        );
+
+        const currentOrFututeAssignmentsOfUserCount = _.size(
+          currentOrFututeAssignmentsOfUser
+        );
+
+        return {
+          ...user,
+          furthestAssignment: furthestAssignmentOfUser,
+          onBench: `${currentOrFututeAssignmentsOfUserCount} ${
+            currentOrFututeAssignmentsOfUserCount > 1
+              ? 'assignments'
+              : 'assignment'
+          } until ${moment(furthestAssignmentOfUser.endDate).format(
+            'MMM DD, YYYY'
+          )}`,
+        };
+      }
+    ),
+    user => {
+      const assignEndDateObj = moment(user.furthestAssignment.endDate);
+      return assignEndDateObj.isSameOrBefore(endDateObj, 'day');
+    }
+  );
+}
+
 class Report extends React.Component {
   constructor(props) {
     super(props);
@@ -287,6 +414,23 @@ class Report extends React.Component {
       chartBenchByLevelDataItems
     );
     chartData.benchByLevelData = chartBenchByLevelDataCombine;
+
+    // Unassign User Detail
+    const unassignedUsersDetails = getUnassignedEmployeesDetails(
+      startDate,
+      endDate,
+      unassignedUsers,
+      assignments
+    );
+
+    // Employees about to unassigned
+    const aboutToUnassignedEmployeesDetails = getAboutToUnassignedEmployeesDetails(
+      assignments,
+      unassignedUsers,
+      users,
+      startDate,
+      endDate
+    );
 
     return (
       <div className="report-page">
@@ -449,6 +593,7 @@ class Report extends React.Component {
                                 },
                                 vAxis: {
                                   title: 'On bench employees',
+                                  minValue: 0,
                                 },
                               }}
                               rootProps={{ 'data-testid': '1' }}
@@ -534,6 +679,129 @@ class Report extends React.Component {
                               rootProps={{ 'data-testid': '3' }}
                             />
                           )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* <!-- Unassign User Cards --> */}
+              <div className="col-xs-12 col-sm-12 col-md-12 unassign-emp-card">
+                <div className="image-flip">
+                  <div className="mainflip">
+                    <div className="frontside">
+                      <div className="card">
+                        <div className="card-body">
+                          <h1 className="text-center">Unassigned Employees</h1>
+                          {unassignedUsersDetails &&
+                            _.map(unassignedUsersDetails, user => {
+                              return (
+                                <div className="row" key={user._id}>
+                                  <div className="col-md-2 pb-2 pt-2 assign-name-text">
+                                    <NavLink
+                                      to={`/employee/assignment/${user._id}`}
+                                    >
+                                      {user.profile.fullName}
+                                      &nbsp;
+                                      <span className="badge badge-pill badge-warning">
+                                        {user.profile.posTitle}
+                                      </span>
+                                    </NavLink>
+                                  </div>
+                                  <div className="col-md-2 pb-2 pt-2">
+                                    {user.profile.base === 'HCM'
+                                      ? 'Ho Chi Minh'
+                                      : 'Ha Noi'}
+                                  </div>
+                                  <div className="col-md-3 pb-2 pt-2">
+                                    {user.lastAssign}
+                                  </div>
+                                  <div
+                                    className={
+                                      user.nextAssignTextClass
+                                        ? `col-md-3 pb-2 pt-2 ${
+                                            user.nextAssignTextClass
+                                          }`
+                                        : 'col-md-3 pb-2 pt-2'
+                                    }
+                                  >
+                                    {user.nextAssign}
+                                  </div>
+                                  <div className="col-md-2 pb-2 pt-2">
+                                    {user.profile.talents
+                                      ? _.map(user.profile.talents, talent => {
+                                          return (
+                                            <span
+                                              className="react-tagsinput-tag"
+                                              key={talent}
+                                            >
+                                              {talent}
+                                            </span>
+                                          );
+                                        })
+                                      : ''}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* <!-- Unassign User Cards --> */}
+              <div className="col-xs-12 col-sm-12 col-md-12 will-unassign-emp-card">
+                <div className="image-flip">
+                  <div className="mainflip">
+                    <div className="frontside">
+                      <div className="card">
+                        <div className="card-body">
+                          <h1 className="text-center">
+                            Employees going to be Unassigned
+                          </h1>
+                          {aboutToUnassignedEmployeesDetails &&
+                            _.map(aboutToUnassignedEmployeesDetails, user => {
+                              return (
+                                <div className="row" key={user._id}>
+                                  <div className="col-md-2 pb-2 pt-2 assign-name-text">
+                                    <NavLink
+                                      to={`/employee/assignment/${user._id}`}
+                                    >
+                                      {user.profile.fullName}
+                                      &nbsp;
+                                      <span className="badge badge-pill badge-warning">
+                                        {user.profile.posTitle}
+                                      </span>
+                                    </NavLink>
+                                  </div>
+                                  <div className="col-md-2 pb-2 pt-2">
+                                    {user.profile.base === 'HCM'
+                                      ? 'Ho Chi Minh'
+                                      : 'Ha Noi'}
+                                  </div>
+                                  <div className="col-md-6 pb-2 pt-2">
+                                    {user.onBench}
+                                  </div>
+                                  <div className="col-md-2 pb-2 pt-2">
+                                    {user.profile.talents
+                                      ? _.map(user.profile.talents, talent => {
+                                          return (
+                                            <span
+                                              className="react-tagsinput-tag"
+                                              key={talent}
+                                            >
+                                              {talent}
+                                            </span>
+                                          );
+                                        })
+                                      : ''}
+                                  </div>
+                                </div>
+                              );
+                            })}
                         </div>
                       </div>
                     </div>

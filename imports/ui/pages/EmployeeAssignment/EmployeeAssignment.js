@@ -7,6 +7,7 @@ import TagsInput from 'react-tagsinput';
 import moment from 'moment/moment';
 import { Chart } from 'react-google-charts';
 import { NotificationManager } from 'react-notifications';
+import { NavLink } from 'react-router-dom';
 
 // collection
 import Projects from '../../../api/projects/projects';
@@ -19,6 +20,7 @@ import EmployeeCard from '../../components/EmployeeCard';
 import './EmployeeAssignment.scss';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-notifications/lib/notifications.css';
+import Navbar from '../../components/Navbar/Navbar';
 
 // functions
 function getDateRange(startDate, stopDate) {
@@ -586,8 +588,14 @@ class EmployeeAssignment extends React.Component {
                                 });
                                 return (
                                   <div className="row" key={assignment._id}>
-                                    <div className="col-md-2 pb-2 pt-2">
-                                      {assignedProject.projectName}
+                                    <div className="col-md-2 pb-2 pt-2 assign-name-text">
+                                      <NavLink
+                                        to={`/project/assignment/${
+                                          assignedProject._id
+                                        }`}
+                                      >
+                                        {assignedProject.projectName}
+                                      </NavLink>
                                     </div>
                                     <div className="col-md-3 pb-2 pt-2">
                                       {`${moment(assignment.startDate).format(
@@ -694,6 +702,9 @@ class EmployeeAssignment extends React.Component {
                                       height: chartData.height,
                                       gantt: {
                                         trackHeight: 40,
+                                        labelStyle: {
+                                          fontName: 'Nunito-Bold',
+                                        },
                                       },
                                     }}
                                     rootProps={{ 'data-testid': '2' }}

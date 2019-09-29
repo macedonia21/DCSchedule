@@ -79,4 +79,36 @@
   .react-datepicker {
     font-family: 'Nunito-Regular', sans-serif;
   }
+
+  .react-tagsinput-tag {
+    background-color: #cde69c;
+    border-radius: 5px;
+    color: #638421;
+    display: inline-block;
+    margin-right: 5px;
+    padding: 1px 5px 0 5px;
+  }
+
+  .unassign-emp-card, .will-unassign-emp-card {
+    .card {
+      border: none;
+      background: #ffffff;
+      border-radius: 10px;
+    }
+
+    .frontside {
+      position: relative;
+      z-index: 0;
+      margin-bottom: 30px;
+    }
+
+    .assign-name-text, .bold-text{
+      font-family: 'Nunito-Bold', sans-serif;
+    }
+    
+    a {
+      text-decoration: none;
+      color: #333;
+    }
+  }
 }

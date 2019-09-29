@@ -7,6 +7,7 @@ import TagsInput from 'react-tagsinput';
 import moment from 'moment/moment';
 import { Chart } from 'react-google-charts';
 import { NotificationManager } from 'react-notifications';
+import { NavLink } from 'react-router-dom';
 
 // collection
 import Projects from '../../../api/projects/projects';
@@ -470,8 +471,18 @@ class ProjectAssignment extends React.Component {
                                 });
                                 return (
                                   <div className="row" key={assignment._id}>
-                                    <div className="col-md-2 pb-2 pt-2">
-                                      {assignedUser.profile.fullName}
+                                    <div className="col-md-2 pb-2 pt-2 assign-name-text">
+                                      <NavLink
+                                        to={`/employee/assignment/${
+                                          assignedUser._id
+                                        }`}
+                                      >
+                                        {assignedUser.profile.fullName}
+                                        &nbsp;
+                                        <span className="badge badge-pill badge-warning">
+                                          {assignedUser.profile.posTitle}
+                                        </span>
+                                      </NavLink>
                                     </div>
                                     <div className="col-md-3 pb-2 pt-2">
                                       {`${moment(assignment.startDate).format(
@@ -543,6 +554,9 @@ class ProjectAssignment extends React.Component {
                                       height: chartData.height,
                                       gantt: {
                                         trackHeight: 40,
+                                        labelStyle: {
+                                          fontName: 'Nunito-Bold',
+                                        },
                                       },
                                     }}
                                     rootProps={{ 'data-testid': '1' }}
