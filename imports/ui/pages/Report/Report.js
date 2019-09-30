@@ -396,10 +396,16 @@ class Report extends React.Component {
     );
     let chartBenchByModuleDataCombine = [];
     chartBenchByModuleDataCombine.push(chartBenchByModuleDataDeclare);
-    chartBenchByModuleDataCombine = _.union(
-      chartBenchByModuleDataCombine,
-      chartBenchByModuleDataItems
-    );
+    if (_.size(chartBenchByModuleDataItems) > 0) {
+      chartBenchByModuleDataCombine = _.union(
+        chartBenchByModuleDataCombine,
+        chartBenchByModuleDataItems
+      );
+    } else {
+      chartBenchByModuleDataCombine = _.union(chartBenchByModuleDataCombine, [
+        ['No data', 0, 0],
+      ]);
+    }
     chartData.benchByModuleData = chartBenchByModuleDataCombine;
 
     // On bench by level data
@@ -409,10 +415,16 @@ class Report extends React.Component {
     );
     let chartBenchByLevelDataCombine = [];
     chartBenchByLevelDataCombine.push(chartBenchByLevelDataDeclare);
-    chartBenchByLevelDataCombine = _.union(
-      chartBenchByLevelDataCombine,
-      chartBenchByLevelDataItems
-    );
+    if (_.size(chartBenchByLevelDataItems) > 0) {
+      chartBenchByLevelDataCombine = _.union(
+        chartBenchByLevelDataCombine,
+        chartBenchByLevelDataItems
+      );
+    } else {
+      chartBenchByLevelDataCombine = _.union(chartBenchByLevelDataCombine, [
+        ['No data', 0, 0],
+      ]);
+    }
     chartData.benchByLevelData = chartBenchByLevelDataCombine;
 
     // Unassign User Detail
@@ -571,34 +583,32 @@ class Report extends React.Component {
                     <div className="frontside">
                       <div className="card">
                         <div className="card-body text-center">
-                          {_.size(inRangeAssignments) > 0 && (
-                            <Chart
-                              width="auto"
-                              height="312px"
-                              chartType="LineChart"
-                              loader={<div>Chart loading...</div>}
-                              data={chartData.benchByDateData}
-                              options={{
-                                fontName: 'Roboto',
-                                title: `On bench by date from ${moment(
-                                  startDate
-                                ).format('MMM DD, YYYY')} to ${moment(
-                                  endDate
-                                ).format('MMM DD, YYYY')}`,
-                                titleTextStyle: {
-                                  fontSize: 16,
-                                },
-                                hAxis: {
-                                  title: 'Date',
-                                },
-                                vAxis: {
-                                  title: 'On bench employees',
-                                  minValue: 0,
-                                },
-                              }}
-                              rootProps={{ 'data-testid': '1' }}
-                            />
-                          )}
+                          <Chart
+                            width="auto"
+                            height="312px"
+                            chartType="LineChart"
+                            loader={<div>Chart loading...</div>}
+                            data={chartData.benchByDateData}
+                            options={{
+                              fontName: 'Roboto',
+                              title: `On bench by date from ${moment(
+                                startDate
+                              ).format('MMM DD, YYYY')} to ${moment(
+                                endDate
+                              ).format('MMM DD, YYYY')}`,
+                              titleTextStyle: {
+                                fontSize: 16,
+                              },
+                              hAxis: {
+                                title: 'Date',
+                              },
+                              vAxis: {
+                                title: 'On bench employees',
+                                minValue: 0,
+                              },
+                            }}
+                            rootProps={{ 'data-testid': '1' }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -613,32 +623,30 @@ class Report extends React.Component {
                     <div className="frontside">
                       <div className="card">
                         <div className="card-body text-center">
-                          {_.size(unassignedUsers) > 0 && (
-                            <Chart
-                              width="auto"
-                              height="300px"
-                              chartType="BarChart"
-                              loader={<div>Chart loading...</div>}
-                              data={chartData.benchByModuleData}
-                              options={{
-                                fontName: 'Roboto',
-                                title: 'On bench by module',
-                                titleTextStyle: {
-                                  fontSize: 16,
-                                },
-                                chartArea: { width: '50%' },
-                                hAxis: {
-                                  title: 'Employees',
-                                  minValue: 0,
-                                },
-                                vAxis: {
-                                  title: 'Module',
-                                },
-                              }}
-                              // For tests
-                              rootProps={{ 'data-testid': '2' }}
-                            />
-                          )}
+                          <Chart
+                            width="auto"
+                            height="300px"
+                            chartType="BarChart"
+                            loader={<div>Chart loading...</div>}
+                            data={chartData.benchByModuleData}
+                            options={{
+                              fontName: 'Roboto',
+                              title: 'On bench by module',
+                              titleTextStyle: {
+                                fontSize: 16,
+                              },
+                              chartArea: { width: '50%' },
+                              hAxis: {
+                                title: 'Employees',
+                                minValue: 0,
+                              },
+                              vAxis: {
+                                title: 'Module',
+                              },
+                            }}
+                            // For tests
+                            rootProps={{ 'data-testid': '2' }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -653,32 +661,30 @@ class Report extends React.Component {
                     <div className="frontside">
                       <div className="card">
                         <div className="card-body text-center">
-                          {_.size(unassignedUsers) > 0 && (
-                            <Chart
-                              width="auto"
-                              height="300px"
-                              chartType="BarChart"
-                              loader={<div>Chart loading...</div>}
-                              data={chartData.benchByLevelData}
-                              options={{
-                                fontName: 'Roboto',
-                                title: 'On bench by level',
-                                titleTextStyle: {
-                                  fontSize: 16,
-                                },
-                                chartArea: { width: '50%' },
-                                hAxis: {
-                                  title: 'Employees',
-                                  minValue: 0,
-                                },
-                                vAxis: {
-                                  title: 'Level',
-                                },
-                              }}
-                              // For tests
-                              rootProps={{ 'data-testid': '3' }}
-                            />
-                          )}
+                          <Chart
+                            width="auto"
+                            height="300px"
+                            chartType="BarChart"
+                            loader={<div>Chart loading...</div>}
+                            data={chartData.benchByLevelData}
+                            options={{
+                              fontName: 'Roboto',
+                              title: 'On bench by level',
+                              titleTextStyle: {
+                                fontSize: 16,
+                              },
+                              chartArea: { width: '50%' },
+                              hAxis: {
+                                title: 'Employees',
+                                minValue: 0,
+                              },
+                              vAxis: {
+                                title: 'Level',
+                              },
+                            }}
+                            // For tests
+                            rootProps={{ 'data-testid': '3' }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -752,7 +758,7 @@ class Report extends React.Component {
                 </div>
               </div>
 
-              {/* <!-- Unassign User Cards --> */}
+              {/* <!-- Will Unassign User Cards --> */}
               <div className="col-xs-12 col-sm-12 col-md-12 will-unassign-emp-card">
                 <div className="image-flip">
                   <div className="mainflip">
