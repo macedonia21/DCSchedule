@@ -74,7 +74,14 @@ const LoggedInNav = () => (
       <div className="dropdown-divider" />
     </li>
     <li>
-      <NavLink to="/" onClick={() => Meteor.logout()}>
+      <NavLink
+        to="/"
+        onClick={() =>
+          Meteor.logout(() => {
+            this.props.history.push('/');
+          })
+        }
+      >
         <button type="button" className="dropdown-item">
           Logout
         </button>

@@ -89,7 +89,7 @@
     padding: 1px 5px 0 5px;
   }
 
-  .unassign-emp-card, .will-unassign-emp-card {
+  .unassign-emp-card, .assign-emp-card, .will-unassign-emp-card {
     .card {
       border: none;
       background: #ffffff;
@@ -105,10 +105,10 @@
     .assign-name-text, .bold-text{
       font-family: 'Nunito-Bold', sans-serif;
     }
-    
-    a {
-      text-decoration: none;
-      color: #333;
-    }
+  }
+
+  a {
+    text-decoration: none;
+    color: #333;
   }
 }

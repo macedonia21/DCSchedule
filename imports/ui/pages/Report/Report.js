@@ -226,6 +226,47 @@ function getUnassignedEmployeesDetails(
   });
 }
 
+function getAssignedEmployeesDetails(
+  startDate,
+  endDate,
+  users,
+  inRangeAssignments,
+  projects
+) {
+  const assignerUsers = _.filter(users, user => {
+    return _.contains(
+      _.uniq(_.pluck(inRangeAssignments, '_employeeId')),
+      user._id
+    );
+  });
+
+  return _.map(assignerUsers, user => {
+    const startDateObj = moment(startDate);
+    const endDateObj = moment(endDate);
+
+    return {
+      ...user,
+      inRangeAssignmentsOfUser: _.sortBy(
+        _.map(
+          _.filter(inRangeAssignments, assignment => {
+            return assignment._employeeId === user._id;
+          }),
+          assignment => {
+            return {
+              ...assignment,
+              projectName: _.findWhere(projects, { _id: assignment._projectId })
+                .projectName,
+            };
+          }
+        ),
+        assignment => {
+          return assignment.startDate;
+        }
+      ),
+    };
+  });
+}
+
 function getAboutToUnassignedEmployeesDetails(
   assignments,
   unassignedUsers,
@@ -305,6 +346,7 @@ class Report extends React.Component {
         benchByModuleData: {},
         benchByLevelData: {},
       },
+      filterAssignedUsers: '',
     };
   }
 
@@ -332,7 +374,7 @@ class Report extends React.Component {
       assignmentsReady,
       assignments,
     } = this.props;
-    const { startDate, endDate, chartData } = this.state;
+    const { startDate, endDate, chartData, filterAssignedUsers } = this.state;
 
     if (!loggedIn) {
       return null;
@@ -344,6 +386,7 @@ class Report extends React.Component {
       endDate,
       assignments
     );
+
     const unassignedUsers = _.reject(users, user => {
       return _.contains(
         _.unique(_.pluck(inRangeAssignments, '_employeeId')),
@@ -436,13 +479,33 @@ class Report extends React.Component {
     );
 
     // Employees about to unassigned
-    const aboutToUnassignedEmployeesDetails = getAboutToUnassignedEmployeesDetails(
-      assignments,
-      unassignedUsers,
-      users,
+    const assignedUsersDetailsFull = getAssignedEmployeesDetails(
       startDate,
-      endDate
+      endDate,
+      users,
+      inRangeAssignments,
+      projects
     );
+    let assignedUsersDetails = assignedUsersDetailsFull;
+    if (filterAssignedUsers) {
+      const filterAssignedUsersLowerCase = filterAssignedUsers.toLowerCase();
+      assignedUsersDetails = _.filter(assignedUsersDetails, user => {
+        return (
+          user.profile.fullName
+            .toLowerCase()
+            .indexOf(filterAssignedUsersLowerCase) > -1
+        );
+      });
+    }
+
+    // // Employees about to unassigned
+    // const aboutToUnassignedEmployeesDetails = getAboutToUnassignedEmployeesDetails(
+    //   assignments,
+    //   unassignedUsers,
+    //   users,
+    //   startDate,
+    //   endDate
+    // );
 
     return (
       <div className="report-page">
@@ -530,22 +593,24 @@ class Report extends React.Component {
                 <div className="image-flip">
                   <div className="mainflip">
                     <div className="frontside">
-                      <div className="card">
-                        <div className="card-body text-center">
-                          <p>
-                            <span className="card-summary-title">
-                              {assignedUsertCount}
-                            </span>
-                          </p>
-                          <h4 className="card-title">
-                            assigned&nbsp;
-                            <span className="badge badge-pill badge-warning">
-                              {`${assignedUsertCountPercent}%`}
-                            </span>
-                          </h4>
-                          <p className="card-text">{`in ${assignmentCount} assignments`}</p>
+                      <a href="#anchor-assigned-users">
+                        <div className="card">
+                          <div className="card-body text-center">
+                            <p>
+                              <span className="card-summary-title">
+                                {assignedUsertCount}
+                              </span>
+                            </p>
+                            <h4 className="card-title">
+                              assigned&nbsp;
+                              <span className="badge badge-pill badge-warning">
+                                {`${assignedUsertCountPercent}%`}
+                              </span>
+                            </h4>
+                            <p className="card-text">{`in ${assignmentCount} assignments`}</p>
+                          </div>
                         </div>
-                      </div>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -555,22 +620,24 @@ class Report extends React.Component {
                 <div className="image-flip">
                   <div className="mainflip">
                     <div className="frontside">
-                      <div className="card">
-                        <div className="card-body text-center">
-                          <p>
-                            <span className="card-summary-title">
-                              {unassignedUsertCount}
-                            </span>
-                          </p>
-                          <h4 className="card-title">
-                            on bench&nbsp;
-                            <span className="badge badge-pill badge-warning">
-                              {`${unassignedUsertCountPercent}%`}
-                            </span>
-                          </h4>
-                          <p className="card-text">{`${unassignedProjectCount} unassigned projects`}</p>
+                      <a href="#anchor-unassigned-users">
+                        <div className="card">
+                          <div className="card-body text-center">
+                            <p>
+                              <span className="card-summary-title">
+                                {unassignedUsertCount}
+                              </span>
+                            </p>
+                            <h4 className="card-title">
+                              on bench&nbsp;
+                              <span className="badge badge-pill badge-warning">
+                                {`${unassignedUsertCountPercent}%`}
+                              </span>
+                            </h4>
+                            <p className="card-text">{`${unassignedProjectCount} unassigned projects`}</p>
+                          </div>
                         </div>
-                      </div>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -699,7 +766,12 @@ class Report extends React.Component {
                     <div className="frontside">
                       <div className="card">
                         <div className="card-body">
-                          <h1 className="text-center">Unassigned Employees</h1>
+                          <h1
+                            id="anchor-unassigned-users"
+                            className="text-center"
+                          >
+                            Unassigned Employees
+                          </h1>
                           {unassignedUsersDetails &&
                             _.map(unassignedUsersDetails, user => {
                               return (
@@ -758,8 +830,141 @@ class Report extends React.Component {
                 </div>
               </div>
 
+              {/* <!-- Assigned User Cards --> */}
+              <div className="col-xs-12 col-sm-12 col-md-12 assign-emp-card">
+                <div className="image-flip">
+                  <div className="mainflip">
+                    <div className="frontside">
+                      <div className="card">
+                        <div className="card-body">
+                          <h1
+                            id="anchor-assigned-users"
+                            className="text-center"
+                          >
+                            Assigned Employees
+                          </h1>
+                          {assignedUsersDetails && (
+                            <form>
+                              <div className="row">
+                                <div className="col-sm-12 col-md-4">
+                                  <div className="form-group">
+                                    <input
+                                      id="assignedsearch"
+                                      type="text"
+                                      className="form-control"
+                                      name="assignedsearch"
+                                      value={filterAssignedUsers || ''}
+                                      onChange={e =>
+                                        this.setState({
+                                          filterAssignedUsers: e.target.value,
+                                        })
+                                      }
+                                      placeholder="Search..."
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          )}
+                          {assignedUsersDetails &&
+                            _.map(assignedUsersDetails, user => {
+                              return (
+                                <div className="row" key={user._id}>
+                                  <div className="col-md-2 pb-2 pt-2 assign-name-text">
+                                    <NavLink
+                                      to={`/employee/assignment/${user._id}`}
+                                    >
+                                      {user.profile.fullName}
+                                      &nbsp;
+                                      <span className="badge badge-pill badge-warning">
+                                        {user.profile.posTitle}
+                                      </span>
+                                    </NavLink>
+                                  </div>
+
+                                  <div className="col-md-10 pb-2 pt-2 pl-0 pr-0">
+                                    {user.inRangeAssignmentsOfUser &&
+                                      _.map(
+                                        user.inRangeAssignmentsOfUser,
+                                        assignment => {
+                                          return (
+                                            <div
+                                              className="row"
+                                              key={assignment._id}
+                                            >
+                                              <div className="col-md-2 pb-1 assign-name-text">
+                                                <NavLink
+                                                  to={`/project/assignment/${
+                                                    assignment._projectId
+                                                  }`}
+                                                >
+                                                  {assignment.projectName}
+                                                </NavLink>
+                                              </div>
+                                              <div className="col-md-4 pb-1">
+                                                {`${moment(
+                                                  assignment.startDate
+                                                ).format(
+                                                  'MMM DD, YYYY'
+                                                )} - ${moment(
+                                                  assignment.endDate
+                                                ).format('MMM DD, YYYY')}`}
+                                              </div>
+                                              <div className="col-md-1 pb-1">
+                                                {`${assignment.percent}%`}
+                                              </div>
+                                              <div className="col-md-3 pb-1">
+                                                {assignment.level ===
+                                                  'Member' &&
+                                                assignment.role === 'Member'
+                                                  ? `${assignment.level}`
+                                                  : assignment.level !==
+                                                      'Member' &&
+                                                    assignment.role !== 'Member'
+                                                  ? `${assignment.level} & ${
+                                                      assignment.role
+                                                    }`
+                                                  : assignment.level !==
+                                                    'Member'
+                                                  ? `${assignment.level}`
+                                                  : assignment.role !== 'Member'
+                                                  ? `${assignment.role}`
+                                                  : ''}
+                                              </div>
+                                              <div className="col-md-2 pb-1">
+                                                {assignment.talents
+                                                  ? _.map(
+                                                      assignment.talents,
+                                                      talent => {
+                                                        return (
+                                                          <span
+                                                            className="react-tagsinput-tag"
+                                                            key={talent}
+                                                          >
+                                                            {talent}
+                                                          </span>
+                                                        );
+                                                      }
+                                                    )
+                                                  : ''}
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+                                      )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* <!-- Will Unassign User Cards --> */}
-              <div className="col-xs-12 col-sm-12 col-md-12 will-unassign-emp-card">
+              {/* <div className="col-xs-12 col-sm-12 col-md-12 will-unassign-emp-card">
                 <div className="image-flip">
                   <div className="mainflip">
                     <div className="frontside">
@@ -813,7 +1018,7 @@ class Report extends React.Component {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         )}
