@@ -24,13 +24,10 @@ Navigate to [http://localhost:3000](http://localhost:3000) in any browser.
 ## Todo
 
 - Rerouting
-
 - Roles management
-
 - Old assignment filtering
-
 - Dropdown select (already include react-select np package - need to update style)
-
+- Allow assignment update
 - ...
 
 <!-- **npm packages added**:

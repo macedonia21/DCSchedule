@@ -347,6 +347,7 @@ class Report extends React.Component {
         benchByLevelData: {},
       },
       filterAssignedUsers: '',
+      filterUnassignedUsers: '',
     };
   }
 
@@ -374,7 +375,13 @@ class Report extends React.Component {
       assignmentsReady,
       assignments,
     } = this.props;
-    const { startDate, endDate, chartData, filterAssignedUsers } = this.state;
+    const {
+      startDate,
+      endDate,
+      chartData,
+      filterAssignedUsers,
+      filterUnassignedUsers,
+    } = this.state;
 
     if (!loggedIn) {
       return null;
@@ -471,12 +478,23 @@ class Report extends React.Component {
     chartData.benchByLevelData = chartBenchByLevelDataCombine;
 
     // Unassign User Detail
-    const unassignedUsersDetails = getUnassignedEmployeesDetails(
+    const unassignedUsersDetailsFull = getUnassignedEmployeesDetails(
       startDate,
       endDate,
       unassignedUsers,
       assignments
     );
+    let unassignedUsersDetails = unassignedUsersDetailsFull;
+    if (filterUnassignedUsers) {
+      const filterUnassignedUsersLowerCase = filterUnassignedUsers.toLowerCase();
+      unassignedUsersDetails = _.filter(unassignedUsersDetails, user => {
+        return (
+          user.profile.fullName
+            .toLowerCase()
+            .indexOf(filterUnassignedUsersLowerCase) > -1
+        );
+      });
+    }
 
     // Employees about to unassigned
     const assignedUsersDetailsFull = getAssignedEmployeesDetails(
@@ -764,14 +782,32 @@ class Report extends React.Component {
                 <div className="image-flip">
                   <div className="mainflip">
                     <div className="frontside">
-                      <div className="card">
+                      <div className="card" id="anchor-unassigned-users">
                         <div className="card-body">
-                          <h1
-                            id="anchor-unassigned-users"
-                            className="text-center"
-                          >
-                            Unassigned Employees
-                          </h1>
+                          <h1 className="text-center">Unassigned Employees</h1>
+                          {_.size(unassignedUsersDetails) > 0 && (
+                            <form>
+                              <div className="row">
+                                <div className="col-sm-12 col-md-4">
+                                  <div className="form-group">
+                                    <input
+                                      id="assignedsearch"
+                                      type="text"
+                                      className="form-control"
+                                      name="assignedsearch"
+                                      value={filterUnassignedUsers || ''}
+                                      onChange={e =>
+                                        this.setState({
+                                          filterUnassignedUsers: e.target.value,
+                                        })
+                                      }
+                                      placeholder="Search Employee"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          )}
                           {unassignedUsersDetails &&
                             _.map(unassignedUsersDetails, user => {
                               return (
@@ -835,15 +871,10 @@ class Report extends React.Component {
                 <div className="image-flip">
                   <div className="mainflip">
                     <div className="frontside">
-                      <div className="card">
+                      <div className="card" id="anchor-assigned-users">
                         <div className="card-body">
-                          <h1
-                            id="anchor-assigned-users"
-                            className="text-center"
-                          >
-                            Assigned Employees
-                          </h1>
-                          {assignedUsersDetails && (
+                          <h1 className="text-center">Assigned Employees</h1>
+                          {_.size(assignedUsersDetails) > 0 && (
                             <form>
                               <div className="row">
                                 <div className="col-sm-12 col-md-4">
@@ -859,7 +890,7 @@ class Report extends React.Component {
                                           filterAssignedUsers: e.target.value,
                                         })
                                       }
-                                      placeholder="Search..."
+                                      placeholder="Search Employee"
                                     />
                                   </div>
                                 </div>

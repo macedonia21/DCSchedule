@@ -8,6 +8,7 @@ import moment from 'moment/moment';
 import { Chart } from 'react-google-charts';
 import { NotificationManager } from 'react-notifications';
 import { NavLink } from 'react-router-dom';
+import Select from 'react-select';
 
 // collection
 import Projects from '../../../api/projects/projects';
@@ -152,6 +153,22 @@ class ProjectAssignment extends React.Component {
         : () => null;
     }
 
+    const userSelectOptions = _.map(users, user => {
+      return { value: user._id, label: user.profile.fullName };
+    });
+
+    const reactSelectStyle = {
+      control: (provided, state) => ({
+        ...provided,
+        backgroundColor: '#fff',
+        borderColor: state.isFocused ? '#80bdff' : '#ced4da',
+        outline: state.isFocused ? 0 : null,
+        boxShadow: state.isFocused
+          ? '0 0 0 0.2rem rgba(0, 123, 255, 0.25)'
+          : '',
+      }),
+    };
+
     if (!loggedIn) {
       return null;
     }
@@ -192,36 +209,20 @@ class ProjectAssignment extends React.Component {
                                       <label htmlFor="employeeid">
                                         Employee
                                       </label>
-                                      <select
-                                        id="employeeid"
-                                        type="text"
-                                        className="form-control"
-                                        name="employeeid"
+                                      <Select
                                         defaultValue={newAssignment._employeeId}
-                                        onChange={e =>
+                                        options={userSelectOptions}
+                                        placeholder="Select Employee"
+                                        onChange={selectedOption => {
                                           this.setState({
                                             newAssignment: {
                                               ...this.state.newAssignment,
-                                              _employeeId: e.target.value,
+                                              _employeeId: selectedOption.value,
                                             },
-                                          })
-                                        }
-                                        required
-                                      >
-                                        <option value="" key="0" disabled>
-                                          Select Employee
-                                        </option>
-                                        {_.map(users, user => {
-                                          return (
-                                            <option
-                                              value={user._id}
-                                              key={user._id}
-                                            >
-                                              {user.profile.fullName}
-                                            </option>
-                                          );
-                                        })}
-                                      </select>
+                                          });
+                                        }}
+                                        styles={reactSelectStyle}
+                                      />
                                     </div>
 
                                     {/* <!-- Project --> */}
@@ -266,9 +267,10 @@ class ProjectAssignment extends React.Component {
                                         }}
                                         required
                                       >
-                                        <option value="25">25</option>
-                                        <option value="50">50</option>
-                                        <option value="75">75</option>
+                                        <option value="20">20</option>
+                                        <option value="40">40</option>
+                                        <option value="60">60</option>
+                                        <option value="80">80</option>
                                         <option value="100">100</option>
                                       </select>
                                     </div>
@@ -360,6 +362,9 @@ class ProjectAssignment extends React.Component {
                                         }
                                         required
                                       >
+                                        <option value="Project Manager">
+                                          Project Manager
+                                        </option>
                                         <option value="Team Lead">
                                           Team Lead
                                         </option>
@@ -369,7 +374,7 @@ class ProjectAssignment extends React.Component {
 
                                     {/* <!-- Role --> */}
                                     <div className="form-group">
-                                      <label htmlFor="role">Role</label>
+                                      <label htmlFor="role">Task Role</label>
                                       <select
                                         id="role"
                                         type="text"
@@ -386,6 +391,9 @@ class ProjectAssignment extends React.Component {
                                         }
                                         required
                                       >
+                                        <option value="Authorization Lead">
+                                          Authorization Lead
+                                        </option>
                                         <option value="Data Lead">
                                           Data Lead
                                         </option>
@@ -397,6 +405,13 @@ class ProjectAssignment extends React.Component {
                                         </option>
                                         <option value="Integration Lead">
                                           Integration Lead
+                                        </option>
+                                        <option value="Technical Lead">
+                                          Technical Lead
+                                        </option>
+                                        <option value="UT Lead">UT Lead</option>
+                                        <option value="SIT Lead">
+                                          SIT Lead
                                         </option>
                                         <option value="UAT Lead">
                                           UAT Lead

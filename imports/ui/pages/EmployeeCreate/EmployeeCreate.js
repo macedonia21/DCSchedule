@@ -101,7 +101,9 @@ class CreateEmployee extends React.Component {
                         className="form-control"
                         name="email"
                         value={email}
-                        onChange={e => this.setState({ email: e.target.value })}
+                        onChange={e =>
+                          this.setState({ email: e.target.value.toLowerCase() })
+                        }
                         required
                       />
                     </div>

@@ -382,9 +382,10 @@ class EmployeeAssignment extends React.Component {
                                         }}
                                         required
                                       >
-                                        <option value="25">25</option>
-                                        <option value="50">50</option>
-                                        <option value="75">75</option>
+                                        <option value="20">20</option>
+                                        <option value="40">40</option>
+                                        <option value="60">60</option>
+                                        <option value="80">80</option>
                                         <option value="100">100</option>
                                       </select>
                                     </div>
@@ -476,6 +477,9 @@ class EmployeeAssignment extends React.Component {
                                         }
                                         required
                                       >
+                                        <option value="Project Manager">
+                                          Project Manager
+                                        </option>
                                         <option value="Team Lead">
                                           Team Lead
                                         </option>
@@ -485,7 +489,7 @@ class EmployeeAssignment extends React.Component {
 
                                     {/* <!-- Role --> */}
                                     <div className="form-group">
-                                      <label htmlFor="role">Role</label>
+                                      <label htmlFor="role">Task Role</label>
                                       <select
                                         id="role"
                                         type="text"
@@ -502,6 +506,9 @@ class EmployeeAssignment extends React.Component {
                                         }
                                         required
                                       >
+                                        <option value="Authorization Lead">
+                                          Authorization Lead
+                                        </option>
                                         <option value="Data Lead">
                                           Data Lead
                                         </option>
@@ -513,6 +520,13 @@ class EmployeeAssignment extends React.Component {
                                         </option>
                                         <option value="Integration Lead">
                                           Integration Lead
+                                        </option>
+                                        <option value="Technical Lead">
+                                          Technical Lead
+                                        </option>
+                                        <option value="UT Lead">UT Lead</option>
+                                        <option value="SIT Lead">
+                                          SIT Lead
                                         </option>
                                         <option value="UAT Lead">
                                           UAT Lead
