@@ -1,11 +1,13 @@
-.proj-card {
-  * {
-    :hover,
-    :active,
-    :focus {
-      text-decoration: none;
-    }
+.proj-new-card {
+  a {
+    color: #333;
+    text-decoration: none;
   }
+
+  a.dropdown-toggle {
+    cursor: pointer;
+  }
+
   .card {
     border: none;
     background: #ffffff;

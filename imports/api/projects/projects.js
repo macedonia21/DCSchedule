@@ -19,6 +19,7 @@ const Schema = new SimpleSchema({
   },
   _pmId: {
     type: String,
+    optional: true,
   },
   startDate: {
     type: Date,
@@ -31,6 +32,10 @@ const Schema = new SimpleSchema({
   },
   remark: {
     type: String,
+    optional: true,
+  },
+  disabled: {
+    type: Boolean,
     optional: true,
   },
 });

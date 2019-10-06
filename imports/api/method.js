@@ -8,7 +8,7 @@ import Assignments from './assignments/assignments.js';
 
 if (Meteor.isServer) {
   Meteor.methods({
-    'employee.create'(email, password, profile) {
+    'employee.create'(email, password, profile, disabled) {
       check(email, String);
       check(password, String);
       check(profile, {
@@ -32,12 +32,14 @@ if (Meteor.isServer) {
         hPW: Number,
         _counsellorId: String,
       });
+      check(disabled, Boolean);
 
       try {
         const _id = Accounts.createUser({
           email,
           password,
           profile,
+          disabled,
         });
         if (_id) {
           Roles.addUsersToRoles(_id, ['user'], Roles.GLOBAL_GROUP);
@@ -46,7 +48,7 @@ if (Meteor.isServer) {
         throw new Meteor.Error(e.message);
       }
     },
-    'employee.update'(_id, profile) {
+    'employee.update'(_id, profile, disabled) {
       check(_id, String);
       check(profile, {
         firstName: String,
@@ -71,6 +73,7 @@ if (Meteor.isServer) {
         hPW: Number,
         _counsellorId: String,
       });
+      check(disabled, Match.Maybe(Boolean));
 
       try {
         Meteor.users.update(
@@ -94,6 +97,7 @@ if (Meteor.isServer) {
               'profile.gender': profile.gender,
               'profile.talents': profile.talents,
               'profile.hPW': profile.hPW,
+              disabled,
             },
           }
         );
@@ -105,11 +109,12 @@ if (Meteor.isServer) {
       check(project, {
         projectName: String,
         engagementCode: String,
-        _pmId: String,
+        _pmId: Match.Maybe(String),
         startDate: Date,
         endDate: Date,
         status: String,
         remark: String,
+        disabled: Boolean,
       });
 
       try {
@@ -124,11 +129,12 @@ if (Meteor.isServer) {
         _id: String,
         projectName: String,
         engagementCode: String,
-        _pmId: String,
+        _pmId: Match.Maybe(String),
         startDate: Date,
         endDate: Date,
         status: String,
         remark: Match.Maybe(String),
+        disabled: Match.Maybe(Boolean),
       });
 
       try {
@@ -143,6 +149,7 @@ if (Meteor.isServer) {
               endDate: project.endDate,
               status: project.status,
               remark: project.remark,
+              disabled: project.disabled,
             },
           }
         );

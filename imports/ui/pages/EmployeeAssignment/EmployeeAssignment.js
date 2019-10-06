@@ -8,6 +8,7 @@ import moment from 'moment/moment';
 import { Chart } from 'react-google-charts';
 import { NotificationManager } from 'react-notifications';
 import { NavLink } from 'react-router-dom';
+import Select from 'react-select';
 
 // collection
 import Projects from '../../../api/projects/projects';
@@ -87,9 +88,104 @@ class EmployeeAssignment extends React.Component {
         calendarHeight: 170,
         calendarHeightRow: 186,
       },
+      reactSelect: {
+        projectIdValue: null,
+        percentageValue: { value: '100', label: '100' },
+        percentageOptions: [
+          {
+            value: 20,
+            label: 20,
+          },
+          {
+            value: 40,
+            label: 40,
+          },
+          {
+            value: 60,
+            label: 60,
+          },
+          {
+            value: 80,
+            label: 80,
+          },
+          {
+            value: 100,
+            label: 100,
+          },
+        ],
+        levelValue: {
+          value: 'Member',
+          label: 'Member',
+        },
+        levelOptions: [
+          {
+            value: 'Member',
+            label: 'Member',
+          },
+          {
+            value: 'Team Lead',
+            label: 'Team Lead',
+          },
+          {
+            value: 'Project Manager',
+            label: 'Project Manager',
+          },
+        ],
+        taskRoleValue: {
+          value: 'Member',
+          label: 'Member',
+        },
+        taskRoleOptions: [
+          {
+            value: 'Member',
+            label: 'Member',
+          },
+          {
+            value: 'Authorization Lead',
+            label: 'Authorization Lead',
+          },
+          {
+            value: 'Data Lead',
+            label: 'Data Lead',
+          },
+          {
+            value: 'Training Lead',
+            label: 'Training Lead',
+          },
+          {
+            value: 'Interface Lead',
+            label: 'Interface Lead',
+          },
+          {
+            value: 'Integration Lead',
+            label: 'Integration Lead',
+          },
+          {
+            value: 'Technical Lead',
+            label: 'Technical Lead',
+          },
+          {
+            value: 'UT Lead',
+            label: 'UT Lead',
+          },
+          {
+            value: 'SIT Lead',
+            label: 'SIT Lead',
+          },
+          {
+            value: 'UAT Lead',
+            label: 'UAT Lead',
+          },
+          {
+            value: 'Cut-over Lead',
+            label: 'Cut-over Lead',
+          },
+        ],
+      },
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDeleteAssignment = this.handleDeleteAssignment.bind(this);
+    this.customFilter = this.customFilter.bind(this);
   }
 
   componentWillMount() {
@@ -106,6 +202,40 @@ class EmployeeAssignment extends React.Component {
     return true;
   }
 
+  resetDefaultAssignment() {
+    this.setState({
+      newAssignment: {
+        _employeeId: '',
+        _projectId: '',
+        startDate: new Date(),
+        endDate: new Date(),
+        availableDate: new Date(),
+        percent: 100,
+        level: 'Member',
+        role: 'Member',
+        talents: [],
+        remark: '',
+      },
+      isDefaultSet: {
+        set: false,
+      },
+      reactSelect: {
+        ...this.state.reactSelect,
+        projectIdValue: null,
+        percentageValue: this.state.reactSelect.percentageOptions[4],
+        levelValue: this.state.reactSelect.levelOptions[0],
+        taskRoleValue: this.state.reactSelect.taskRoleOptions[0],
+      },
+    });
+  }
+
+  customFilter(option, searchText) {
+    if (option.data.label.toLowerCase().includes(searchText.toLowerCase())) {
+      return true;
+    }
+    return false;
+  }
+
   handleSubmit(e) {
     e.preventDefault();
     const { newAssignment } = this.state;
@@ -113,6 +243,7 @@ class EmployeeAssignment extends React.Component {
       if (err) {
         NotificationManager.error(`Cannot add: ${err.message}`, 'Error', 3000);
       } else {
+        this.resetDefaultAssignment();
         NotificationManager.success('New assignment is added', 'Success', 3000);
       }
     });
@@ -143,7 +274,7 @@ class EmployeeAssignment extends React.Component {
       assignmentsReady,
       employeeAssignments,
     } = this.props;
-    const { newAssignment, isDefaultSet, chartData } = this.state;
+    const { newAssignment, isDefaultSet, chartData, reactSelect } = this.state;
 
     if (user && !isDefaultSet.set) {
       isDefaultSet.set = true;
@@ -268,8 +399,34 @@ class EmployeeAssignment extends React.Component {
     }
     chartData.calendarHeight = assignmentCalendarChartHeight;
     chartData.calendarHeightRow = assignmentCalendarChartHeight + 16;
-
     chartData.calendarData = chartCalendarDataCombine;
+
+    // Selects Component Options
+    const userSelectOptions = [
+      {
+        value: `${user ? user._id : ''}`,
+        label: `${user ? user.profile.fullName : ''}`,
+      },
+    ];
+
+    const projectSelectOptions = _.map(projects, project => {
+      return {
+        value: project._id,
+        label: project.projectName,
+      };
+    });
+
+    const reactSelectStyle = {
+      control: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.isDisabled ? '#e9ecef' : '#fff',
+        borderColor: state.isFocused ? '#80bdff' : '#ced4da',
+        outline: state.isFocused ? 0 : null,
+        boxShadow: state.isFocused
+          ? '0 0 0 0.2rem rgba(0, 123, 255, 0.25)'
+          : '',
+      }),
+    };
 
     if (!loggedIn) {
       return null;
@@ -311,54 +468,37 @@ class EmployeeAssignment extends React.Component {
                                       <label htmlFor="employeeid">
                                         Employee
                                       </label>
-                                      <select
-                                        id="employeeid"
-                                        type="text"
-                                        className="form-control"
-                                        name="employeeid"
-                                        defaultValue={newAssignment._employeeId}
-                                        disabled
-                                        required
-                                      >
-                                        <option value={user._id} key={user._id}>
-                                          {user.profile.fullName}
-                                        </option>
-                                      </select>
+                                      <Select
+                                        defaultValue={userSelectOptions[0]}
+                                        options={userSelectOptions}
+                                        placeholder="Select Employee"
+                                        styles={reactSelectStyle}
+                                        isDisabled
+                                      />
                                     </div>
 
                                     {/* <!-- Project --> */}
                                     <div className="form-group">
                                       <label htmlFor="projectid">Project</label>
-                                      <select
-                                        id="projectid"
-                                        type="text"
-                                        className="form-control"
-                                        name="projectid"
-                                        defaultValue={newAssignment._projectId}
-                                        onChange={e =>
+                                      <Select
+                                        value={reactSelect.projectIdValue}
+                                        options={projectSelectOptions}
+                                        placeholder="Select Project"
+                                        onChange={selectedOption => {
                                           this.setState({
                                             newAssignment: {
                                               ...this.state.newAssignment,
-                                              _projectId: e.target.value,
+                                              _projectId: selectedOption.value,
                                             },
-                                          })
-                                        }
-                                        required
-                                      >
-                                        <option value="" key="0" disabled>
-                                          Select Project
-                                        </option>
-                                        {_.map(projects, project => {
-                                          return (
-                                            <option
-                                              value={project._id}
-                                              key={project._id}
-                                            >
-                                              {project.projectName}
-                                            </option>
-                                          );
-                                        })}
-                                      </select>
+                                            reactSelect: {
+                                              ...this.state.reactSelect,
+                                              projectIdValue: selectedOption,
+                                            },
+                                          });
+                                        }}
+                                        filterOption={this.customFilter}
+                                        styles={reactSelectStyle}
+                                      />
                                     </div>
 
                                     {/* <!-- Percentage --> */}
@@ -366,28 +506,28 @@ class EmployeeAssignment extends React.Component {
                                       <label htmlFor="percent">
                                         Percentage
                                       </label>
-                                      <select
-                                        id="percent"
-                                        type="text"
-                                        className="form-control"
-                                        name="percent"
-                                        defaultValue={newAssignment.percent}
-                                        onChange={e => {
+                                      <Select
+                                        defaultValue={
+                                          reactSelect.percentageOptions[4]
+                                        }
+                                        value={reactSelect.percentageValue}
+                                        options={reactSelect.percentageOptions}
+                                        placeholder="Select Percentage"
+                                        onChange={selectedOption => {
                                           this.setState({
                                             newAssignment: {
                                               ...this.state.newAssignment,
-                                              percent: parseInt(e.target.value),
+                                              percent: selectedOption.value,
+                                            },
+                                            reactSelect: {
+                                              ...this.state.reactSelect,
+                                              percentageValue: selectedOption,
                                             },
                                           });
                                         }}
-                                        required
-                                      >
-                                        <option value="20">20</option>
-                                        <option value="40">40</option>
-                                        <option value="60">60</option>
-                                        <option value="80">80</option>
-                                        <option value="100">100</option>
-                                      </select>
+                                        styles={reactSelectStyle}
+                                        isSearchable={false}
+                                      />
                                     </div>
                                   </div>
 
@@ -461,81 +601,55 @@ class EmployeeAssignment extends React.Component {
                                     {/* <!-- Level --> */}
                                     <div className="form-group">
                                       <label htmlFor="level">Level</label>
-                                      <select
-                                        id="level"
-                                        type="text"
-                                        className="form-control"
-                                        name="level"
-                                        defaultValue={newAssignment.level}
-                                        onChange={e =>
+                                      <Select
+                                        defaultValue={
+                                          reactSelect.levelOptions[0]
+                                        }
+                                        value={reactSelect.levelValue}
+                                        options={reactSelect.levelOptions}
+                                        placeholder="Select Level"
+                                        onChange={selectedOption => {
                                           this.setState({
                                             newAssignment: {
                                               ...this.state.newAssignment,
-                                              level: e.target.value,
+                                              level: selectedOption.value,
                                             },
-                                          })
-                                        }
-                                        required
-                                      >
-                                        <option value="Project Manager">
-                                          Project Manager
-                                        </option>
-                                        <option value="Team Lead">
-                                          Team Lead
-                                        </option>
-                                        <option value="Member">Member</option>
-                                      </select>
+                                            reactSelect: {
+                                              ...this.state.reactSelect,
+                                              levelValue: selectedOption,
+                                            },
+                                          });
+                                        }}
+                                        styles={reactSelectStyle}
+                                        isSearchable={false}
+                                      />
                                     </div>
 
                                     {/* <!-- Role --> */}
                                     <div className="form-group">
                                       <label htmlFor="role">Task Role</label>
-                                      <select
-                                        id="role"
-                                        type="text"
-                                        className="form-control"
-                                        name="role"
-                                        defaultValue={newAssignment.role}
-                                        onChange={e =>
+                                      <Select
+                                        defaultValue={
+                                          reactSelect.taskRoleOptions[0]
+                                        }
+                                        value={reactSelect.taskRoleValue}
+                                        options={reactSelect.taskRoleOptions}
+                                        placeholder="Select Task Role"
+                                        onChange={selectedOption => {
                                           this.setState({
                                             newAssignment: {
                                               ...this.state.newAssignment,
-                                              role: e.target.value,
+                                              role: selectedOption.value,
                                             },
-                                          })
-                                        }
-                                        required
-                                      >
-                                        <option value="Authorization Lead">
-                                          Authorization Lead
-                                        </option>
-                                        <option value="Data Lead">
-                                          Data Lead
-                                        </option>
-                                        <option value="Training Lead">
-                                          Training Lead
-                                        </option>
-                                        <option value="Interface Lead">
-                                          Interface Lead
-                                        </option>
-                                        <option value="Integration Lead">
-                                          Integration Lead
-                                        </option>
-                                        <option value="Technical Lead">
-                                          Technical Lead
-                                        </option>
-                                        <option value="UT Lead">UT Lead</option>
-                                        <option value="SIT Lead">
-                                          SIT Lead
-                                        </option>
-                                        <option value="UAT Lead">
-                                          UAT Lead
-                                        </option>
-                                        <option value="Cut-over Lead">
-                                          Cut-over Lead
-                                        </option>
-                                        <option value="Member">Member</option>
-                                      </select>
+                                            reactSelect: {
+                                              ...this.state.reactSelect,
+                                              taskRoleValue: selectedOption,
+                                            },
+                                          });
+                                        }}
+                                        styles={reactSelectStyle}
+                                        isSearchable={false}
+                                      />
                                     </div>
 
                                     {/* <!-- Remark --> */}
@@ -576,7 +690,7 @@ class EmployeeAssignment extends React.Component {
                   </div>
                 </div>
 
-                {/* <!-- Remark --> */}
+                {/* <!-- Employee Assignments --> */}
                 <div className="col-xs-12 col-sm-12 col-md-12 employee-assignment-card">
                   <div className="image-flip">
                     <div className="mainflip">
@@ -601,68 +715,76 @@ class EmployeeAssignment extends React.Component {
                                   _id: assignment._projectId,
                                 });
                                 return (
-                                  <div className="row" key={assignment._id}>
-                                    <div className="col-md-2 pb-2 pt-2 assign-name-text">
-                                      <NavLink
-                                        to={`/project/assignment/${
-                                          assignedProject._id
-                                        }`}
-                                      >
-                                        {assignedProject.projectName}
-                                      </NavLink>
-                                    </div>
-                                    <div className="col-md-3 pb-2 pt-2">
-                                      {`${moment(assignment.startDate).format(
-                                        'MMM DD, YYYY'
-                                      )} - ${moment(assignment.endDate).format(
-                                        'MMM DD, YYYY'
-                                      )}`}
-                                    </div>
-                                    <div className="col-md-1 pb-2 pt-2">
-                                      {`${assignment.percent}%`}
-                                    </div>
-                                    <div className="col-md-3 pb-2 pt-2">
-                                      {assignment.level === 'Member' &&
-                                      assignment.role === 'Member'
-                                        ? `${assignment.level}`
-                                        : assignment.level !== 'Member' &&
-                                          assignment.role !== 'Member'
-                                        ? `${assignment.level} & ${
-                                            assignment.role
-                                          }`
-                                        : assignment.level !== 'Member'
-                                        ? `${assignment.level}`
-                                        : assignment.role !== 'Member'
-                                        ? `${assignment.role}`
-                                        : ''}
-                                    </div>
-                                    <div className="col-md-2 pb-2 pt-2">
-                                      {assignment.talents
-                                        ? _.map(assignment.talents, talent => {
-                                            return (
-                                              <span
-                                                className="react-tagsinput-tag"
-                                                key={talent}
-                                              >
-                                                {talent}
-                                              </span>
-                                            );
-                                          })
-                                        : ''}
-                                    </div>
-                                    <div className="col-md-1 pb-2 pt-2">
-                                      <button
-                                        type="button"
-                                        className="close"
-                                        aria-label="Close"
-                                        onClick={() =>
-                                          this.handleDeleteAssignment(
-                                            assignment._id
-                                          )
-                                        }
-                                      >
-                                        <span aria-hidden="true">&times;</span>
-                                      </button>
+                                  <div key={assignment._id}>
+                                    <hr />
+                                    <div className="row">
+                                      <div className="col-md-2 pb-2 pt-2 assign-name-text">
+                                        <NavLink
+                                          to={`/project/assignment/${
+                                            assignedProject._id
+                                          }`}
+                                        >
+                                          {assignedProject.projectName}
+                                        </NavLink>
+                                      </div>
+                                      <div className="col-md-3 pb-2 pt-2">
+                                        {`${moment(assignment.startDate).format(
+                                          'MMM DD, YYYY'
+                                        )} - ${moment(
+                                          assignment.endDate
+                                        ).format('MMM DD, YYYY')}`}
+                                      </div>
+                                      <div className="col-md-1 pb-2 pt-2">
+                                        {`${assignment.percent}%`}
+                                      </div>
+                                      <div className="col-md-3 pb-2 pt-2">
+                                        {assignment.level === 'Member' &&
+                                        assignment.role === 'Member'
+                                          ? `${assignment.level}`
+                                          : assignment.level !== 'Member' &&
+                                            assignment.role !== 'Member'
+                                          ? `${assignment.level} & ${
+                                              assignment.role
+                                            }`
+                                          : assignment.level !== 'Member'
+                                          ? `${assignment.level}`
+                                          : assignment.role !== 'Member'
+                                          ? `${assignment.role}`
+                                          : ''}
+                                      </div>
+                                      <div className="col-md-2 pb-2 pt-2">
+                                        {assignment.talents
+                                          ? _.map(
+                                              assignment.talents,
+                                              talent => {
+                                                return (
+                                                  <span
+                                                    className="react-tagsinput-tag"
+                                                    key={talent}
+                                                  >
+                                                    {talent}
+                                                  </span>
+                                                );
+                                              }
+                                            )
+                                          : ''}
+                                      </div>
+                                      <div className="col-md-1 pb-2 pt-2">
+                                        <button
+                                          type="button"
+                                          className="close"
+                                          aria-label="Close"
+                                          onClick={() =>
+                                            this.handleDeleteAssignment(
+                                              assignment._id
+                                            )
+                                          }
+                                        >
+                                          <span aria-hidden="true">
+                                            &times;
+                                          </span>
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
                                 );

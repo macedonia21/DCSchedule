@@ -92,4 +92,7 @@
   .form-control:hover:focus {
     border-color: #2684FF;
   }
+  .form-control:hover:disabled {
+    border-color: #ced4da;
+  }
 }

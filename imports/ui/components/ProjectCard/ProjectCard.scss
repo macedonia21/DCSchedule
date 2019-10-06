@@ -11,6 +11,19 @@
   .card {
     border: none;
     background: #ffffff;
+    border-radius: 10px;
+  }
+
+  .disabled-card {
+    background-color: #ced4da !important;
+
+    .img-fluid {
+      -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+      filter: grayscale(100%);
+    }
+    .card-title, .card-text {
+      color: #6c757d !important;
+    }
   }
 
   .image-flip:hover .backside,
@@ -92,12 +105,12 @@
 
   .backside .card a {
     font-size: 18px;
-    color: #007b5e !important;
+    color: #007b5e;
   }
 
   .frontside .card .card-title,
   .backside .card .card-title {
-    color: #007b5e !important;
+    color: #007b5e;
   }
 
   .frontside .card .card-body img {

@@ -10,6 +10,16 @@
     color: #000;
   }
 
+  hr {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  a {
+    text-decoration: none;
+    color: #333;
+  }
+
   .report-filter-card {
     .frontside {
       position: relative;
@@ -121,8 +131,8 @@
     }
   }
 
-  a {
-    text-decoration: none;
-    color: #333;
+  .percentage-14-pt1 {
+    font-size: 14px;
+    padding-top: 1px;
   }
 }

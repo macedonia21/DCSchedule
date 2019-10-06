@@ -9,9 +9,13 @@
     font-size: 44px;
     color: #000;
   }
-
   h1.dropdown-toggle {
     cursor: pointer;
+  }
+
+  hr {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
   }
 
   .new-assignment-card {
@@ -30,8 +34,11 @@
     .form-control:hover {
       border-color: hsl(0,0%,70%);
     }
-    .form-control:hover:focus {
+    .form-control:hover:focus, .form-control.react-tagsinput--focused:hover{
       border-color: #2684FF;
+    }
+    .form-control:hover:disabled {
+      border-color: #ced4da;
     }
   }
 

@@ -16,7 +16,6 @@ import Assignments from '../../../api/assignments/assignments';
 
 import './Report.scss';
 import 'react-datepicker/dist/react-datepicker.css';
-import Navbar from '../../components/Navbar/Navbar';
 
 // functions
 function getDateRange(startDate, stopDate) {
@@ -218,7 +217,7 @@ function getUnassignedEmployeesDetails(
         ? `Next assignment ${moment(nextAssignment.startDate).format(
             'MMM DD, YYYY'
           )}`
-        : 'No next assignment',
+        : 'Available',
       nextAssignTextClass: nextAssignment.startDate
         ? ''
         : 'text-danger bold-text',
@@ -486,13 +485,10 @@ class Report extends React.Component {
     );
     let unassignedUsersDetails = unassignedUsersDetailsFull;
     if (filterUnassignedUsers) {
-      const filterUnassignedUsersLowerCase = filterUnassignedUsers.toLowerCase();
       unassignedUsersDetails = _.filter(unassignedUsersDetails, user => {
-        return (
-          user.profile.fullName
-            .toLowerCase()
-            .indexOf(filterUnassignedUsersLowerCase) > -1
-        );
+        return user.profile.fullName
+          .toLowerCase()
+          .includes(filterUnassignedUsers.toLowerCase());
       });
     }
 
@@ -506,13 +502,10 @@ class Report extends React.Component {
     );
     let assignedUsersDetails = assignedUsersDetailsFull;
     if (filterAssignedUsers) {
-      const filterAssignedUsersLowerCase = filterAssignedUsers.toLowerCase();
       assignedUsersDetails = _.filter(assignedUsersDetails, user => {
-        return (
-          user.profile.fullName
-            .toLowerCase()
-            .indexOf(filterAssignedUsersLowerCase) > -1
-        );
+        return user.profile.fullName
+          .toLowerCase()
+          .includes(filterAssignedUsers.toLowerCase());
       });
     }
 
@@ -785,76 +778,78 @@ class Report extends React.Component {
                       <div className="card" id="anchor-unassigned-users">
                         <div className="card-body">
                           <h1 className="text-center">Unassigned Employees</h1>
-                          {_.size(unassignedUsersDetails) > 0 && (
-                            <form>
-                              <div className="row">
-                                <div className="col-sm-12 col-md-4">
-                                  <div className="form-group">
-                                    <input
-                                      id="assignedsearch"
-                                      type="text"
-                                      className="form-control"
-                                      name="assignedsearch"
-                                      value={filterUnassignedUsers || ''}
-                                      onChange={e =>
-                                        this.setState({
-                                          filterUnassignedUsers: e.target.value,
-                                        })
-                                      }
-                                      placeholder="Search Employee"
-                                    />
-                                  </div>
+                          <form>
+                            <div className="row">
+                              <div className="col-sm-12 col-md-4">
+                                <div className="form-group">
+                                  <input
+                                    id="assignedsearch"
+                                    type="text"
+                                    className="form-control"
+                                    name="assignedsearch"
+                                    value={filterUnassignedUsers || ''}
+                                    onChange={e =>
+                                      this.setState({
+                                        filterUnassignedUsers: e.target.value,
+                                      })
+                                    }
+                                    placeholder="Search Employee"
+                                  />
                                 </div>
                               </div>
-                            </form>
-                          )}
+                            </div>
+                          </form>
                           {unassignedUsersDetails &&
                             _.map(unassignedUsersDetails, user => {
                               return (
-                                <div className="row" key={user._id}>
-                                  <div className="col-md-2 pb-2 pt-2 assign-name-text">
-                                    <NavLink
-                                      to={`/employee/assignment/${user._id}`}
+                                <div key={user._id}>
+                                  <hr />
+                                  <div className="row">
+                                    <div className="col-md-3 pb-2 pt-2 assign-name-text">
+                                      <NavLink
+                                        to={`/employee/assignment/${user._id}`}
+                                      >
+                                        {user.profile.fullName}
+                                        &nbsp;
+                                        <span className="badge badge-pill badge-warning">
+                                          {user.profile.posTitle}
+                                        </span>
+                                      </NavLink>
+                                    </div>
+                                    <div className="col-md-1 pb-2 pt-2">
+                                      {user.profile.base}
+                                    </div>
+                                    <div className="col-md-3 pb-2 pt-2">
+                                      {user.lastAssign}
+                                    </div>
+                                    <div
+                                      className={
+                                        user.nextAssignTextClass
+                                          ? `col-md-3 pb-2 pt-2 ${
+                                              user.nextAssignTextClass
+                                            }`
+                                          : 'col-md-3 pb-2 pt-2'
+                                      }
                                     >
-                                      {user.profile.fullName}
-                                      &nbsp;
-                                      <span className="badge badge-pill badge-warning">
-                                        {user.profile.posTitle}
-                                      </span>
-                                    </NavLink>
-                                  </div>
-                                  <div className="col-md-2 pb-2 pt-2">
-                                    {user.profile.base === 'HCM'
-                                      ? 'Ho Chi Minh'
-                                      : 'Ha Noi'}
-                                  </div>
-                                  <div className="col-md-3 pb-2 pt-2">
-                                    {user.lastAssign}
-                                  </div>
-                                  <div
-                                    className={
-                                      user.nextAssignTextClass
-                                        ? `col-md-3 pb-2 pt-2 ${
-                                            user.nextAssignTextClass
-                                          }`
-                                        : 'col-md-3 pb-2 pt-2'
-                                    }
-                                  >
-                                    {user.nextAssign}
-                                  </div>
-                                  <div className="col-md-2 pb-2 pt-2">
-                                    {user.profile.talents
-                                      ? _.map(user.profile.talents, talent => {
-                                          return (
-                                            <span
-                                              className="react-tagsinput-tag"
-                                              key={talent}
-                                            >
-                                              {talent}
-                                            </span>
-                                          );
-                                        })
-                                      : ''}
+                                      {user.nextAssign}
+                                    </div>
+                                    <div className="col-md-2 pb-2 pt-2">
+                                      {user.profile.talents
+                                        ? _.map(
+                                            user.profile.talents,
+                                            talent => {
+                                              return (
+                                                <span
+                                                  className="react-tagsinput-tag"
+                                                  key={talent}
+                                                >
+                                                  {talent}
+                                                </span>
+                                              );
+                                            }
+                                          )
+                                        : ''}
+                                    </div>
                                   </div>
                                 </div>
                               );
@@ -874,115 +869,120 @@ class Report extends React.Component {
                       <div className="card" id="anchor-assigned-users">
                         <div className="card-body">
                           <h1 className="text-center">Assigned Employees</h1>
-                          {_.size(assignedUsersDetails) > 0 && (
-                            <form>
-                              <div className="row">
-                                <div className="col-sm-12 col-md-4">
-                                  <div className="form-group">
-                                    <input
-                                      id="assignedsearch"
-                                      type="text"
-                                      className="form-control"
-                                      name="assignedsearch"
-                                      value={filterAssignedUsers || ''}
-                                      onChange={e =>
-                                        this.setState({
-                                          filterAssignedUsers: e.target.value,
-                                        })
-                                      }
-                                      placeholder="Search Employee"
-                                    />
-                                  </div>
+                          <form>
+                            <div className="row">
+                              <div className="col-sm-12 col-md-4">
+                                <div className="form-group">
+                                  <input
+                                    id="assignedsearch"
+                                    type="text"
+                                    className="form-control"
+                                    name="assignedsearch"
+                                    value={filterAssignedUsers || ''}
+                                    onChange={e =>
+                                      this.setState({
+                                        filterAssignedUsers: e.target.value,
+                                      })
+                                    }
+                                    placeholder="Search Employee"
+                                  />
                                 </div>
                               </div>
-                            </form>
-                          )}
+                            </div>
+                          </form>
                           {assignedUsersDetails &&
                             _.map(assignedUsersDetails, user => {
                               return (
-                                <div className="row" key={user._id}>
-                                  <div className="col-md-2 pb-2 pt-2 assign-name-text">
-                                    <NavLink
-                                      to={`/employee/assignment/${user._id}`}
-                                    >
-                                      {user.profile.fullName}
-                                      &nbsp;
-                                      <span className="badge badge-pill badge-warning">
-                                        {user.profile.posTitle}
-                                      </span>
-                                    </NavLink>
-                                  </div>
+                                <div key={user._id}>
+                                  <hr />
+                                  <div className="row">
+                                    <div className="col-md-3 pb-2 pt-2 assign-name-text">
+                                      <NavLink
+                                        to={`/employee/assignment/${user._id}`}
+                                      >
+                                        {user.profile.fullName}
+                                        &nbsp;
+                                        <span className="badge badge-pill badge-warning">
+                                          {user.profile.posTitle}
+                                        </span>
+                                      </NavLink>
+                                    </div>
 
-                                  <div className="col-md-10 pb-2 pt-2 pl-0 pr-0">
-                                    {user.inRangeAssignmentsOfUser &&
-                                      _.map(
-                                        user.inRangeAssignmentsOfUser,
-                                        assignment => {
-                                          return (
-                                            <div
-                                              className="row"
-                                              key={assignment._id}
-                                            >
-                                              <div className="col-md-2 pb-1 assign-name-text">
-                                                <NavLink
-                                                  to={`/project/assignment/${
-                                                    assignment._projectId
-                                                  }`}
-                                                >
-                                                  {assignment.projectName}
-                                                </NavLink>
+                                    <div className="col-md-9 pb-2 pt-2 pl-0 pr-0">
+                                      {user.inRangeAssignmentsOfUser &&
+                                        _.map(
+                                          user.inRangeAssignmentsOfUser,
+                                          assignment => {
+                                            return (
+                                              <div
+                                                className="row"
+                                                key={assignment._id}
+                                              >
+                                                <div className="col-md-3 pb-1 assign-name-text">
+                                                  <NavLink
+                                                    to={`/project/assignment/${
+                                                      assignment._projectId
+                                                    }`}
+                                                  >
+                                                    {assignment.projectName}
+                                                  </NavLink>
+                                                </div>
+                                                <div className="col-md-3 pb-1">
+                                                  {`${moment(
+                                                    assignment.startDate
+                                                  ).format(
+                                                    'MMM DD, YY'
+                                                  )} - ${moment(
+                                                    assignment.endDate
+                                                  ).format('MMM DD, YY')}`}
+                                                </div>
+                                                <div className="col-md-1 pb-1">
+                                                  <span className="percentage-14-pt1">
+                                                    {`${assignment.percent}%`}
+                                                  </span>
+                                                </div>
+                                                <div className="col-md-3 pb-1">
+                                                  {assignment.level ===
+                                                    'Member' &&
+                                                  assignment.role === 'Member'
+                                                    ? `${assignment.level}`
+                                                    : assignment.level !==
+                                                        'Member' &&
+                                                      assignment.role !==
+                                                        'Member'
+                                                    ? `${assignment.level} & ${
+                                                        assignment.role
+                                                      }`
+                                                    : assignment.level !==
+                                                      'Member'
+                                                    ? `${assignment.level}`
+                                                    : assignment.role !==
+                                                      'Member'
+                                                    ? `${assignment.role}`
+                                                    : ''}
+                                                </div>
+                                                <div className="col-md-2 pb-1">
+                                                  {assignment.talents
+                                                    ? _.map(
+                                                        assignment.talents,
+                                                        talent => {
+                                                          return (
+                                                            <span
+                                                              className="react-tagsinput-tag"
+                                                              key={talent}
+                                                            >
+                                                              {talent}
+                                                            </span>
+                                                          );
+                                                        }
+                                                      )
+                                                    : ''}
+                                                </div>
                                               </div>
-                                              <div className="col-md-4 pb-1">
-                                                {`${moment(
-                                                  assignment.startDate
-                                                ).format(
-                                                  'MMM DD, YYYY'
-                                                )} - ${moment(
-                                                  assignment.endDate
-                                                ).format('MMM DD, YYYY')}`}
-                                              </div>
-                                              <div className="col-md-1 pb-1">
-                                                {`${assignment.percent}%`}
-                                              </div>
-                                              <div className="col-md-3 pb-1">
-                                                {assignment.level ===
-                                                  'Member' &&
-                                                assignment.role === 'Member'
-                                                  ? `${assignment.level}`
-                                                  : assignment.level !==
-                                                      'Member' &&
-                                                    assignment.role !== 'Member'
-                                                  ? `${assignment.level} & ${
-                                                      assignment.role
-                                                    }`
-                                                  : assignment.level !==
-                                                    'Member'
-                                                  ? `${assignment.level}`
-                                                  : assignment.role !== 'Member'
-                                                  ? `${assignment.role}`
-                                                  : ''}
-                                              </div>
-                                              <div className="col-md-2 pb-1">
-                                                {assignment.talents
-                                                  ? _.map(
-                                                      assignment.talents,
-                                                      talent => {
-                                                        return (
-                                                          <span
-                                                            className="react-tagsinput-tag"
-                                                            key={talent}
-                                                          >
-                                                            {talent}
-                                                          </span>
-                                                        );
-                                                      }
-                                                    )
-                                                  : ''}
-                                              </div>
-                                            </div>
-                                          );
-                                        }
-                                      )}
+                                            );
+                                          }
+                                        )}
+                                    </div>
                                   </div>
                                 </div>
                               );

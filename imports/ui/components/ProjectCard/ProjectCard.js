@@ -14,7 +14,15 @@ const ProjectCard = ({ project }) => (
     <div className="image-flip">
       <div className="mainflip">
         <div className="frontside">
-          <div className="card">
+          <div
+            className={
+              project
+                ? project.disabled
+                  ? 'card disabled-card'
+                  : 'card'
+                : 'card'
+            }
+          >
             <div className="card-body text-center">
               <p>
                 <img
@@ -24,7 +32,7 @@ const ProjectCard = ({ project }) => (
                 />
               </p>
 
-              <h4 className="card-title text-info">
+              <h4 className="card-title">
                 <div className="dropdown">
                   <a
                     className="dropdown-toggle"
@@ -45,12 +53,18 @@ const ProjectCard = ({ project }) => (
                     >
                       Update Project
                     </NavLink>
-                    <NavLink
-                      className="dropdown-item"
-                      to={project ? `/project/assignment/${project._id}` : `/project`}
-                    >
-                      Assignments
-                    </NavLink>
+                    {project && !project.disabled && (
+                      <NavLink
+                        className="dropdown-item"
+                        to={
+                          project
+                            ? `/project/assignment/${project._id}`
+                            : `/project`
+                        }
+                      >
+                        Assignments
+                      </NavLink>
+                    )}
                   </div>
                 </div>
               </h4>

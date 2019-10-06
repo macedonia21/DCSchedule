@@ -39,8 +39,10 @@ class CreateEmployee extends React.Component {
         hPW: 40,
         _counsellorId: '',
       },
+      disabled: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleActiveClick = this.handleActiveClick.bind(this);
   }
 
   componentWillMount() {
@@ -57,26 +59,43 @@ class CreateEmployee extends React.Component {
     return true;
   }
 
+  handleActiveClick() {
+    this.setState({
+      disabled: !this.state.disabled,
+    });
+  }
+
   handleSubmit(e) {
     e.preventDefault();
-    const { email, password, profile } = this.state;
-    Meteor.call('employee.create', email, password, profile, (err, res) => {
-      if (err) {
-        NotificationManager.error(
-          `Cannot create: ${err.message}`,
-          'Error',
-          3000
-        );
-      } else {
-        NotificationManager.success('New employee is created', 'Success', 3000);
-        return this.props.history.push('/employee');
+    const { email, password, profile, disabled } = this.state;
+    Meteor.call(
+      'employee.create',
+      email,
+      password,
+      profile,
+      disabled,
+      (err, res) => {
+        if (err) {
+          NotificationManager.error(
+            `Cannot create: ${err.message}`,
+            'Error',
+            3000
+          );
+        } else {
+          NotificationManager.success(
+            'New employee is created',
+            'Success',
+            3000
+          );
+          return this.props.history.push('/employee');
+        }
       }
-    });
+    );
   }
 
   render() {
     const { loggedIn } = this.props;
-    const { email, password, profile } = this.state;
+    const { email, password, profile, disabled } = this.state;
 
     if (!loggedIn) {
       return null;
@@ -494,6 +513,21 @@ class CreateEmployee extends React.Component {
                         required
                         disabled
                       />
+                    </div>
+
+                    {/* <!-- Active --> */}
+                    <div className="form-group">
+                      <button
+                        type="button"
+                        className={
+                          disabled
+                            ? 'btn btn-block btn-secondary'
+                            : 'btn btn-block btn-primary'
+                        }
+                        onClick={this.handleActiveClick}
+                      >
+                        {disabled ? 'Inactive' : 'Active'}
+                      </button>
                     </div>
                   </div>
                 </div>

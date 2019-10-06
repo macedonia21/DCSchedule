@@ -32,6 +32,8 @@ Accounts.onCreateUser((options, user) => {
   user.profile.hPW = options.profile.hPW;
   user.profile._counsellorId = options.profile._counsellorId;
   user.profile.email = options.email;
+
+  user.disabled = options.disabled;
   // Returns the user object
   return user;
 });
@@ -40,6 +42,8 @@ Accounts.validateLoginAttempt(function(attemptInfo) {
   if (attemptInfo.type === 'resume') return true;
 
   if (attemptInfo.methodName === 'createUser') return false;
+
+  if (attemptInfo.user.disabled) return false;
 
   if (attemptInfo.methodName === 'login' && attemptInfo.allowed) {
     let verified = false;

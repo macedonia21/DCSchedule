@@ -41,22 +41,28 @@ class EmployeeUpdate extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     const { user } = this.props;
-    Meteor.call('employee.update', user._id, user.profile, (err, res) => {
-      if (err) {
-        NotificationManager.error(
-          `Cannot update: ${err.message}`,
-          'Error',
-          3000
-        );
-      } else {
-        NotificationManager.success(
-          'Employee profile is updated',
-          'Success',
-          3000
-        );
-        return this.props.history.push('/employee');
+    Meteor.call(
+      'employee.update',
+      user._id,
+      user.profile,
+      user.disabled,
+      (err, res) => {
+        if (err) {
+          NotificationManager.error(
+            `Cannot update: ${err.message}`,
+            'Error',
+            3000
+          );
+        } else {
+          NotificationManager.success(
+            'Employee profile is updated',
+            'Success',
+            3000
+          );
+          return this.props.history.push('/employee');
+        }
       }
-    });
+    );
   }
 
   render() {
@@ -446,6 +452,26 @@ class EmployeeUpdate extends React.Component {
                           required
                           disabled
                         />
+                      </div>
+
+                      {/* <!-- Active --> */}
+                      <div className="form-group">
+                        <button
+                          type="button"
+                          className={
+                            user.disabled
+                              ? 'btn btn-block btn-secondary'
+                              : 'btn btn-block btn-primary'
+                          }
+                          onClick={() => {
+                            this.setState({
+                              isChanged: true,
+                            });
+                            user.disabled = !user.disabled;
+                          }}
+                        >
+                          {user.disabled ? 'Inactive' : 'Active'}
+                        </button>
                       </div>
                     </div>
                   </div>

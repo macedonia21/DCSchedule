@@ -4,6 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import { NotificationManager } from 'react-notifications';
+import Select from 'react-select';
 
 // import components
 
@@ -24,9 +25,50 @@ class ProjectCreate extends React.Component {
         endDate: new Date(),
         status: 'Presales',
         remark: '',
+        disabled: false,
+      },
+      reactSelect: {
+        pmIdValue: null,
+        statusValue: { value: 'Presales', label: 'Presales' },
+        statusOptions: [
+          {
+            value: 'Presales',
+            label: 'Presales',
+          },
+          {
+            value: 'Kick-off',
+            label: 'Kick-off',
+          },
+          {
+            value: 'Blueprint',
+            label: 'Blueprint',
+          },
+          {
+            value: 'Realization',
+            label: 'Realization',
+          },
+          {
+            value: 'SIT',
+            label: 'SIT',
+          },
+          {
+            value: 'UAT',
+            label: 'UAT',
+          },
+          {
+            value: 'Go-live',
+            label: 'Go-live',
+          },
+          {
+            value: 'Go-live Support',
+            label: 'Go-live Support',
+          },
+        ],
       },
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.customFilter = this.customFilter.bind(this);
+    this.handleActiveClick = this.handleActiveClick.bind(this);
   }
 
   componentWillMount() {
@@ -41,6 +83,26 @@ class ProjectCreate extends React.Component {
       return false;
     }
     return true;
+  }
+
+  customFilter(option, searchText) {
+    if (
+      option.data.profile.fullName
+        .toLowerCase()
+        .includes(searchText.toLowerCase())
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  handleActiveClick() {
+    this.setState({
+      project: {
+        ...this.state.project,
+        disabled: !this.state.project.disabled,
+      },
+    });
   }
 
   handleSubmit(e) {
@@ -62,7 +124,28 @@ class ProjectCreate extends React.Component {
 
   render() {
     const { loggedIn, usersReady, users } = this.props;
-    const { project } = this.state;
+    const { project, reactSelect } = this.state;
+
+    // Selects Component Options
+    const pmIdSelectOptions = _.map(users, user => {
+      return {
+        value: user._id,
+        label: user.profile.fullName,
+        profile: user.profile,
+      };
+    });
+
+    const reactSelectStyle = {
+      control: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.isDisabled ? '#e9ecef' : '#fff',
+        borderColor: state.isFocused ? '#80bdff' : '#ced4da',
+        outline: state.isFocused ? 0 : null,
+        boxShadow: state.isFocused
+          ? '0 0 0 0.2rem rgba(0, 123, 255, 0.25)'
+          : '',
+      }),
+    };
 
     if (!loggedIn) {
       return null;
@@ -123,33 +206,28 @@ class ProjectCreate extends React.Component {
                     {/* <!-- Project Manager --> */}
                     <div className="form-group">
                       <label htmlFor="pmid">Project Manager</label>
-                      <select
-                        id="pmid"
-                        type="text"
-                        className="form-control"
-                        name="pmid"
-                        defaultValue={project._pmId}
-                        onChange={e =>
+                      <Select
+                        value={reactSelect.pmIdValue}
+                        options={pmIdSelectOptions}
+                        placeholder="Select Project Manager"
+                        onChange={selectedOption => {
                           this.setState({
-                            project: {
-                              ...this.state.project,
-                              _pmId: e.target.value,
+                            newAssignment: {
+                              ...this.state.newAssignment,
+                              _pmId: selectedOption ? selectedOption.value : '',
                             },
-                          })
-                        }
-                        required
-                      >
-                        <option value="" key="0" disabled>
-                          Select Project Manager
-                        </option>
-                        {_.map(users, user => {
-                          return (
-                            <option value={user._id} key={user._id}>
-                              {user.profile.fullName}
-                            </option>
-                          );
-                        })}
-                      </select>
+                            reactSelect: {
+                              ...this.state.reactSelect,
+                              pmIdValue: selectedOption,
+                            },
+                          });
+                        }}
+                        filterOption={this.customFilter}
+                        isClearable="true"
+                        styles={reactSelectStyle}
+                        valueKey="value"
+                        labelKey="label"
+                      />
                     </div>
 
                     {/* <!-- Start Date --> */}
@@ -193,31 +271,26 @@ class ProjectCreate extends React.Component {
                     {/* <!-- Status --> */}
                     <div className="form-group">
                       <label htmlFor="status">Status</label>
-                      <select
-                        id="status"
-                        type="text"
-                        className="form-control"
-                        name="status"
-                        defaultValue={project.status}
-                        onChange={e =>
+                      <Select
+                        defaultValue={reactSelect.statusOptions[0]}
+                        value={reactSelect.statusValue}
+                        options={reactSelect.statusOptions}
+                        placeholder="Select Status"
+                        onChange={selectedOption => {
                           this.setState({
                             project: {
                               ...this.state.project,
-                              status: e.target.value,
+                              status: selectedOption.value,
                             },
-                          })
-                        }
-                        required
-                      >
-                        <option value="Presales">Presales</option>
-                        <option value="Kick-off">Kick-off</option>
-                        <option value="Blueprint">Blueprint</option>
-                        <option value="Realization">Realization</option>
-                        <option value="SIT">SIT</option>
-                        <option value="UAT">UAT</option>
-                        <option value="Go-live">Go-live</option>
-                        <option value="Go-live Support">Go-live Support</option>
-                      </select>
+                            reactSelect: {
+                              ...this.state.reactSelect,
+                              statusValue: selectedOption,
+                            },
+                          });
+                        }}
+                        styles={reactSelectStyle}
+                        isSearchable={false}
+                      />
                     </div>
 
                     {/* <!-- Remark --> */}
@@ -238,6 +311,21 @@ class ProjectCreate extends React.Component {
                           })
                         }
                       />
+                    </div>
+
+                    {/* <!-- Active --> */}
+                    <div className="form-group">
+                      <button
+                        type="button"
+                        className={
+                          project.disabled
+                            ? 'btn btn-block btn-secondary'
+                            : 'btn btn-block btn-primary'
+                        }
+                        onClick={this.handleActiveClick}
+                      >
+                        {project.disabled ? 'Inactive' : 'Active'}
+                      </button>
                     </div>
                   </div>
                 </div>

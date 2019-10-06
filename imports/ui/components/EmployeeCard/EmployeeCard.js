@@ -10,9 +10,45 @@ const EmployeeCard = ({ user }) => (
     <div className="image-flip">
       <div className="mainflip">
         <div className="frontside">
-          <div className="card">
+          <div
+            className={
+              user ? (user.disabled ? 'card disabled-card' : 'card') : 'card'
+            }
+          >
             <div className="card-body text-center">
               <p>
+                {user.todayAssignmentProject && (
+                  <NavLink
+                    to={`/project/assignment/${
+                      user.todayAssignmentProject._id
+                    }`}
+                  >
+                    <span
+                      className={
+                        user
+                          ? user.disabled
+                            ? 'badge badge-pill badge-secondary emp-img-badge'
+                            : 'badge badge-pill badge-primary emp-img-badge'
+                          : 'badge badge-pill emp-img-badge'
+                      }
+                    >
+                      {user.todayAssignmentProject.projectName}
+                    </span>
+                  </NavLink>
+                )}
+                {!user.todayAssignmentProject && (
+                  <span
+                    className={
+                      user
+                        ? user.disabled
+                          ? 'badge badge-pill badge-secondary emp-img-badge'
+                          : 'badge badge-pill badge-danger emp-img-badge'
+                        : 'badge badge-pill emp-img-badge'
+                    }
+                  >
+                    Available
+                  </span>
+                )}
                 <img
                   className="img-fluid"
                   src="/img/avatar_placeholder.png"
@@ -20,7 +56,7 @@ const EmployeeCard = ({ user }) => (
                 />
               </p>
 
-              <h4 className="card-title text-info">
+              <h4 className="card-title">
                 <div className="dropdown">
                   <a
                     className="dropdown-toggle"
@@ -29,9 +65,17 @@ const EmployeeCard = ({ user }) => (
                     aria-haspopup="true"
                     aria-expanded="false"
                   >
-                    {user ? user.profile.fullName : ''}
+                    <span className="emp-fullname">{user ? user.profile.fullName : ''}</span>
                     &nbsp;
-                    <span className="badge badge-pill badge-warning">
+                    <span
+                      className={
+                        user
+                          ? user.disabled
+                            ? 'badge badge-pill badge-secondary'
+                            : 'badge badge-pill badge-warning'
+                          : 'badge badge-pill badge-warning'
+                      }
+                    >
                       {user.profile.posTitle}
                     </span>
                   </a>
@@ -45,14 +89,18 @@ const EmployeeCard = ({ user }) => (
                     >
                       Update Employee
                     </NavLink>
-                    <NavLink
-                      className="dropdown-item"
-                      to={
-                        user ? `/employee/assignment/${user._id}` : `/employee`
-                      }
-                    >
-                      Assignments
-                    </NavLink>
+                    {user && !user.disabled && (
+                      <NavLink
+                        className="dropdown-item"
+                        to={
+                          user
+                            ? `/employee/assignment/${user._id}`
+                            : `/employee`
+                        }
+                      >
+                        Assignments
+                      </NavLink>
+                    )}
                   </div>
                 </div>
               </h4>
