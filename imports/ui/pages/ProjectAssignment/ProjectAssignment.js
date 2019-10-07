@@ -229,11 +229,13 @@ class ProjectAssignment extends React.Component {
     const {
       loggedIn,
       projectsReady,
+      projects,
       project,
       usersReady,
       users,
       user,
       assignmentsReady,
+      assignments,
       projectAssignments,
     } = this.props;
     const { newAssignment, isDefaultSet, chartData, reactSelect } = this.state;
@@ -245,7 +247,49 @@ class ProjectAssignment extends React.Component {
       newAssignment.endDate = project.endDate;
     }
 
-    if (projectAssignments) {
+    const activeProjectAssignments = _.filter(
+      projectAssignments,
+      assignment => {
+        return _.contains(
+          _.map(users, user => {
+            return user._id;
+          }),
+          assignment._employeeId
+        );
+      }
+    );
+
+    const pmUser = user
+      ? _.map([user], user => {
+          // Find today Assignment
+          const todayAssignment = _.find(assignments, assignment => {
+            const todayObj = moment();
+            const assignStartDateObj = moment(assignment.startDate);
+            const assignEndDateObj = moment(assignment.endDate);
+            return (
+              assignment._employeeId === user._id &&
+              assignStartDateObj.isSameOrBefore(todayObj, 'day') &&
+              assignEndDateObj.isSameOrAfter(todayObj, 'day')
+            );
+          });
+
+          let todayAssignmentProject;
+          if (todayAssignment) {
+            todayAssignmentProject = _.findWhere(projects, {
+              _id: todayAssignment._projectId,
+            });
+          }
+
+          // Find today Project
+          return {
+            ...user,
+            todayAssignment,
+            todayAssignmentProject,
+          };
+        })[0]
+      : null;
+
+    if (activeProjectAssignments) {
       const chartDataDeclare = [
         { type: 'string', label: 'Task ID' },
         { type: 'string', label: 'Task Name' },
@@ -262,7 +306,7 @@ class ProjectAssignment extends React.Component {
           label: 'Dependencies',
         },
       ];
-      const chartDataItems = _.map(projectAssignments, assignment => {
+      const chartDataItems = _.map(activeProjectAssignments, assignment => {
         const assignedUser = _.findWhere(users, {
           _id: assignment._employeeId,
         });
@@ -282,7 +326,7 @@ class ProjectAssignment extends React.Component {
       chartDataCombine = _.union(chartDataCombine, chartDataItems);
       chartData.data = chartDataCombine;
 
-      const assignmentChartHeight = (_.size(projectAssignments) + 1) * 40;
+      const assignmentChartHeight = (_.size(activeProjectAssignments) + 1) * 40;
       chartData.height < assignmentChartHeight
         ? (chartData.height = assignmentChartHeight)
         : () => null;
@@ -329,7 +373,7 @@ class ProjectAssignment extends React.Component {
             {projectsReady && usersReady && assignmentsReady && (
               <>
                 <ProjectCard project={project} key={project._id} />
-                {user && <EmployeeCard user={user} key={user._id} />}
+                {pmUser && <EmployeeCard user={pmUser} key={pmUser._id} />}
 
                 <div className="col-xs-12 col-sm-12 col-md-12 new-assignment-card">
                   <div className="image-flip">
@@ -599,7 +643,7 @@ class ProjectAssignment extends React.Component {
                               className="collapse"
                               id="collapseProjAssignments"
                             >
-                              {_.map(projectAssignments, assignment => {
+                              {_.map(activeProjectAssignments, assignment => {
                                 const assignedUser = _.findWhere(users, {
                                   _id: assignment._employeeId,
                                 });
@@ -685,7 +729,7 @@ class ProjectAssignment extends React.Component {
                             </div>
                             <div className="row" key="0">
                               <div className="col-md-12 pb-2 pt-2">
-                                {_.size(projectAssignments) > 0 && (
+                                {_.size(activeProjectAssignments) > 0 && (
                                   <Chart
                                     width="100%"
                                     height={`${chartData.height}px`}
@@ -723,9 +767,11 @@ class ProjectAssignment extends React.Component {
 
 ProjectAssignment.defaultProps = {
   // users: null, remote example (if using ddp)
+  projects: null,
   project: null,
   users: null,
   user: null,
+  assignments: null,
   projectAssignments: null,
 };
 
@@ -735,22 +781,24 @@ ProjectAssignment.propTypes = {
     push: PropTypes.func.isRequired,
   }).isRequired,
   projectsReady: PropTypes.bool.isRequired,
+  projects: Projects ? PropTypes.array.isRequired : () => null,
   project: PropTypes.object,
   usersReady: PropTypes.bool.isRequired,
   users: Meteor.user() ? PropTypes.array.isRequired : () => null,
   user: PropTypes.object,
   assignmentsReady: PropTypes.bool.isRequired,
+  assignments: Assignments ? PropTypes.array : () => null,
   projectAssignments: Assignments ? PropTypes.array : () => null,
 };
 
 export default withTracker(props => {
   const projectsSub = Meteor.subscribe('projects.all'); // publication needs to be set on remote server
-  const projects = Projects.find().fetch();
+  const projects = Projects.find({ disabled: { $in: [false, null] } }).fetch();
   const project = _.findWhere(projects, { _id: props.match.params._id });
   const projectsReady = projectsSub.ready() && !!projects;
 
   const usersSub = Meteor.subscribe('users.all'); // publication needs to be set on remote server
-  const users = Meteor.users.find().fetch();
+  const users = Meteor.users.find({ disabled: { $in: [false, null] } }).fetch();
   const user = project ? _.findWhere(users, { _id: project._pmId }) : null;
   const usersReady = usersSub.ready() && !!users;
 
@@ -773,11 +821,13 @@ export default withTracker(props => {
 
   return {
     projectsReady,
+    projects,
     project,
     usersReady,
     users,
     user,
     assignmentsReady,
+    assignments,
     projectAssignments,
   };
 })(ProjectAssignment);

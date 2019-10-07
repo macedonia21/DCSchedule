@@ -386,11 +386,21 @@ class Report extends React.Component {
       return null;
     }
 
+    // Filter assignments of ACTIVE users only
+    const activeAssignments = _.filter(assignments, assignment => {
+      return _.contains(
+        _.map(users, user => {
+          return user._id;
+        }),
+        assignment._employeeId
+      );
+    });
+
     // Summary
     const inRangeAssignments = getInRangeAssignments(
       startDate,
       endDate,
-      assignments
+      activeAssignments
     );
 
     const unassignedUsers = _.reject(users, user => {
@@ -481,7 +491,7 @@ class Report extends React.Component {
       startDate,
       endDate,
       unassignedUsers,
-      assignments
+      activeAssignments
     );
     let unassignedUsersDetails = unassignedUsersDetailsFull;
     if (filterUnassignedUsers) {
@@ -1084,7 +1094,7 @@ export default withTracker(() => {
   const projectsReady = projectsSub.ready() && !!projects;
 
   const usersSub = Meteor.subscribe('users.all'); // publication needs to be set on remote server
-  const users = Meteor.users.find().fetch();
+  const users = Meteor.users.find({ disabled: { $in: [false, null] } }).fetch();
   const usersReady = usersSub.ready() && !!users;
 
   const assignmentsSub = Meteor.subscribe('assignments.all'); // publication needs to be set on remote server

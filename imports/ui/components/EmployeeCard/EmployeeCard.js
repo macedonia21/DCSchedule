@@ -32,7 +32,11 @@ const EmployeeCard = ({ user }) => (
                           : 'badge badge-pill emp-img-badge'
                       }
                     >
-                      {user.todayAssignmentProject.projectName}
+                      {user
+                        ? user.disabled
+                          ? 'Inactive'
+                          : user.todayAssignmentProject.projectName
+                        : ''}
                     </span>
                   </NavLink>
                 )}
@@ -46,7 +50,7 @@ const EmployeeCard = ({ user }) => (
                         : 'badge badge-pill emp-img-badge'
                     }
                   >
-                    Available
+                    {user ? (user.disabled ? 'Inactive' : 'Available') : ''}
                   </span>
                 )}
                 <img
@@ -65,7 +69,9 @@ const EmployeeCard = ({ user }) => (
                     aria-haspopup="true"
                     aria-expanded="false"
                   >
-                    <span className="emp-fullname">{user ? user.profile.fullName : ''}</span>
+                    <span className="emp-fullname">
+                      {user ? user.profile.fullName : ''}
+                    </span>
                     &nbsp;
                     <span
                       className={

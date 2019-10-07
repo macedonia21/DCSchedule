@@ -281,6 +281,34 @@ class EmployeeAssignment extends React.Component {
       newAssignment._employeeId = user._id;
     }
 
+    const selectedUser = _.map([user], user => {
+      // Find today Assignment
+      const todayAssignment = _.find(employeeAssignments, assignment => {
+        const todayObj = moment();
+        const assignStartDateObj = moment(assignment.startDate);
+        const assignEndDateObj = moment(assignment.endDate);
+        return (
+          assignment._employeeId === user._id &&
+          assignStartDateObj.isSameOrBefore(todayObj, 'day') &&
+          assignEndDateObj.isSameOrAfter(todayObj, 'day')
+        );
+      });
+
+      let todayAssignmentProject;
+      if (todayAssignment) {
+        todayAssignmentProject = _.findWhere(projects, {
+          _id: todayAssignment._projectId,
+        });
+      }
+
+      // Find today Project
+      return {
+        ...user,
+        todayAssignment,
+        todayAssignmentProject,
+      };
+    })[0];
+
     // Chart Date
     const chartCalendarDataDeclare = [
       { type: 'date', id: 'Date' },
@@ -440,7 +468,7 @@ class EmployeeAssignment extends React.Component {
           <div className="row">
             {projectsReady && usersReady && assignmentsReady && (
               <>
-                <EmployeeCard user={user} key={user._id} />
+                <EmployeeCard user={selectedUser} key={selectedUser._id} />
                 {project && <ProjectCard project={project} key={project._id} />}
 
                 <div className="col-xs-12 col-sm-12 col-md-12 new-assignment-card">
@@ -887,11 +915,11 @@ EmployeeAssignment.propTypes = {
 
 export default withTracker(props => {
   const projectsSub = Meteor.subscribe('projects.all'); // publication needs to be set on remote server
-  const projects = Projects.find().fetch();
+  const projects = Projects.find({ disabled: { $in: [false, null] } }).fetch();
   const projectsReady = projectsSub.ready() && !!projects;
 
   const usersSub = Meteor.subscribe('users.all'); // publication needs to be set on remote server
-  const users = Meteor.users.find().fetch();
+  const users = Meteor.users.find({ disabled: { $in: [false, null] } }).fetch();
   const user = _.findWhere(users, { _id: props.match.params._id });
   const usersReady = usersSub.ready() && !!users;
 
