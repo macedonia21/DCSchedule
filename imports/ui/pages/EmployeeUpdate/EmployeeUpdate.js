@@ -6,7 +6,8 @@ import DatePicker from 'react-datepicker';
 import TagsInput from 'react-tagsinput';
 import { _ } from 'underscore';
 import { NotificationManager } from 'react-notifications';
-import moment from 'moment/moment';
+import { Roles } from 'meteor/alanning:roles';
+import Select from 'react-select';
 
 // import components
 
@@ -19,9 +20,216 @@ class EmployeeUpdate extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loginRoles: {
+        admin: false,
+        projMan: false,
+      },
       isChanged: false,
+      isDefaultSet: {
+        set: false,
+      },
+      roles: {
+        admin: false,
+        projMan: false,
+      },
+      reactSelect: {
+        genderValue: { value: 'M', label: 'Male' },
+        genderOptions: [
+          {
+            value: 'M',
+            label: 'Male',
+          },
+          {
+            value: 'F',
+            label: 'Female',
+          },
+        ],
+        titleValue: { value: 'C', label: 'Consultant' },
+        titleOptions: [
+          {
+            value: 'BA',
+            label: 'Business Analysis',
+          },
+          {
+            value: 'C',
+            label: 'Consultant',
+          },
+          {
+            value: 'SC',
+            label: 'Senior Consultant',
+          },
+          {
+            value: 'M',
+            label: 'Manager',
+          },
+          {
+            value: 'SM',
+            label: 'Senior Manager',
+          },
+        ],
+        empTypeValue: { value: 'Permanent', label: 'Permanent' },
+        empTypeOptions: [
+          {
+            value: 'Permanent',
+            label: 'Permanent',
+          },
+          {
+            value: 'Contractor',
+            label: 'Contractor',
+          },
+        ],
+        countryValue: { value: 'Vietnam', label: 'Vietnam' },
+        countryOptions: [
+          {
+            value: 'Guam',
+            label: 'Guam',
+          },
+          {
+            value: 'Indonesia',
+            label: 'Indonesia',
+          },
+          {
+            value: 'Malaysia',
+            label: 'Malaysia',
+          },
+          {
+            value: 'Philippines',
+            label: 'Philippines',
+          },
+          {
+            value: 'Singapore',
+            label: 'Singapore',
+          },
+          {
+            value: 'Thailand',
+            label: 'Thailand',
+          },
+          {
+            value: 'Vietnam',
+            label: 'Vietnam',
+          },
+        ],
+        baseSelectDisabled: false,
+        baseValue: {
+          value: 'HCM',
+          label: 'Ho Chi Minh',
+          country: 'Vietnam',
+        },
+        baseAllOptions: [
+          {
+            value: 'GUAM',
+            label: 'Guam',
+            country: 'Guam',
+          },
+          {
+            value: 'INDO',
+            label: 'Indonesia',
+            country: 'Indonesia',
+          },
+          {
+            value: 'MALAY',
+            label: 'Malaysia',
+            country: 'Malaysia',
+          },
+          {
+            value: 'PHI',
+            label: 'Philippines',
+            country: 'Philippines',
+          },
+          {
+            value: 'SING',
+            label: 'Singapore',
+            country: 'Singapore',
+          },
+          {
+            value: 'THAI',
+            label: 'Thailand',
+            country: 'Thailand',
+          },
+          {
+            value: 'HCM',
+            label: 'Ho Chi Minh',
+            country: 'Vietnam',
+          },
+          {
+            value: 'HN',
+            label: 'Ha Noi',
+            country: 'Vietnam',
+          },
+        ],
+        baseOptions: [
+          {
+            value: 'HCM',
+            label: 'Ho Chi Minh',
+            country: 'Vietnam',
+          },
+          {
+            value: 'HN',
+            label: 'Ha Noi',
+            country: 'Vietnam',
+          },
+        ],
+        entCodeSelectDisabled: false,
+        entCodeValue: { value: 'VN1C', label: 'VN1C', country: 'Vietnam' },
+        entCodeAllOptions: [
+          {
+            value: 'GU1C',
+            label: 'GU1C',
+            country: 'Guam',
+          },
+          {
+            value: 'IN1C',
+            label: 'IN1C',
+            country: 'Indonesia',
+          },
+          {
+            value: 'MA1C',
+            label: 'MA1C',
+            country: 'Malaysia',
+          },
+          {
+            value: 'PH1C',
+            label: 'PH1C',
+            country: 'Philippines',
+          },
+          {
+            value: 'SG1C',
+            label: 'SG1C',
+            country: 'Singapore',
+          },
+          {
+            value: 'TH1C',
+            label: 'TH1C',
+            country: 'Thailand',
+          },
+          {
+            value: 'VN1C',
+            label: 'VN1C',
+            country: 'Vietnam',
+          },
+          {
+            value: 'VN2C',
+            label: 'VN2C',
+            country: 'Vietnam',
+          },
+        ],
+        entCodeOptions: [
+          {
+            value: 'VN1C',
+            label: 'VN1C',
+            country: 'Vietnam',
+          },
+          {
+            value: 'VN2C',
+            label: 'VN2C',
+            country: 'Vietnam',
+          },
+        ],
+      },
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleRoleAdminClick = this.handleRoleAdminClick.bind(this);
+    this.handleRoleProjManClick = this.handleRoleProjManClick.bind(this);
   }
 
   componentWillMount() {
@@ -38,14 +246,36 @@ class EmployeeUpdate extends React.Component {
     return true;
   }
 
+  handleRoleAdminClick() {
+    this.setState({
+      isChanged: true,
+      roles: {
+        ...this.state.roles,
+        admin: !this.state.roles.admin,
+      },
+    });
+  }
+
+  handleRoleProjManClick() {
+    this.setState({
+      isChanged: true,
+      roles: {
+        ...this.state.roles,
+        projMan: !this.state.roles.projMan,
+      },
+    });
+  }
+
   handleSubmit(e) {
     e.preventDefault();
     const { user } = this.props;
+    const { roles } = this.state;
     Meteor.call(
       'employee.update',
       user._id,
       user.profile,
       user.disabled,
+      roles,
       (err, res) => {
         if (err) {
           NotificationManager.error(
@@ -67,6 +297,82 @@ class EmployeeUpdate extends React.Component {
 
   render() {
     const { loggedIn, usersReady, user } = this.props;
+    const { loginRoles, roles, isDefaultSet, reactSelect } = this.state;
+
+    if (Meteor.userId()) {
+      if (Roles.userIsInRole(Meteor.userId(), 'admin')) {
+        loginRoles.admin = true;
+      }
+      if (Roles.userIsInRole(Meteor.userId(), 'projman')) {
+        loginRoles.projMan = true;
+      }
+    }
+
+    if (user && !isDefaultSet.set) {
+      isDefaultSet.set = true;
+      if (Roles.userIsInRole(user._id, 'admin')) {
+        roles.admin = true;
+      }
+      if (Roles.userIsInRole(user._id, 'projman')) {
+        roles.projMan = true;
+      }
+    }
+
+    const reactSelectStyle = {
+      control: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.isDisabled ? '#e9ecef' : '#fff',
+        borderColor: state.isFocused ? '#80bdff' : '#ced4da',
+        outline: state.isFocused ? 0 : null,
+        boxShadow: state.isFocused
+          ? '0 0 0 0.2rem rgba(0, 123, 255, 0.25)'
+          : '',
+      }),
+    };
+    const defaultGenderOption = user
+      ? _.findWhere(reactSelect.genderOptions, { value: user.profile.gender })
+      : null;
+    reactSelect.genderValue = defaultGenderOption;
+    const defaultTitleOption = user
+      ? _.findWhere(reactSelect.titleOptions, { value: user.profile.posTitle })
+      : null;
+    reactSelect.titleValue = defaultTitleOption;
+    const defaultEmpTypeOption = user
+      ? _.findWhere(reactSelect.empTypeOptions, { value: user.profile.empType })
+      : null;
+    reactSelect.empTypeValue = defaultEmpTypeOption;
+    const defaultCountryOption = user
+      ? _.findWhere(reactSelect.countryOptions, { value: user.profile.country })
+      : null;
+    reactSelect.countryValue = defaultCountryOption;
+    const defaultBaseOption = user
+      ? _.findWhere(reactSelect.baseAllOptions, {
+          value: user.profile.base,
+        })
+      : null;
+    reactSelect.baseValue = defaultBaseOption;
+    reactSelect.baseOptions = user
+      ? _.where(reactSelect.baseAllOptions, {
+          country: user.profile.country,
+        })
+      : null;
+    reactSelect.baseSelectDisabled = user
+      ? user.profile.country !== 'Vietnam'
+      : false;
+    const defaultEntCodeOption = user
+      ? _.findWhere(reactSelect.entCodeAllOptions, {
+          value: user.profile.entCode,
+        })
+      : null;
+    reactSelect.entCodeValue = defaultEntCodeOption;
+    reactSelect.entCodeOptions = user
+      ? _.where(reactSelect.entCodeAllOptions, {
+          country: user.profile.country,
+        })
+      : null;
+    reactSelect.entCodeSelectDisabled = user
+      ? user.profile.country !== 'Vietnam'
+      : false;
 
     if (!loggedIn) {
       return null;
@@ -78,7 +384,12 @@ class EmployeeUpdate extends React.Component {
           <div className="card-header">
             <div className="card-body">
               <h1 className="card-title text-center">Employee Profile</h1>
-              {usersReady && (
+              {!loginRoles.admin && !loginRoles.projMan && (
+                <h4 className="text-center text-danger">
+                  You are not authorized to view Employee
+                </h4>
+              )}
+              {usersReady && (loginRoles.admin || loginRoles.projMan) && (
                 <form onSubmit={this.handleSubmit}>
                   <div className="row">
                     {/* <!-- First Col --> */}
@@ -127,6 +438,7 @@ class EmployeeUpdate extends React.Component {
                             user.profile.firstName = e.target.value;
                           }}
                           required
+                          disabled={!loginRoles.admin}
                         />
                       </div>
 
@@ -146,6 +458,7 @@ class EmployeeUpdate extends React.Component {
                             user.profile.lastName = e.target.value;
                           }}
                           required
+                          disabled={!loginRoles.admin}
                         />
                       </div>
 
@@ -165,29 +478,32 @@ class EmployeeUpdate extends React.Component {
                             user.profile.vnName = e.target.value;
                           }}
                           required
+                          disabled={!loginRoles.admin}
                         />
                       </div>
 
                       {/* <!-- Gender --> */}
                       <div className="form-group">
                         <label htmlFor="gender">Gender</label>
-                        <select
-                          id="gender"
-                          type="text"
-                          className="form-control"
-                          name="gender"
-                          defaultValue={user.profile.gender}
-                          onChange={e => {
+                        <Select
+                          defaultValue={defaultGenderOption}
+                          value={reactSelect.genderValue}
+                          options={reactSelect.genderOptions}
+                          placeholder="Select Gender"
+                          onChange={selectedOption => {
                             this.setState({
                               isChanged: true,
+                              reactSelect: {
+                                ...this.state.reactSelect,
+                                genderValue: selectedOption,
+                              },
                             });
-                            user.profile.gender = e.target.value;
+                            user.profile.gender = selectedOption.value;
                           }}
-                          required
-                        >
-                          <option value="M">Male</option>
-                          <option value="F">Female</option>
-                        </select>
+                          styles={reactSelectStyle}
+                          isSearchable={false}
+                          isDisabled={!loginRoles.admin}
+                        />
                       </div>
                     </div>
 
@@ -207,6 +523,7 @@ class EmployeeUpdate extends React.Component {
                           }}
                           dateFormat="MMM dd, yyyy"
                           required
+                          disabled={!loginRoles.admin}
                         />
                       </div>
 
@@ -215,7 +532,11 @@ class EmployeeUpdate extends React.Component {
                         <label htmlFor="talents">Capabilities</label>
                         <TagsInput
                           id="talents"
-                          className="form-control"
+                          className={
+                            loginRoles.admin
+                              ? 'form-control'
+                              : 'form-control form-control-disabled'
+                          }
                           value={user.profile.talents}
                           maxTags={3}
                           onChange={tags => {
@@ -224,32 +545,32 @@ class EmployeeUpdate extends React.Component {
                             });
                             user.profile.talents = tags;
                           }}
+                          disabled={!loginRoles.admin}
                         />
                       </div>
 
                       {/* <!-- Position Title --> */}
                       <div className="form-group">
                         <label htmlFor="postitle">Position Title</label>
-                        <select
-                          id="postitle"
-                          type="text"
-                          className="form-control"
-                          name="postitle"
-                          defaultValue={user.profile.posTitle}
-                          onChange={e => {
+                        <Select
+                          defaultValue={defaultTitleOption}
+                          value={reactSelect.titleValue}
+                          options={reactSelect.titleOptions}
+                          placeholder="Select Position Title"
+                          onChange={selectedOption => {
                             this.setState({
                               isChanged: true,
+                              reactSelect: {
+                                ...this.state.reactSelect,
+                                titleValue: selectedOption,
+                              },
                             });
-                            user.profile.posTitle = e.target.value;
+                            user.profile.posTitle = selectedOption.value;
                           }}
-                          required
-                        >
-                          <option value="BA">Business Analysis</option>
-                          <option value="C">Consultant</option>
-                          <option value="SC">Senior Consultant</option>
-                          <option value="M">Manager</option>
-                          <option value="SM">Senior Manager</option>
-                        </select>
+                          styles={reactSelectStyle}
+                          isSearchable={false}
+                          isDisabled={!loginRoles.admin}
+                        />
                       </div>
 
                       {/* <!-- Job Level --> */}
@@ -268,52 +589,112 @@ class EmployeeUpdate extends React.Component {
                             user.profile.jobLevel = e.target.value;
                           }}
                           required
+                          disabled={!loginRoles.admin}
                         />
                       </div>
 
                       {/* <!-- Base --> */}
                       <div className="form-group">
                         <label htmlFor="base">Base</label>
-                        <select
-                          id="base"
-                          type="text"
-                          className="form-control"
-                          name="base"
-                          defaultValue={user.profile.base}
-                          onChange={e => {
+                        <Select
+                          defaultValue={defaultBaseOption}
+                          value={reactSelect.baseValue}
+                          options={reactSelect.baseOptions}
+                          placeholder="Select Base"
+                          onChange={selectedOption => {
                             this.setState({
                               isChanged: true,
+                              reactSelect: {
+                                ...this.state.reactSelect,
+                                baseValue: selectedOption,
+                              },
                             });
-                            user.profile.base = e.target.value;
+                            user.profile.base = selectedOption.value;
                           }}
-                          required
-                        >
-                          <option value="HCM">Ho Chi Minh</option>
-                          <option value="HN">Ha Noi</option>
-                        </select>
+                          styles={reactSelectStyle}
+                          isSearchable={false}
+                          valueKey="value"
+                          labelKey="label"
+                          isDisabled={
+                            reactSelect.baseSelectDisabled || !loginRoles.admin
+                          }
+                        />
                       </div>
 
                       {/* <!-- Entity Code --> */}
                       <div className="form-group">
                         <label htmlFor="entcode">Entity Code</label>
-                        <select
-                          id="entcode"
-                          type="text"
-                          className="form-control"
-                          name="entcode"
-                          defaultValue={user.profile.entCode}
-                          onChange={e => {
+                        <Select
+                          defaultValue={defaultEmpTypeOption}
+                          value={reactSelect.entCodeValue}
+                          options={reactSelect.entCodeOptions}
+                          placeholder="Select Entity Code"
+                          onChange={selectedOption => {
                             this.setState({
                               isChanged: true,
+                              reactSelect: {
+                                ...this.state.reactSelect,
+                                entCodeValue: selectedOption,
+                              },
                             });
-                            user.profile.entCode = e.target.value;
+                            user.profile.entCode = selectedOption.value;
                           }}
-                          required
-                        >
-                          <option value="VN1C">VN1C</option>
-                          <option value="VN2C">VN2C</option>
-                        </select>
+                          styles={reactSelectStyle}
+                          isSearchable={false}
+                          valueKey="value"
+                          labelKey="label"
+                          isDisabled={
+                            reactSelect.entCodeSelectDisabled ||
+                            !loginRoles.admin
+                          }
+                        />
                       </div>
+
+                      {/* <!-- Roles --> */}
+                      {loginRoles.admin && (
+                        <div className="form-group">
+                          <div
+                            className="btn-group d-flex"
+                            role="group"
+                            aria-label="Roles"
+                          >
+                            <button
+                              type="button"
+                              className={
+                                roles.admin
+                                  ? 'btn btn-primary w-100'
+                                  : 'btn btn-secondary w-100'
+                              }
+                              onClick={
+                                loginRoles.admin
+                                  ? this.handleRoleAdminClick
+                                  : null
+                              }
+                              disabled={!loginRoles.admin}
+                            >
+                              {roles.admin ? 'Admin' : 'Not Admin'}
+                            </button>
+                            <button
+                              type="button"
+                              className={
+                                roles.projMan
+                                  ? 'btn btn-primary w-100'
+                                  : 'btn btn-secondary w-100'
+                              }
+                              onClick={
+                                loginRoles.admin
+                                  ? this.handleRoleProjManClick
+                                  : null
+                              }
+                              disabled={!loginRoles.admin}
+                            >
+                              {roles.projMan
+                                ? 'Project Manager'
+                                : 'Not Proj. Manager'}
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* <!-- Third Col --> */}
@@ -321,55 +702,92 @@ class EmployeeUpdate extends React.Component {
                       {/* <!-- Country --> */}
                       <div className="form-group">
                         <label htmlFor="country">Country</label>
-                        <select
-                          id="country"
-                          type="text"
-                          className="form-control"
-                          name="country"
-                          defaultValue={user.profile.country}
-                          onChange={e => {
+                        <Select
+                          defaultValue={defaultCountryOption}
+                          value={reactSelect.countryValue}
+                          options={reactSelect.countryOptions}
+                          placeholder="Select Country"
+                          onChange={selectedOption => {
                             this.setState({
                               isChanged: true,
+                              reactSelect: {
+                                ...this.state.reactSelect,
+                                countryValue: selectedOption,
+                                // baseSelectDisabled:
+                                //   selectedOption.value !== 'Vietnam',
+                                // baseOptions: _.where(
+                                //   reactSelect.baseAllOptions,
+                                //   {
+                                //     country: selectedOption.value,
+                                //   }
+                                // ),
+                                baseValue: _.findWhere(
+                                  reactSelect.baseAllOptions,
+                                  {
+                                    country: selectedOption.value,
+                                  }
+                                ),
+                                // entCodeSelectDisabled:
+                                //   selectedOption.value !== 'Vietnam',
+                                // entCodeOptions: _.where(
+                                //   reactSelect.entCodeAllOptions,
+                                //   {
+                                //     country: selectedOption.value,
+                                //   }
+                                // ),
+                                entCodeValue: _.findWhere(
+                                  reactSelect.entCodeAllOptions,
+                                  {
+                                    country: selectedOption.value,
+                                  }
+                                ),
+                              },
                             });
-                            user.profile.country = e.target.value;
+                            user.profile.country = selectedOption.value;
+                            user.profile.base = _.findWhere(
+                              reactSelect.baseAllOptions,
+                              {
+                                country: selectedOption.value,
+                              }
+                            ).value;
+                            user.profile.entCode = _.findWhere(
+                              reactSelect.entCodeAllOptions,
+                              {
+                                country: selectedOption.value,
+                              }
+                            ).value;
                           }}
-                          required
-                          disabled
-                        >
-                          <option value="Brunei">Brunei</option>
-                          <option value="Guam">Guam</option>
-                          <option value="Indonesia">Indonesia</option>
-                          <option value="Malaysia">Malaysia</option>
-                          <option value="Philippines">Philippines</option>
-                          <option value="Singapore">Singapore</option>
-                          <option value="Thailand">Thailand</option>
-                          <option value="Vietnam">Vietnam</option>
-                        </select>
+                          styles={reactSelectStyle}
+                          isSearchable={false}
+                          isDisabled={!loginRoles.admin}
+                        />
                       </div>
 
                       {/* <!-- Employment Type --> */}
                       <div className="form-group">
                         <label htmlFor="emptype">Employment Type</label>
-                        <select
-                          id="emptype"
-                          type="text"
-                          className="form-control"
-                          name="emptype"
-                          defaultValue={user.profile.empType}
-                          onChange={e => {
+                        <Select
+                          defaultValue={defaultEmpTypeOption}
+                          value={reactSelect.empTypeValue}
+                          options={reactSelect.empTypeOptions}
+                          placeholder="Select Employment Type"
+                          onChange={selectedOption => {
                             this.setState({
                               isChanged: true,
+                              reactSelect: {
+                                ...this.state.reactSelect,
+                                empTypeValue: selectedOption,
+                              },
                             });
-                            user.profile.empType = e.target.value;
+                            user.profile.empType = selectedOption.value;
                             if (user.profile.empType === 'Permanent') {
                               user.profile.hPW = 40;
                             }
                           }}
-                          required
-                        >
-                          <option value="Permanent">Permanent</option>
-                          <option value="Contractor">Contractor</option>
-                        </select>
+                          styles={reactSelectStyle}
+                          isSearchable={false}
+                          isDisabled={!loginRoles.admin}
+                        />
                       </div>
 
                       {/* <!-- Hours Per Week --> */}
@@ -390,7 +808,10 @@ class EmployeeUpdate extends React.Component {
                             user.profile.hPW = parseInt(e.target.value);
                           }}
                           required
-                          disabled={user.profile.empType === 'Permanent'}
+                          disabled={
+                            user.profile.empType === 'Permanent' ||
+                            !loginRoles.admin
+                          }
                         />
                       </div>
 
@@ -469,21 +890,24 @@ class EmployeeUpdate extends React.Component {
                             });
                             user.disabled = !user.disabled;
                           }}
+                          disabled={!loginRoles.admin}
                         >
                           {user.disabled ? 'Inactive' : 'Active'}
                         </button>
                       </div>
                     </div>
                   </div>
-                  <div className="form-group no-margin">
-                    <button
-                      type="submit"
-                      className="btn btn-primary btn-block mb-2"
-                      disabled={!this.state.isChanged}
-                    >
-                      Update
-                    </button>
-                  </div>
+                  {loginRoles.admin && (
+                    <div className="form-group no-margin">
+                      <button
+                        type="submit"
+                        className="btn btn-primary btn-block mb-2"
+                        disabled={!this.state.isChanged}
+                      >
+                        Update
+                      </button>
+                    </div>
+                  )}
                 </form>
               )}
             </div>

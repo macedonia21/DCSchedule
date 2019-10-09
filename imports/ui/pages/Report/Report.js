@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment/moment';
 import numeral from 'numeral';
 import { Chart } from 'react-google-charts';
+import { Roles } from 'meteor/alanning:roles';
 import { NavLink } from 'react-router-dom';
 
 // collection
@@ -338,6 +339,10 @@ class Report extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loginRoles: {
+        admin: false,
+        projMan: false,
+      },
       startDate: new Date(),
       endDate: new Date(moment().add(1, 'M')),
       chartData: {
@@ -375,6 +380,7 @@ class Report extends React.Component {
       assignments,
     } = this.props;
     const {
+      loginRoles,
       startDate,
       endDate,
       chartData,
@@ -384,6 +390,15 @@ class Report extends React.Component {
 
     if (!loggedIn) {
       return null;
+    }
+
+    if (Meteor.userId()) {
+      if (Roles.userIsInRole(Meteor.userId(), 'admin')) {
+        loginRoles.admin = true;
+      }
+      if (Roles.userIsInRole(Meteor.userId(), 'projman')) {
+        loginRoles.projMan = true;
+      }
     }
 
     // Filter assignments of ACTIVE users only
@@ -434,7 +449,7 @@ class Report extends React.Component {
     // On bench by date data
     const dateRange = getDateRange(startDate, endDate); // Common used
 
-    const chartBenchByDateDataDeclare = ['x', 'Ho Chi Minh', 'Ha Noi'];
+    const chartBenchByDateDataDeclare = ['x', 'HCM', 'HN'];
     const chartBenchByDateDataItems = getChartBenchByDateDataItems(
       dateRange,
       inRangeAssignments,
@@ -449,7 +464,7 @@ class Report extends React.Component {
     chartData.benchByDateData = chartBenchByDateDataCombine;
 
     // On bench by module data
-    const chartBenchByModuleDataDeclare = ['x', 'Ho Chi Minh', 'Ha Noi'];
+    const chartBenchByModuleDataDeclare = ['x', 'HCM', 'HN'];
     const chartBenchByModuleDataItems = getChartBenchByModuleDataItems(
       unassignedUsers
     );
@@ -468,7 +483,7 @@ class Report extends React.Component {
     chartData.benchByModuleData = chartBenchByModuleDataCombine;
 
     // On bench by level data
-    const chartBenchByLevelDataDeclare = ['x', 'Ho Chi Minh', 'Ha Noi'];
+    const chartBenchByLevelDataDeclare = ['x', 'HCM', 'HN'];
     const chartBenchByLevelDataItems = getChartBenchByLevelDataItems(
       unassignedUsers
     );
@@ -486,7 +501,7 @@ class Report extends React.Component {
     }
     chartData.benchByLevelData = chartBenchByLevelDataCombine;
 
-    // Unassign User Detail
+    // Unassign Employee Detail
     const unassignedUsersDetailsFull = getUnassignedEmployeesDetails(
       startDate,
       endDate,
@@ -502,7 +517,7 @@ class Report extends React.Component {
       });
     }
 
-    // Employees about to unassigned
+    // Assign Employee Detail
     const assignedUsersDetailsFull = getAssignedEmployeesDetails(
       startDate,
       endDate,
@@ -558,11 +573,14 @@ class Report extends React.Component {
                                     }
                                     maxDate={endDate}
                                     dateFormat="MMM dd, yyyy"
+                                    disabled={
+                                      !loginRoles.admin && !loginRoles.projMan
+                                    }
                                   />
                                 </div>
                               </div>
 
-                              {/* <!-- First Col --> */}
+                              {/* <!-- Second Col --> */}
                               <div className="col-md-6">
                                 {/* <!-- End Date --> */}
                                 <div className="form-group">
@@ -577,6 +595,9 @@ class Report extends React.Component {
                                     }
                                     minDate={startDate}
                                     dateFormat="MMM dd, yyyy"
+                                    disabled={
+                                      !loginRoles.admin && !loginRoles.projMan
+                                    }
                                   />
                                 </div>
                               </div>
@@ -816,15 +837,30 @@ class Report extends React.Component {
                                   <hr />
                                   <div className="row">
                                     <div className="col-md-3 pb-2 pt-2 assign-name-text">
-                                      <NavLink
-                                        to={`/employee/assignment/${user._id}`}
-                                      >
-                                        {user.profile.fullName}
-                                        &nbsp;
-                                        <span className="badge badge-pill badge-warning">
-                                          {user.profile.posTitle}
-                                        </span>
-                                      </NavLink>
+                                      {(loginRoles.admin ||
+                                        loginRoles.projMan) && (
+                                        <NavLink
+                                          to={`/employee/assignment/${
+                                            user._id
+                                          }`}
+                                        >
+                                          {user.profile.fullName}
+                                          &nbsp;
+                                          <span className="badge badge-pill badge-warning">
+                                            {user.profile.posTitle}
+                                          </span>
+                                        </NavLink>
+                                      )}
+                                      {!loginRoles.admin &&
+                                        !loginRoles.projMan && (
+                                          <>
+                                            {user.profile.fullName}
+                                            &nbsp;
+                                            <span className="badge badge-pill badge-warning">
+                                              {user.profile.posTitle}
+                                            </span>
+                                          </>
+                                        )}
                                     </div>
                                     <div className="col-md-1 pb-2 pt-2">
                                       {user.profile.base}
@@ -907,15 +943,30 @@ class Report extends React.Component {
                                   <hr />
                                   <div className="row">
                                     <div className="col-md-3 pb-2 pt-2 assign-name-text">
-                                      <NavLink
-                                        to={`/employee/assignment/${user._id}`}
-                                      >
-                                        {user.profile.fullName}
-                                        &nbsp;
-                                        <span className="badge badge-pill badge-warning">
-                                          {user.profile.posTitle}
-                                        </span>
-                                      </NavLink>
+                                      {(loginRoles.admin ||
+                                        loginRoles.projMan) && (
+                                        <NavLink
+                                          to={`/employee/assignment/${
+                                            user._id
+                                          }`}
+                                        >
+                                          {user.profile.fullName}
+                                          &nbsp;
+                                          <span className="badge badge-pill badge-warning">
+                                            {user.profile.posTitle}
+                                          </span>
+                                        </NavLink>
+                                      )}
+                                      {!loginRoles.admin &&
+                                        !loginRoles.projMan && (
+                                          <>
+                                            {user.profile.fullName}
+                                            &nbsp;
+                                            <span className="badge badge-pill badge-warning">
+                                              {user.profile.posTitle}
+                                            </span>
+                                          </>
+                                        )}
                                     </div>
 
                                     <div className="col-md-9 pb-2 pt-2 pl-0 pr-0">
@@ -929,13 +980,22 @@ class Report extends React.Component {
                                                 key={assignment._id}
                                               >
                                                 <div className="col-md-3 pb-1 assign-name-text">
-                                                  <NavLink
-                                                    to={`/project/assignment/${
-                                                      assignment._projectId
-                                                    }`}
-                                                  >
-                                                    {assignment.projectName}
-                                                  </NavLink>
+                                                  {(loginRoles.admin ||
+                                                    loginRoles.projMan) && (
+                                                    <NavLink
+                                                      to={`/project/assignment/${
+                                                        assignment._projectId
+                                                      }`}
+                                                    >
+                                                      {assignment.projectName}
+                                                    </NavLink>
+                                                  )}
+                                                  {!loginRoles.admin &&
+                                                    !loginRoles.projMan && (
+                                                      <>
+                                                        {assignment.projectName}
+                                                      </>
+                                                    )}
                                                 </div>
                                                 <div className="col-md-3 pb-1">
                                                   {`${moment(

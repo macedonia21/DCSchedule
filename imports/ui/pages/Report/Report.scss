@@ -26,13 +26,6 @@
       z-index: 1;
       margin-bottom: 30px;
     }
-
-    .form-control:hover {
-      border-color: hsl(0,0%,70%);
-    }
-    .form-control:hover:focus {
-      border-color: #2684FF;
-    }
   }
   .report-summary-card {
     .card-summary-title {
@@ -122,17 +115,23 @@
     .assign-name-text, .bold-text{
       font-family: 'Nunito-Bold', sans-serif;
     }
-
-    .form-control:hover {
-      border-color: hsl(0,0%,70%);
-    }
-    .form-control:hover:focus {
-      border-color: #2684FF;
-    }
   }
 
   .percentage-14-pt1 {
     font-size: 14px;
     padding-top: 1px;
+  }
+
+  .form-control:hover {
+    border-color: hsl(0,0%,70%);
+  }
+  .form-control:hover:focus {
+    border-color: #2684FF;
+  }
+  .form-control:hover:disabled {
+    border-color: #ced4da;
+  }
+  .form-control:disabled {
+    color: hsl(0,0%,60%);
   }
 }

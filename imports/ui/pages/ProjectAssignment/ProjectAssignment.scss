@@ -27,7 +27,6 @@
 
     .frontside {
       position: relative;
-      z-index: 1;
       margin-bottom: 30px;
     }
 
@@ -102,5 +101,10 @@
       text-decoration: none;
       color: #333;
     }
+  }
+
+  .assign-date-14-mt2 {
+    font-size: 14px;
+    margin-top: 2px;
   }
 }

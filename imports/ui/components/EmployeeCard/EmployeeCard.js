@@ -5,123 +5,157 @@ import { NavLink } from 'react-router-dom';
 
 import './EmployeeCard.scss';
 
-const EmployeeCard = ({ user }) => (
+const EmployeeCard = ({ user, isAdmin, isProjMan, zIndex }) => (
   <div className="col-xs-12 col-sm-6 col-md-4 emp-card">
     <div className="image-flip">
-      <div className="mainflip">
+      <div className="mainflip" style={{ zIndex }}>
         <div className="frontside">
-          <div
-            className={
-              user ? (user.disabled ? 'card disabled-card' : 'card') : 'card'
-            }
-          >
-            <div className="card-body text-center">
-              <p>
-                {user.todayAssignmentProject && (
-                  <NavLink
-                    to={`/project/assignment/${
-                      user.todayAssignmentProject._id
-                    }`}
-                  >
-                    <span
-                      className={
-                        user
-                          ? user.disabled
+          {user && (
+            <div className={user.disabled ? 'card disabled-card' : 'card'}>
+              <div className="card-body text-center">
+                <p>
+                  {user.todayAssignmentProject && (isAdmin || isProjMan) && (
+                    <NavLink
+                      to={`/project/assignment/${
+                        user.todayAssignmentProject._id
+                      }`}
+                    >
+                      <span
+                        className={
+                          user.disabled
                             ? 'badge badge-pill badge-secondary emp-img-badge'
                             : 'badge badge-pill badge-primary emp-img-badge'
-                          : 'badge badge-pill emp-img-badge'
-                      }
-                    >
-                      {user
-                        ? user.disabled
-                          ? 'Inactive'
-                          : user.todayAssignmentProject.projectName
-                        : ''}
-                    </span>
-                  </NavLink>
-                )}
-                {!user.todayAssignmentProject && (
-                  <span
-                    className={
-                      user
-                        ? user.disabled
-                          ? 'badge badge-pill badge-secondary emp-img-badge'
-                          : 'badge badge-pill badge-danger emp-img-badge'
-                        : 'badge badge-pill emp-img-badge'
-                    }
-                  >
-                    {user ? (user.disabled ? 'Inactive' : 'Available') : ''}
-                  </span>
-                )}
-                <img
-                  className="img-fluid"
-                  src="/img/avatar_placeholder.png"
-                  alt="card image"
-                />
-              </p>
-
-              <h4 className="card-title">
-                <div className="dropdown">
-                  <a
-                    className="dropdown-toggle"
-                    id="dropdownMenuButton"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    <span className="emp-fullname">
-                      {user ? user.profile.fullName : ''}
-                    </span>
-                    &nbsp;
-                    <span
-                      className={
-                        user
-                          ? user.disabled
-                            ? 'badge badge-pill badge-secondary'
-                            : 'badge badge-pill badge-warning'
-                          : 'badge badge-pill badge-warning'
-                      }
-                    >
-                      {user.profile.posTitle}
-                    </span>
-                  </a>
-                  <div
-                    className="dropdown-menu"
-                    aria-labelledby="dropdownMenuButton"
-                  >
-                    <NavLink
-                      className="dropdown-item"
-                      to={user ? `/employee/${user._id}` : `/employee`}
-                    >
-                      Update Employee
-                    </NavLink>
-                    {user && !user.disabled && (
-                      <NavLink
-                        className="dropdown-item"
-                        to={
-                          user
-                            ? `/employee/assignment/${user._id}`
-                            : `/employee`
                         }
                       >
-                        Assignments
-                      </NavLink>
-                    )}
-                  </div>
-                </div>
-              </h4>
+                        {user.disabled
+                          ? 'Inactive'
+                          : user.todayAssignmentProject.projectName}
+                      </span>
+                    </NavLink>
+                  )}
+                  {user.todayAssignmentProject && !isAdmin && !isProjMan && (
+                    <span
+                      className={
+                        user.disabled
+                          ? 'badge badge-pill badge-secondary emp-img-badge'
+                          : 'badge badge-pill badge-primary emp-img-badge'
+                      }
+                    >
+                      {user.disabled
+                        ? 'Inactive'
+                        : user.todayAssignmentProject.projectName}
+                    </span>
+                  )}
+                  {!user.todayAssignmentProject && (
+                    <span
+                      className={
+                        user.disabled
+                          ? 'badge badge-pill badge-secondary emp-img-badge'
+                          : 'badge badge-pill badge-danger emp-img-badge'
+                      }
+                    >
+                      {user.disabled ? 'Inactive' : 'Available'}
+                    </span>
+                  )}
+                  <img
+                    className="img-fluid"
+                    src="/img/avatar_placeholder.png"
+                    alt="card image"
+                  />
+                </p>
 
-              <p className="card-text">{user ? user.profile.email : ''}</p>
+                <h4 className="card-title">
+                  {(isAdmin || isProjMan) && (
+                    <div className="dropdown">
+                      <a
+                        className="dropdown-toggle"
+                        id="dropdownMenuButton"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                      >
+                        <span className="emp-fullname">
+                          {user.profile.fullName}
+                        </span>
+                        &nbsp;
+                        <span
+                          className={
+                            user.disabled
+                              ? 'badge badge-pill badge-secondary'
+                              : 'badge badge-pill badge-warning'
+                          }
+                        >
+                          {user.profile.posTitle}
+                        </span>
+                      </a>
+                      <div
+                        className="dropdown-menu"
+                        aria-labelledby="dropdownMenuButton"
+                      >
+                        <NavLink
+                          className="dropdown-item"
+                          to={`/employee/${user._id}`}
+                        >
+                          {isAdmin ? 'Update Employee' : 'Employee Profile'}
+                        </NavLink>
+                        {!user.disabled && (isAdmin || isProjMan) && (
+                          <NavLink
+                            className="dropdown-item"
+                            to={`/employee/assignment/${user._id}`}
+                          >
+                            Assignments
+                          </NavLink>
+                        )}
+                        {!user.disabled && isAdmin && (
+                          <NavLink
+                            className="dropdown-item"
+                            to={`/employee/resetpassword/${user._id}`}
+                          >
+                            Reset Password
+                          </NavLink>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {!isAdmin && !isProjMan && (
+                    <>
+                      <span className="emp-fullname">
+                        {user.profile.fullName}
+                      </span>
+                      &nbsp;
+                      <span
+                        className={
+                          user.disabled
+                            ? 'badge badge-pill badge-secondary'
+                            : 'badge badge-pill badge-warning'
+                        }
+                      >
+                        {user.profile.posTitle}
+                      </span>
+                    </>
+                  )}
+                </h4>
+
+                <p className="card-text">{user.profile.email}</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
   </div>
 );
 
+EmployeeCard.defaultProps = {
+  // users: null, remote example (if using ddp)
+  zIndex: 1,
+};
+
 EmployeeCard.propTypes = {
   user: PropTypes.objectOf(Meteor.user),
+  isAdmin: PropTypes.bool.isRequired,
+  isProjMan: PropTypes.bool.isRequired,
+  zIndex: PropTypes.number,
 };
 
 export default EmployeeCard;

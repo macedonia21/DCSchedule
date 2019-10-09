@@ -129,4 +129,16 @@
     white-space: nowrap;
     overflow: hidden;
   }
+
+  .white-space-no-wrap {
+    white-space: nowrap;
+  }
+
+  .emp-fullname {
+    max-width: 75%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: inline-flex;
+  }
 }

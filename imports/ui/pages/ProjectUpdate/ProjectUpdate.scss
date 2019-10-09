@@ -95,4 +95,7 @@
   .form-control:hover:disabled {
     border-color: #ced4da;
   }
+  .form-control:disabled {
+    color: hsl(0,0%,60%);
+  }
 }

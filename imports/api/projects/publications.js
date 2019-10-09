@@ -6,7 +6,7 @@ import Projects from './projects.js';
 
 if (Meteor.isServer) {
   Meteor.publish('projects.all', function() {
-    if (Roles.userIsInRole(this.userId, 'admin')) {
+    if (Roles.userIsInRole(this.userId, ['admin', 'projman', 'user'])) {
       return Projects.find();
     }
     return this.ready();

@@ -6,7 +6,7 @@ import { Roles } from 'meteor/alanning:roles';
 if (Meteor.isServer) {
   // all users publication (admin only)
   Meteor.publish('users.all', function() {
-    if (Roles.userIsInRole(this.userId, 'admin')) {
+    if (Roles.userIsInRole(this.userId, ['admin', 'projman', 'user'])) {
       return Meteor.users.find();
     }
     return this.ready();

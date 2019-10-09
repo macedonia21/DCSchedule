@@ -77,6 +77,10 @@
     outline: none;
     width: 80px;
   }
+  .react-tagsinput-input:disabled {
+    background-color: #e9ecef;
+    color: hsl(0,0%,60%);
+  }
 
   .react-tagsinput--focused {
     color: #495057;
@@ -89,7 +93,22 @@
   .form-control:hover {
     border-color: hsl(0,0%,70%);
   }
-  .form-control:hover:focus {
+  .form-control:hover:focus, .form-control.react-tagsinput--focused:hover{
     border-color: #2684FF;
+  }
+  .form-control:hover:disabled {
+    border-color: #ced4da;
+  }
+  .form-control:disabled {
+    color: hsl(0,0%,60%);
+  }
+  .form-control-disabled {
+    background-color: #e9ecef !important;
+    opacity: 1;
+    box-shadow: none !important;
+    border-color: #ced4da !important;
+  }
+  .form-control-disabled:hover {
+    border-color: #ced4da !important;
   }
 }

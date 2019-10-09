@@ -122,4 +122,16 @@
   .dropdown-menu.show:hover {
     background-color: #fff;
   }
+
+  .white-space-no-wrap {
+    white-space: nowrap;
+  }
+
+  .proj-name {
+    max-width: 93%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: inline-flex;
+  }
 }

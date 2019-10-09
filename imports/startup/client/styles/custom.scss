@@ -43,3 +43,12 @@ body {
 .notification-message.title, .notification-message.message {
   font-family: 'Nunito-Regular', sans-serif;
 }
+
+.dropdown-toggle[aria-expanded="true"]:after {
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+.dropdown-toggle:after {
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}

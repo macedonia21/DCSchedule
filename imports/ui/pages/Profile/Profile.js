@@ -7,6 +7,7 @@ import TagsInput from 'react-tagsinput';
 import { _ } from 'underscore';
 import { NotificationManager } from 'react-notifications';
 import { Accounts } from 'meteor/accounts-base';
+import Select from 'react-select';
 
 // collection
 
@@ -21,6 +22,200 @@ class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      reactSelect: {
+        genderValue: { value: 'M', label: 'Male' },
+        genderOptions: [
+          {
+            value: 'M',
+            label: 'Male',
+          },
+          {
+            value: 'F',
+            label: 'Female',
+          },
+        ],
+        titleValue: { value: 'C', label: 'Consultant' },
+        titleOptions: [
+          {
+            value: 'BA',
+            label: 'Business Analysis',
+          },
+          {
+            value: 'C',
+            label: 'Consultant',
+          },
+          {
+            value: 'SC',
+            label: 'Senior Consultant',
+          },
+          {
+            value: 'M',
+            label: 'Manager',
+          },
+          {
+            value: 'SM',
+            label: 'Senior Manager',
+          },
+        ],
+        empTypeValue: { value: 'Permanent', label: 'Permanent' },
+        empTypeOptions: [
+          {
+            value: 'Permanent',
+            label: 'Permanent',
+          },
+          {
+            value: 'Contractor',
+            label: 'Contractor',
+          },
+        ],
+        countryValue: { value: 'Vietnam', label: 'Vietnam' },
+        countryOptions: [
+          {
+            value: 'Guam',
+            label: 'Guam',
+          },
+          {
+            value: 'Indonesia',
+            label: 'Indonesia',
+          },
+          {
+            value: 'Malaysia',
+            label: 'Malaysia',
+          },
+          {
+            value: 'Philippines',
+            label: 'Philippines',
+          },
+          {
+            value: 'Singapore',
+            label: 'Singapore',
+          },
+          {
+            value: 'Thailand',
+            label: 'Thailand',
+          },
+          {
+            value: 'Vietnam',
+            label: 'Vietnam',
+          },
+        ],
+        baseSelectDisabled: false,
+        baseValue: {
+          value: 'HCM',
+          label: 'Ho Chi Minh',
+          country: 'Vietnam',
+        },
+        baseAllOptions: [
+          {
+            value: 'GUAM',
+            label: 'Guam',
+            country: 'Guam',
+          },
+          {
+            value: 'INDO',
+            label: 'Indonesia',
+            country: 'Indonesia',
+          },
+          {
+            value: 'MALAY',
+            label: 'Malaysia',
+            country: 'Malaysia',
+          },
+          {
+            value: 'PHI',
+            label: 'Philippines',
+            country: 'Philippines',
+          },
+          {
+            value: 'SING',
+            label: 'Singapore',
+            country: 'Singapore',
+          },
+          {
+            value: 'THAI',
+            label: 'Thailand',
+            country: 'Thailand',
+          },
+          {
+            value: 'HCM',
+            label: 'Ho Chi Minh',
+            country: 'Vietnam',
+          },
+          {
+            value: 'HN',
+            label: 'Ha Noi',
+            country: 'Vietnam',
+          },
+        ],
+        baseOptions: [
+          {
+            value: 'HCM',
+            label: 'Ho Chi Minh',
+            country: 'Vietnam',
+          },
+          {
+            value: 'HN',
+            label: 'Ha Noi',
+            country: 'Vietnam',
+          },
+        ],
+        entCodeSelectDisabled: false,
+        entCodeValue: { value: 'VN1C', label: 'VN1C', country: 'Vietnam' },
+        entCodeAllOptions: [
+          {
+            value: 'GU1C',
+            label: 'GU1C',
+            country: 'Guam',
+          },
+          {
+            value: 'IN1C',
+            label: 'IN1C',
+            country: 'Indonesia',
+          },
+          {
+            value: 'MA1C',
+            label: 'MA1C',
+            country: 'Malaysia',
+          },
+          {
+            value: 'PH1C',
+            label: 'PH1C',
+            country: 'Philippines',
+          },
+          {
+            value: 'SG1C',
+            label: 'SG1C',
+            country: 'Singapore',
+          },
+          {
+            value: 'TH1C',
+            label: 'TH1C',
+            country: 'Thailand',
+          },
+          {
+            value: 'VN1C',
+            label: 'VN1C',
+            country: 'Vietnam',
+          },
+          {
+            value: 'VN2C',
+            label: 'VN2C',
+            country: 'Vietnam',
+          },
+        ],
+        entCodeOptions: [
+          {
+            value: 'VN1C',
+            label: 'VN1C',
+            country: 'Vietnam',
+          },
+          {
+            value: 'VN2C',
+            label: 'VN2C',
+            country: 'Vietnam',
+          },
+        ],
+      },
       oldPass: '',
       newPass: '',
       retypeNewPass: '',
@@ -89,11 +284,67 @@ class Profile extends React.Component {
 
   render() {
     const { loggedIn, usersReady, user } = this.props;
-    const { oldPass, newPass, retypeNewPass } = this.state;
+    const { reactSelect, oldPass, newPass, retypeNewPass } = this.state;
 
     if (!loggedIn) {
       return null;
     }
+
+    const reactSelectStyle = {
+      control: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.isDisabled ? '#e9ecef' : '#fff',
+        borderColor: state.isFocused ? '#80bdff' : '#ced4da',
+        outline: state.isFocused ? 0 : null,
+        boxShadow: state.isFocused
+          ? '0 0 0 0.2rem rgba(0, 123, 255, 0.25)'
+          : '',
+      }),
+    };
+    const defaultGenderOption = user
+      ? _.findWhere(reactSelect.genderOptions, { value: user.profile.gender })
+      : null;
+    reactSelect.genderValue = defaultGenderOption;
+    const defaultTitleOption = user
+      ? _.findWhere(reactSelect.titleOptions, { value: user.profile.posTitle })
+      : null;
+    reactSelect.titleValue = defaultTitleOption;
+    const defaultEmpTypeOption = user
+      ? _.findWhere(reactSelect.empTypeOptions, { value: user.profile.empType })
+      : null;
+    reactSelect.empTypeValue = defaultEmpTypeOption;
+    const defaultCountryOption = user
+      ? _.findWhere(reactSelect.countryOptions, { value: user.profile.country })
+      : null;
+    reactSelect.countryValue = defaultCountryOption;
+    const defaultBaseOption = user
+      ? _.findWhere(reactSelect.baseAllOptions, {
+          value: user.profile.base,
+        })
+      : null;
+    reactSelect.baseValue = defaultBaseOption;
+    reactSelect.baseOptions = user
+      ? _.where(reactSelect.baseAllOptions, {
+          country: user.profile.country,
+        })
+      : null;
+    reactSelect.baseSelectDisabled = user
+      ? user.profile.country !== 'Vietnam'
+      : false;
+    const defaultEntCodeOption = user
+      ? _.findWhere(reactSelect.entCodeAllOptions, {
+          value: user.profile.entCode,
+        })
+      : null;
+    reactSelect.entCodeValue = defaultEntCodeOption;
+    reactSelect.entCodeOptions = user
+      ? _.where(reactSelect.entCodeAllOptions, {
+          country: user.profile.country,
+        })
+      : null;
+    reactSelect.entCodeSelectDisabled = user
+      ? user.profile.country !== 'Vietnam'
+      : false;
 
     return (
       <section className="profile-page">
@@ -188,18 +439,15 @@ class Profile extends React.Component {
                         {/* <!-- Gender --> */}
                         <div className="form-group">
                           <label htmlFor="gender">Gender</label>
-                          <select
-                            id="gender"
-                            type="text"
-                            className="form-control"
-                            name="gender"
-                            defaultValue={user.profile.gender}
-                            required
-                            disabled
-                          >
-                            <option value="M">Male</option>
-                            <option value="F">Female</option>
-                          </select>
+                          <Select
+                            defaultValue={defaultGenderOption}
+                            value={reactSelect.genderValue}
+                            options={reactSelect.genderOptions}
+                            placeholder="Select Gender"
+                            styles={reactSelectStyle}
+                            isSearchable={false}
+                            isDisabled
+                          />
                         </div>
                       </div>
 
@@ -232,21 +480,15 @@ class Profile extends React.Component {
                         {/* <!-- Position Title --> */}
                         <div className="form-group">
                           <label htmlFor="postitle">Position Title</label>
-                          <select
-                            id="postitle"
-                            type="text"
-                            className="form-control"
-                            name="postitle"
-                            defaultValue={user.profile.posTitle}
-                            required
-                            disabled
-                          >
-                            <option value="BA">Business Analysis</option>
-                            <option value="C">Consultant</option>
-                            <option value="SC">Senior Consultant</option>
-                            <option value="M">Manager</option>
-                            <option value="SM">Senior Manager</option>
-                          </select>
+                          <Select
+                            defaultValue={defaultTitleOption}
+                            value={reactSelect.titleValue}
+                            options={reactSelect.titleOptions}
+                            placeholder="Select Position Title"
+                            styles={reactSelectStyle}
+                            isSearchable={false}
+                            isDisabled
+                          />
                         </div>
 
                         {/* <!-- Job Level --> */}
@@ -266,35 +508,33 @@ class Profile extends React.Component {
                         {/* <!-- Base --> */}
                         <div className="form-group">
                           <label htmlFor="base">Base</label>
-                          <select
-                            id="base"
-                            type="text"
-                            className="form-control"
-                            name="base"
-                            defaultValue={user.profile.base}
-                            required
-                            disabled
-                          >
-                            <option value="HCM">Ho Chi Minh</option>
-                            <option value="HN">Ha Noi</option>
-                          </select>
+                          <Select
+                            defaultValue={defaultBaseOption}
+                            value={reactSelect.baseValue}
+                            options={reactSelect.baseOptions}
+                            placeholder="Select Base"
+                            styles={reactSelectStyle}
+                            isSearchable={false}
+                            valueKey="value"
+                            labelKey="label"
+                            isDisabled
+                          />
                         </div>
 
                         {/* <!-- Entity Code --> */}
                         <div className="form-group">
                           <label htmlFor="entcode">Entity Code</label>
-                          <select
-                            id="entcode"
-                            type="text"
-                            className="form-control"
-                            name="entcode"
-                            defaultValue={user.profile.entCode}
-                            required
-                            disabled
-                          >
-                            <option value="VN1C">VN1C</option>
-                            <option value="VN2C">VN2C</option>
-                          </select>
+                          <Select
+                            defaultValue={defaultEmpTypeOption}
+                            value={reactSelect.entCodeValue}
+                            options={reactSelect.entCodeOptions}
+                            placeholder="Select Entity Code"
+                            styles={reactSelectStyle}
+                            isSearchable={false}
+                            valueKey="value"
+                            labelKey="label"
+                            isDisabled
+                          />
                         </div>
                       </div>
 
@@ -303,41 +543,29 @@ class Profile extends React.Component {
                         {/* <!-- Country --> */}
                         <div className="form-group">
                           <label htmlFor="country">Country</label>
-                          <select
-                            id="country"
-                            type="text"
-                            className="form-control"
-                            name="country"
-                            defaultValue={user.profile.country}
-                            required
-                            disabled
-                          >
-                            <option value="Brunei">Brunei</option>
-                            <option value="Guam">Guam</option>
-                            <option value="Indonesia">Indonesia</option>
-                            <option value="Malaysia">Malaysia</option>
-                            <option value="Philippines">Philippines</option>
-                            <option value="Singapore">Singapore</option>
-                            <option value="Thailand">Thailand</option>
-                            <option value="Vietnam">Vietnam</option>
-                          </select>
+                          <Select
+                            defaultValue={defaultCountryOption}
+                            value={reactSelect.countryValue}
+                            options={reactSelect.countryOptions}
+                            placeholder="Select Country"
+                            styles={reactSelectStyle}
+                            isSearchable={false}
+                            isDisabled
+                          />
                         </div>
 
                         {/* <!-- Employment Type --> */}
                         <div className="form-group">
                           <label htmlFor="emptype">Employment Type</label>
-                          <select
-                            id="emptype"
-                            type="text"
-                            className="form-control"
-                            name="emptype"
-                            defaultValue={user.profile.empType}
-                            required
-                            disabled
-                          >
-                            <option value="Permanent">Permanent</option>
-                            <option value="Contractor">Contractor</option>
-                          </select>
+                          <Select
+                            defaultValue={defaultEmpTypeOption}
+                            value={reactSelect.empTypeValue}
+                            options={reactSelect.empTypeOptions}
+                            placeholder="Select Employment Type"
+                            styles={reactSelectStyle}
+                            isSearchable={false}
+                            isDisabled
+                          />
                         </div>
 
                         {/* <!-- Hours Per Week --> */}
@@ -402,7 +630,7 @@ class Profile extends React.Component {
                 )}
               </div>
               <hr />
-              <h1 className="card-title text-center">Update Password</h1>
+              <h1 className="card-title text-center">Change Password</h1>
               {usersReady && (
                 <form onSubmit={this.handleSubmit}>
                   <div className="row">
@@ -470,7 +698,7 @@ class Profile extends React.Component {
                       type="submit"
                       className="btn btn-primary btn-block mb-2"
                     >
-                      Update
+                      Change Password
                     </button>
                   </div>
                 </form>

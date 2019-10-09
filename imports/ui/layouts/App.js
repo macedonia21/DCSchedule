@@ -7,6 +7,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import { NotificationContainer } from 'react-notifications';
+import { Roles } from 'meteor/alanning:roles';
 
 // import navbar
 import Navbar from '../components/Navbar';
@@ -19,6 +20,7 @@ import EmployeeList from '../pages/EmployeeList';
 import EmployeeCreate from '../pages/EmployeeCreate';
 import EmployeeUpdate from '../pages/EmployeeUpdate';
 import EmployeeAssignment from '../pages/EmployeeAssignment';
+import EmployeeResetPassword from '../pages/EmployeeResetPassword';
 
 import ProjectList from '../pages/ProjectList';
 import ProjectCreate from '../pages/ProjectCreate';
@@ -70,6 +72,12 @@ const App = props => (
           component={EmployeeAssignment}
           {...props}
         />
+        <PropsRoute
+          exact
+          path="/employee/resetpassword/:_id"
+          component={EmployeeResetPassword}
+          {...props}
+        />
         <PropsRoute exact path="/project" component={ProjectList} {...props} />
         <PropsRoute
           exact
@@ -111,11 +119,15 @@ App.propTypes = {
   loggingIn: PropTypes.bool.isRequired,
   userReady: PropTypes.bool.isRequired,
   loggedIn: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
+  isProjMan: PropTypes.bool.isRequired,
 };
 
 export default withTracker(() => {
   const userSub = Meteor.subscribe('user');
   const user = Meteor.user();
+  const isAdmin = Roles.userIsInRole(Meteor.userId(), 'admin');
+  const isProjMan = Roles.userIsInRole(Meteor.userId(), 'projman');
   const userReady = userSub.ready() && !!user;
   const loggingIn = Meteor.loggingIn();
   const loggedIn = !loggingIn && userReady;
@@ -123,5 +135,7 @@ export default withTracker(() => {
     loggingIn,
     userReady,
     loggedIn,
+    isAdmin,
+    isProjMan,
   };
 })(App);

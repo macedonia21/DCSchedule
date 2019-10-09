@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
+import { NotificationManager } from 'react-notifications';
 
 import './Navbar.scss';
 
@@ -16,20 +17,6 @@ const PublicNav = () => [
     </span>
   </li>,
 ];
-
-const SearchBar = () => (
-  <form className="form-inline my-2 my-lg-0">
-    <input
-      className="form-control mr-sm-2"
-      type="search"
-      placeholder="Search"
-      aria-label="Search"
-    />
-    <button className="btn btn-outline-secondary my-2 my-sm-0" type="submit">
-      <i className="fa fa-search" />
-    </button>
-  </form>
-);
 
 const LoggedInNav = () => (
   <>
@@ -74,15 +61,15 @@ const LoggedInNav = () => (
       <div className="dropdown-divider" />
     </li>
     <li>
-      <NavLink
-        to="/"
-        onClick={() =>
-          Meteor.logout(() => {
-            this.props.history.push('/');
-          })
-        }
-      >
-        <button type="button" className="dropdown-item">
+      <NavLink to="#">
+        <button
+          type="button"
+          className="dropdown-item"
+          onClick={() => {
+            NotificationManager.success('Logout', 'Success', 3000);
+            Meteor.logout();
+          }}
+        >
           Logout
         </button>
       </NavLink>
@@ -90,12 +77,22 @@ const LoggedInNav = () => (
   </>
 );
 
-const Status = ({ loggedIn }) => (
+const Status = ({ loggedIn, isAdmin, isProjMan }) => (
   <div className="my-2 mr-3">
     {loggedIn ? (
-      <span className="text-success">
-        <i className="fa fa-circle" />
-      </span>
+      isAdmin ? (
+        <span className="text-success">
+          <i className="fa fa-circle" />
+        </span>
+      ) : isProjMan ? (
+        <span className="text-warning">
+          <i className="fa fa-circle" />
+        </span>
+      ) : (
+        <span className="text-danger">
+          <i className="fa fa-circle" />
+        </span>
+      )
     ) : (
       <span className="text-secondary">
         <i className="fa fa-circle" />
@@ -106,11 +103,13 @@ const Status = ({ loggedIn }) => (
 
 Status.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
+  isProjMan: PropTypes.bool.isRequired,
 };
 
-const Navbar = ({ loggedIn }) => (
+const Navbar = ({ loggedIn, isAdmin, isProjMan }) => (
   <nav className="navbar navbar-expand-lg navbar-light">
-    <Status loggedIn={loggedIn} />
+    <Status loggedIn={loggedIn} isAdmin={isAdmin} isProjMan={isProjMan} />
     <span className="navbar-brand" href="#">
       <NavLink to="/">DC Resource Schedule</NavLink>
     </span>
@@ -135,6 +134,8 @@ const Navbar = ({ loggedIn }) => (
 
 Navbar.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
+  isProjMan: PropTypes.bool.isRequired,
 };
 
 export default Navbar;

@@ -8,7 +8,11 @@ import Assignments from './assignments/assignments.js';
 
 if (Meteor.isServer) {
   Meteor.methods({
-    'employee.create'(email, password, profile, disabled) {
+    'employee.create'(email, password, profile, disabled, roles) {
+      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+        throw new Meteor.Error('Not authorized');
+      }
+
       check(email, String);
       check(password, String);
       check(profile, {
@@ -33,6 +37,10 @@ if (Meteor.isServer) {
         _counsellorId: String,
       });
       check(disabled, Boolean);
+      check(roles, {
+        admin: Boolean,
+        projMan: Boolean,
+      });
 
       try {
         const _id = Accounts.createUser({
@@ -43,12 +51,24 @@ if (Meteor.isServer) {
         });
         if (_id) {
           Roles.addUsersToRoles(_id, ['user'], Roles.GLOBAL_GROUP);
+
+          if (roles.admin) {
+            Roles.addUsersToRoles(_id, ['admin'], Roles.GLOBAL_GROUP);
+          }
+
+          if (roles.projMan) {
+            Roles.addUsersToRoles(_id, ['projman'], Roles.GLOBAL_GROUP);
+          }
         }
       } catch (e) {
         throw new Meteor.Error(e.message);
       }
     },
-    'employee.update'(_id, profile, disabled) {
+    'employee.update'(_id, profile, disabled, roles) {
+      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+        throw new Meteor.Error('Not authorized');
+      }
+
       check(_id, String);
       check(profile, {
         firstName: String,
@@ -74,6 +94,10 @@ if (Meteor.isServer) {
         _counsellorId: String,
       });
       check(disabled, Match.Maybe(Boolean));
+      check(roles, {
+        admin: Boolean,
+        projMan: Boolean,
+      });
 
       try {
         Meteor.users.update(
@@ -101,11 +125,41 @@ if (Meteor.isServer) {
             },
           }
         );
+
+        if (roles.admin) {
+          Roles.addUsersToRoles(_id, ['admin'], Roles.GLOBAL_GROUP);
+        } else {
+          Roles.removeUsersFromRoles(_id, ['admin'], Roles.GLOBAL_GROUP);
+        }
+
+        if (roles.projMan) {
+          Roles.addUsersToRoles(_id, ['projman'], Roles.GLOBAL_GROUP);
+        } else {
+          Roles.removeUsersFromRoles(_id, ['projman'], Roles.GLOBAL_GROUP);
+        }
+      } catch (e) {
+        throw new Meteor.Error(e.message);
+      }
+    },
+    'employee.setPassword'(userId, newPassword) {
+      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+        throw new Meteor.Error('Not authorized');
+      }
+
+      check(userId, String);
+      check(newPassword, String);
+
+      try {
+        Accounts.setPassword(userId, newPassword);
       } catch (e) {
         throw new Meteor.Error(e.message);
       }
     },
     'project.create'(project) {
+      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+        throw new Meteor.Error('Not authorized');
+      }
+
       check(project, {
         projectName: String,
         engagementCode: String,
@@ -124,6 +178,10 @@ if (Meteor.isServer) {
       }
     },
     'project.update'(_id, project) {
+      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+        throw new Meteor.Error('Not authorized');
+      }
+
       check(_id, String);
       check(project, {
         _id: String,
@@ -158,6 +216,10 @@ if (Meteor.isServer) {
       }
     },
     'assignment.create'(assignment) {
+      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+        throw new Meteor.Error('Not authorized');
+      }
+
       check(assignment, {
         _employeeId: String,
         _projectId: String,
@@ -178,6 +240,10 @@ if (Meteor.isServer) {
       }
     },
     'assignment.delete'(_id) {
+      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+        throw new Meteor.Error('Not authorized');
+      }
+
       check(_id, String);
 
       try {

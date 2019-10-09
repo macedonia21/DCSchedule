@@ -84,7 +84,7 @@ class Login extends React.Component {
                     onChange={e => this.setState({ password: e.target.value })}
                     required
                   />
-                  <NavLink to="/recover-password">Forgot Password?</NavLink>
+                  <NavLink className="invisible" to="/recover-password">Forgot Password?</NavLink>
                 </div>
                 <div className="form-group no-margin">
                   <button

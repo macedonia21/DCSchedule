@@ -9,8 +9,10 @@
       background-color: transparent;
     }
   }
+
   a {
     color: #fff;
+    display: block;
   }
   .active {
     color: #fff;
@@ -21,5 +23,7 @@
   }
   .dropdown-item {
     color: #fff;
+    width: 115px;
+    text-align: center;
   }
 }

@@ -6,7 +6,7 @@ import Assignments from './assignments.js';
 
 if (Meteor.isServer) {
   Meteor.publish('assignments.all', function() {
-    if (Roles.userIsInRole(this.userId, 'admin')) {
+    if (Roles.userIsInRole(this.userId, ['admin', 'projman', 'user'])) {
       return Assignments.find();
     }
     return this.ready();

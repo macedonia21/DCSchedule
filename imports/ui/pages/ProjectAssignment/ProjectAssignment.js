@@ -8,6 +8,7 @@ import moment from 'moment/moment';
 import { Chart } from 'react-google-charts';
 import { NotificationManager } from 'react-notifications';
 import { NavLink } from 'react-router-dom';
+import { Roles } from 'meteor/alanning:roles';
 import Select from 'react-select';
 
 // collection
@@ -26,6 +27,10 @@ class ProjectAssignment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loginRoles: {
+        admin: false,
+        projMan: false,
+      },
       newAssignment: {
         _employeeId: '',
         _projectId: '',
@@ -238,7 +243,22 @@ class ProjectAssignment extends React.Component {
       assignments,
       projectAssignments,
     } = this.props;
-    const { newAssignment, isDefaultSet, chartData, reactSelect } = this.state;
+    const {
+      loginRoles,
+      newAssignment,
+      isDefaultSet,
+      chartData,
+      reactSelect,
+    } = this.state;
+
+    if (Meteor.userId()) {
+      if (Roles.userIsInRole(Meteor.userId(), 'admin')) {
+        loginRoles.admin = true;
+      }
+      if (Roles.userIsInRole(Meteor.userId(), 'projman')) {
+        loginRoles.projMan = true;
+      }
+    }
 
     if (project && !isDefaultSet.set) {
       isDefaultSet.set = true;
@@ -372,257 +392,279 @@ class ProjectAssignment extends React.Component {
           <div className="row">
             {projectsReady && usersReady && assignmentsReady && (
               <>
-                <ProjectCard project={project} key={project._id} />
-                {pmUser && <EmployeeCard user={pmUser} key={pmUser._id} />}
+                <ProjectCard
+                  project={project}
+                  key={project._id}
+                  isAdmin={loginRoles.admin}
+                  isProjMan={loginRoles.projMan}
+                />
+                {pmUser && (
+                  <EmployeeCard
+                    user={pmUser}
+                    key={pmUser._id}
+                    isAdmin={loginRoles.admin}
+                    isProjMan={loginRoles.projMan}
+                    zindex={2}
+                  />
+                )}
 
-                <div className="col-xs-12 col-sm-12 col-md-12 new-assignment-card">
-                  <div className="image-flip">
-                    <div className="mainflip">
-                      <div className="frontside">
-                        <div className="card">
-                          <div className="card-body">
-                            <h1
-                              className="card-title text-center dropdown-toggle"
-                              data-toggle="collapse"
-                              href="#collapseNewAssign"
-                              aria-expanded="false"
-                              aria-controls="collapseNewAssign"
-                            >
-                              New Assignment
-                            </h1>
-                            <div className="collapse" id="collapseNewAssign">
-                              <form onSubmit={this.handleSubmit}>
-                                <div className="row">
-                                  {/* <!-- First Col --> */}
-                                  <div className="col-md-4">
-                                    {/* <!-- Employee --> */}
-                                    <div className="form-group">
-                                      <label htmlFor="employeeid">
-                                        Employee
-                                      </label>
-                                      <Select
-                                        value={reactSelect.employeeIdValue}
-                                        options={userSelectOptions}
-                                        placeholder="Select Employee"
-                                        onChange={selectedOption => {
-                                          this.setState({
-                                            newAssignment: {
-                                              ...this.state.newAssignment,
-                                              _employeeId: selectedOption.value,
-                                            },
-                                            reactSelect: {
-                                              ...this.state.reactSelect,
-                                              employeeIdValue: selectedOption,
-                                            },
-                                          });
-                                        }}
-                                        filterOption={this.customFilter}
-                                        styles={reactSelectStyle}
-                                        valueKey="value"
-                                        labelKey="label"
-                                      />
+                {loginRoles.admin && (
+                  <div className="col-xs-12 col-sm-12 col-md-12 new-assignment-card">
+                    <div className="image-flip">
+                      <div className="mainflip">
+                        <div className="frontside">
+                          <div className="card">
+                            <div className="card-body">
+                              <h1
+                                className="card-title text-center dropdown-toggle"
+                                data-toggle="collapse"
+                                href="#collapseNewAssign"
+                                aria-expanded="false"
+                                aria-controls="collapseNewAssign"
+                              >
+                                New Assignment
+                              </h1>
+                              <div className="collapse" id="collapseNewAssign">
+                                <form onSubmit={this.handleSubmit}>
+                                  <div className="row">
+                                    {/* <!-- First Col --> */}
+                                    <div className="col-md-4">
+                                      {/* <!-- Employee --> */}
+                                      <div className="form-group">
+                                        <label htmlFor="employeeid">
+                                          Employee
+                                        </label>
+                                        <Select
+                                          value={reactSelect.employeeIdValue}
+                                          options={userSelectOptions}
+                                          placeholder="Select Employee"
+                                          onChange={selectedOption => {
+                                            this.setState({
+                                              newAssignment: {
+                                                ...this.state.newAssignment,
+                                                _employeeId:
+                                                  selectedOption.value,
+                                              },
+                                              reactSelect: {
+                                                ...this.state.reactSelect,
+                                                employeeIdValue: selectedOption,
+                                              },
+                                            });
+                                          }}
+                                          filterOption={this.customFilter}
+                                          styles={reactSelectStyle}
+                                          valueKey="value"
+                                          labelKey="label"
+                                        />
+                                      </div>
+
+                                      {/* <!-- Project --> */}
+                                      <div className="form-group">
+                                        <label htmlFor="projectid">
+                                          Project
+                                        </label>
+                                        <Select
+                                          defaultValue={projectSelectOptions[0]}
+                                          options={projectSelectOptions}
+                                          placeholder="Select Project"
+                                          styles={reactSelectStyle}
+                                          isDisabled
+                                        />
+                                      </div>
+
+                                      {/* <!-- Percentage --> */}
+                                      <div className="form-group">
+                                        <label htmlFor="percent">
+                                          Percentage
+                                        </label>
+                                        <Select
+                                          defaultValue={
+                                            reactSelect.percentageOptions[4]
+                                          }
+                                          value={reactSelect.percentageValue}
+                                          options={
+                                            reactSelect.percentageOptions
+                                          }
+                                          placeholder="Select Percentage"
+                                          onChange={selectedOption => {
+                                            this.setState({
+                                              newAssignment: {
+                                                ...this.state.newAssignment,
+                                                percent: selectedOption.value,
+                                              },
+                                              reactSelect: {
+                                                ...this.state.reactSelect,
+                                                percentageValue: selectedOption,
+                                              },
+                                            });
+                                          }}
+                                          styles={reactSelectStyle}
+                                          isSearchable={false}
+                                        />
+                                      </div>
                                     </div>
 
-                                    {/* <!-- Project --> */}
-                                    <div className="form-group">
-                                      <label htmlFor="projectid">Project</label>
-                                      <Select
-                                        defaultValue={projectSelectOptions[0]}
-                                        options={projectSelectOptions}
-                                        placeholder="Select Project"
-                                        styles={reactSelectStyle}
-                                        isDisabled
-                                      />
+                                    {/* <!-- Second Col --> */}
+                                    <div className="col-md-4">
+                                      {/* <!-- Start Date --> */}
+                                      <div className="form-group">
+                                        <label htmlFor="startdate">
+                                          Start Date
+                                        </label>
+                                        <DatePicker
+                                          className="form-control"
+                                          selected={newAssignment.startDate}
+                                          onChange={date =>
+                                            this.setState({
+                                              newAssignment: {
+                                                ...this.state.newAssignment,
+                                                startDate: date,
+                                                availableDate: date,
+                                              },
+                                            })
+                                          }
+                                          maxDate={newAssignment.endDate}
+                                          dateFormat="MMM dd, yyyy"
+                                        />
+                                      </div>
+
+                                      {/* <!-- End Date --> */}
+                                      <div className="form-group">
+                                        <label htmlFor="enddate">
+                                          End Date
+                                        </label>
+                                        <DatePicker
+                                          className="form-control"
+                                          selected={newAssignment.endDate}
+                                          onChange={date =>
+                                            this.setState({
+                                              newAssignment: {
+                                                ...this.state.newAssignment,
+                                                endDate: date,
+                                              },
+                                            })
+                                          }
+                                          minDate={newAssignment.startDate}
+                                          dateFormat="MMM dd, yyyy"
+                                        />
+                                      </div>
+
+                                      {/* <!-- Talents --> */}
+                                      <div className="form-group">
+                                        <label htmlFor="talents">
+                                          Capabilities
+                                        </label>
+                                        <TagsInput
+                                          id="talents"
+                                          className="form-control"
+                                          value={newAssignment.talents}
+                                          maxTags={3}
+                                          onChange={tags =>
+                                            this.setState({
+                                              newAssignment: {
+                                                ...this.state.newAssignment,
+                                                talents: tags,
+                                              },
+                                            })
+                                          }
+                                        />
+                                      </div>
                                     </div>
 
-                                    {/* <!-- Percentage --> */}
-                                    <div className="form-group">
-                                      <label htmlFor="percent">
-                                        Percentage
-                                      </label>
-                                      <Select
-                                        defaultValue={
-                                          reactSelect.percentageOptions[4]
-                                        }
-                                        value={reactSelect.percentageValue}
-                                        options={reactSelect.percentageOptions}
-                                        placeholder="Select Percentage"
-                                        onChange={selectedOption => {
-                                          this.setState({
-                                            newAssignment: {
-                                              ...this.state.newAssignment,
-                                              percent: selectedOption.value,
-                                            },
-                                            reactSelect: {
-                                              ...this.state.reactSelect,
-                                              percentageValue: selectedOption,
-                                            },
-                                          });
-                                        }}
-                                        styles={reactSelectStyle}
-                                        isSearchable={false}
-                                      />
+                                    {/* <!-- Third Col --> */}
+                                    <div className="col-md-4">
+                                      {/* <!-- Level --> */}
+                                      <div className="form-group">
+                                        <label htmlFor="level">Level</label>
+                                        <Select
+                                          defaultValue={
+                                            reactSelect.levelOptions[0]
+                                          }
+                                          value={reactSelect.levelValue}
+                                          options={reactSelect.levelOptions}
+                                          placeholder="Select Level"
+                                          onChange={selectedOption => {
+                                            this.setState({
+                                              newAssignment: {
+                                                ...this.state.newAssignment,
+                                                level: selectedOption.value,
+                                              },
+                                              reactSelect: {
+                                                ...this.state.reactSelect,
+                                                levelValue: selectedOption,
+                                              },
+                                            });
+                                          }}
+                                          styles={reactSelectStyle}
+                                          isSearchable={false}
+                                        />
+                                      </div>
+
+                                      {/* <!-- Task Role --> */}
+                                      <div className="form-group">
+                                        <label htmlFor="role">Task Role</label>
+                                        <Select
+                                          defaultValue={
+                                            reactSelect.taskRoleOptions[0]
+                                          }
+                                          value={reactSelect.taskRoleValue}
+                                          options={reactSelect.taskRoleOptions}
+                                          placeholder="Select Task Role"
+                                          onChange={selectedOption => {
+                                            this.setState({
+                                              newAssignment: {
+                                                ...this.state.newAssignment,
+                                                role: selectedOption.value,
+                                              },
+                                              reactSelect: {
+                                                ...this.state.reactSelect,
+                                                taskRoleValue: selectedOption,
+                                              },
+                                            });
+                                          }}
+                                          styles={reactSelectStyle}
+                                          isSearchable={false}
+                                        />
+                                      </div>
+
+                                      {/* <!-- Remark --> */}
+                                      <div className="form-group">
+                                        <label htmlFor="remark">Remark</label>
+                                        <input
+                                          id="remark"
+                                          type="text"
+                                          className="form-control"
+                                          name="remark"
+                                          value={newAssignment.remark || ''}
+                                          onChange={e =>
+                                            this.setState({
+                                              newAssignment: {
+                                                ...this.state.newAssignment,
+                                                remark: e.target.value,
+                                              },
+                                            })
+                                          }
+                                        />
+                                      </div>
                                     </div>
                                   </div>
-
-                                  {/* <!-- Second Col --> */}
-                                  <div className="col-md-4">
-                                    {/* <!-- Start Date --> */}
-                                    <div className="form-group">
-                                      <label htmlFor="startdate">
-                                        Start Date
-                                      </label>
-                                      <DatePicker
-                                        className="form-control"
-                                        selected={newAssignment.startDate}
-                                        onChange={date =>
-                                          this.setState({
-                                            newAssignment: {
-                                              ...this.state.newAssignment,
-                                              startDate: date,
-                                              availableDate: date,
-                                            },
-                                          })
-                                        }
-                                        maxDate={newAssignment.endDate}
-                                        dateFormat="MMM dd, yyyy"
-                                      />
-                                    </div>
-
-                                    {/* <!-- End Date --> */}
-                                    <div className="form-group">
-                                      <label htmlFor="enddate">End Date</label>
-                                      <DatePicker
-                                        className="form-control"
-                                        selected={newAssignment.endDate}
-                                        onChange={date =>
-                                          this.setState({
-                                            newAssignment: {
-                                              ...this.state.newAssignment,
-                                              endDate: date,
-                                            },
-                                          })
-                                        }
-                                        minDate={newAssignment.startDate}
-                                        dateFormat="MMM dd, yyyy"
-                                      />
-                                    </div>
-
-                                    {/* <!-- Talents --> */}
-                                    <div className="form-group">
-                                      <label htmlFor="talents">
-                                        Capabilities
-                                      </label>
-                                      <TagsInput
-                                        id="talents"
-                                        className="form-control"
-                                        value={newAssignment.talents}
-                                        maxTags={3}
-                                        onChange={tags =>
-                                          this.setState({
-                                            newAssignment: {
-                                              ...this.state.newAssignment,
-                                              talents: tags,
-                                            },
-                                          })
-                                        }
-                                      />
-                                    </div>
+                                  <div className="form-group no-margin">
+                                    <button
+                                      type="submit"
+                                      className="btn btn-primary btn-block mb-2"
+                                    >
+                                      Add
+                                    </button>
                                   </div>
-
-                                  {/* <!-- Third Col --> */}
-                                  <div className="col-md-4">
-                                    {/* <!-- Level --> */}
-                                    <div className="form-group">
-                                      <label htmlFor="level">Level</label>
-                                      <Select
-                                        defaultValue={
-                                          reactSelect.levelOptions[0]
-                                        }
-                                        value={reactSelect.levelValue}
-                                        options={reactSelect.levelOptions}
-                                        placeholder="Select Level"
-                                        onChange={selectedOption => {
-                                          this.setState({
-                                            newAssignment: {
-                                              ...this.state.newAssignment,
-                                              level: selectedOption.value,
-                                            },
-                                            reactSelect: {
-                                              ...this.state.reactSelect,
-                                              levelValue: selectedOption,
-                                            },
-                                          });
-                                        }}
-                                        styles={reactSelectStyle}
-                                        isSearchable={false}
-                                      />
-                                    </div>
-
-                                    {/* <!-- Task Role --> */}
-                                    <div className="form-group">
-                                      <label htmlFor="role">Task Role</label>
-                                      <Select
-                                        defaultValue={
-                                          reactSelect.taskRoleOptions[0]
-                                        }
-                                        value={reactSelect.taskRoleValue}
-                                        options={reactSelect.taskRoleOptions}
-                                        placeholder="Select Task Role"
-                                        onChange={selectedOption => {
-                                          this.setState({
-                                            newAssignment: {
-                                              ...this.state.newAssignment,
-                                              role: selectedOption.value,
-                                            },
-                                            reactSelect: {
-                                              ...this.state.reactSelect,
-                                              taskRoleValue: selectedOption,
-                                            },
-                                          });
-                                        }}
-                                        styles={reactSelectStyle}
-                                        isSearchable={false}
-                                      />
-                                    </div>
-
-                                    {/* <!-- Remark --> */}
-                                    <div className="form-group">
-                                      <label htmlFor="remark">Remark</label>
-                                      <input
-                                        id="remark"
-                                        type="text"
-                                        className="form-control"
-                                        name="remark"
-                                        value={newAssignment.remark || ''}
-                                        onChange={e =>
-                                          this.setState({
-                                            newAssignment: {
-                                              ...this.state.newAssignment,
-                                              remark: e.target.value,
-                                            },
-                                          })
-                                        }
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="form-group no-margin">
-                                  <button
-                                    type="submit"
-                                    className="btn btn-primary btn-block mb-2"
-                                  >
-                                    Add
-                                  </button>
-                                </div>
-                              </form>
+                                </form>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 <div className="col-xs-12 col-sm-12 col-md-12 project-assignment-card">
                   <div className="image-flip">
@@ -651,7 +693,7 @@ class ProjectAssignment extends React.Component {
                                   <div key={assignment._id}>
                                     <hr />
                                     <div className="row">
-                                      <div className="col-md-2 pb-2 pt-2 assign-name-text">
+                                      <div className="col-md-4 pb-2 pt-2 assign-name-text">
                                         <NavLink
                                           to={`/employee/assignment/${
                                             assignedUser._id
@@ -664,17 +706,17 @@ class ProjectAssignment extends React.Component {
                                           </span>
                                         </NavLink>
                                       </div>
-                                      <div className="col-md-3 pb-2 pt-2">
+                                      <div className="col-md-2 pb-2 pt-2 assign-date-14-mt2">
                                         {`${moment(assignment.startDate).format(
-                                          'MMM DD, YYYY'
+                                          'MMM DD, YY'
                                         )} - ${moment(
                                           assignment.endDate
-                                        ).format('MMM DD, YYYY')}`}
+                                        ).format('MMM DD, YY')}`}
                                       </div>
                                       <div className="col-md-1 pb-2 pt-2">
                                         {`${assignment.percent}%`}
                                       </div>
-                                      <div className="col-md-3 pb-2 pt-2">
+                                      <div className="col-md-2 pb-2 pt-2">
                                         {assignment.level === 'Member' &&
                                         assignment.role === 'Member'
                                           ? `${assignment.level}`
@@ -707,20 +749,22 @@ class ProjectAssignment extends React.Component {
                                           : ''}
                                       </div>
                                       <div className="col-md-1 pb-2 pt-2">
-                                        <button
-                                          type="button"
-                                          className="close"
-                                          aria-label="Close"
-                                          onClick={() =>
-                                            this.handleDeleteAssignment(
-                                              assignment._id
-                                            )
-                                          }
-                                        >
-                                          <span aria-hidden="true">
-                                            &times;
-                                          </span>
-                                        </button>
+                                        {loginRoles.admin && (
+                                          <button
+                                            type="button"
+                                            className="close"
+                                            aria-label="Close"
+                                            onClick={() =>
+                                              this.handleDeleteAssignment(
+                                                assignment._id
+                                              )
+                                            }
+                                          >
+                                            <span aria-hidden="true">
+                                              &times;
+                                            </span>
+                                          </button>
+                                        )}
                                       </div>
                                     </div>
                                   </div>

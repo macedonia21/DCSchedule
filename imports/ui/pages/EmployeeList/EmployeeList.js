@@ -3,6 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React from 'react';
 import PropTypes from 'prop-types';
 import TagsInput from 'react-tagsinput';
+import { Roles } from 'meteor/alanning:roles';
 import moment from 'moment/moment';
 
 // collection
@@ -19,6 +20,10 @@ class EmployeeList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loginRoles: {
+        admin: false,
+        projMan: false,
+      },
       filterFullname: '',
       filterTalents: [],
       filterAvailableToday: false,
@@ -58,11 +63,21 @@ class EmployeeList extends React.Component {
       assignments,
     } = this.props;
     const {
+      loginRoles,
       filterFullname,
       filterTalents,
       filterAvailableToday,
       filterActiveOnly,
     } = this.state;
+
+    if (Meteor.userId()) {
+      if (Roles.userIsInRole(Meteor.userId(), 'admin')) {
+        loginRoles.admin = true;
+      }
+      if (Roles.userIsInRole(Meteor.userId(), 'projman')) {
+        loginRoles.projMan = true;
+      }
+    }
 
     if (!loggedIn) {
       return null;
@@ -132,12 +147,14 @@ class EmployeeList extends React.Component {
       return user.profile.fullName;
     });
 
+    const usersCount = _.size(filteredUsers);
+
     return (
       <div className="employee-page">
         <h1 className="mb-4">Employees</h1>
         <div className="container">
           <div className="row">
-            <EmployeeAddCard />
+            <EmployeeAddCard disabled={!loginRoles.admin} />
 
             {/* <!-- Search Card --> */}
             <div className="col-xs-12 col-sm-6 col-md-8 emp-search-card">
@@ -195,6 +212,9 @@ class EmployeeList extends React.Component {
                                         filterAvailableToday: true,
                                       });
                                     }}
+                                    disabled={
+                                      !loginRoles.admin && !loginRoles.projMan
+                                    }
                                   >
                                     Available Today
                                   </button>
@@ -210,6 +230,9 @@ class EmployeeList extends React.Component {
                                         filterAvailableToday: false,
                                       });
                                     }}
+                                    disabled={
+                                      !loginRoles.admin && !loginRoles.projMan
+                                    }
                                   >
                                     All
                                   </button>
@@ -238,21 +261,23 @@ class EmployeeList extends React.Component {
                               </div>
 
                               {/* <!-- Active --> */}
-                              <div className="form-group">
-                                <button
-                                  type="button"
-                                  className={
-                                    filterActiveOnly
-                                      ? 'btn btn-block btn-primary'
-                                      : 'btn btn-block btn-secondary'
-                                  }
-                                  onClick={this.handleActiveClick}
-                                >
-                                  {filterActiveOnly
-                                    ? 'Active Users Only'
-                                    : 'Include Inactive Users'}
-                                </button>
-                              </div>
+                              {loginRoles.admin && (
+                                <div className="form-group">
+                                  <button
+                                    type="button"
+                                    className={
+                                      filterActiveOnly
+                                        ? 'btn btn-block btn-primary'
+                                        : 'btn btn-block btn-secondary'
+                                    }
+                                    onClick={this.handleActiveClick}
+                                  >
+                                    {filterActiveOnly
+                                      ? 'Active Users Only'
+                                      : 'Include Inactive Users'}
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </form>
@@ -266,8 +291,16 @@ class EmployeeList extends React.Component {
             {usersReady &&
               projectsReady &&
               assignmentsReady &&
-              _.map(filteredUsers, user => {
-                return <EmployeeCard user={user} key={user._id} />;
+              _.map(filteredUsers, (user, index) => {
+                return (
+                  <EmployeeCard
+                    user={user}
+                    key={user._id}
+                    isAdmin={loginRoles.admin}
+                    isProjMan={loginRoles.projMan}
+                    zIndex={usersCount - index}
+                  />
+                );
               })}
           </div>
         </div>
