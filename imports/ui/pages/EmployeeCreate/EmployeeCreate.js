@@ -22,6 +22,7 @@ class CreateEmployee extends React.Component {
         admin: false,
         projMan: false,
       },
+      isPasswordShown: false,
       email: '',
       password: '',
       profile: {
@@ -96,35 +97,65 @@ class CreateEmployee extends React.Component {
             label: 'Contractor',
           },
         ],
-        countryValue: { value: 'Vietnam', label: 'Vietnam' },
+        countryValue: {
+          value: 'Vietnam',
+          label: 'Vietnam',
+          isBaseDisabled: false,
+          isEntCodeDisabled: false,
+        },
         countryOptions: [
           {
-            value: 'Guam',
-            label: 'Guam',
+            value: 'Brunei',
+            label: 'Brunei',
+            isDisabled: true,
+            isBaseDisabled: true,
+            isEntCodeDisabled: true,
           },
           {
             value: 'Indonesia',
             label: 'Indonesia',
+            isDisabled: true,
+            isBaseDisabled: true,
+            isEntCodeDisabled: true,
+          },
+          {
+            value: 'Myanmar',
+            label: 'Myanmar',
+            isDisabled: true,
+            isBaseDisabled: true,
+            isEntCodeDisabled: true,
           },
           {
             value: 'Malaysia',
             label: 'Malaysia',
+            isBaseDisabled: true,
+            isEntCodeDisabled: false,
           },
           {
             value: 'Philippines',
             label: 'Philippines',
+            isDisabled: true,
+            isBaseDisabled: true,
+            isEntCodeDisabled: true,
           },
           {
             value: 'Singapore',
             label: 'Singapore',
+            isBaseDisabled: true,
+            isEntCodeDisabled: false,
           },
           {
             value: 'Thailand',
             label: 'Thailand',
+            isDisabled: true,
+            isBaseDisabled: true,
+            isEntCodeDisabled: true,
           },
           {
             value: 'Vietnam',
             label: 'Vietnam',
+            isBaseDisabled: false,
+            isEntCodeDisabled: false,
           },
         ],
         baseSelectDisabled: false,
@@ -135,32 +166,37 @@ class CreateEmployee extends React.Component {
         },
         baseAllOptions: [
           {
-            value: 'GUAM',
-            label: 'Guam',
-            country: 'Guam',
+            value: 'BS',
+            label: 'Brunei',
+            country: 'Brunei',
           },
           {
-            value: 'INDO',
+            value: 'JK',
             label: 'Indonesia',
             country: 'Indonesia',
           },
           {
-            value: 'MALAY',
+            value: 'YG',
+            label: 'Myanmar',
+            country: 'Myanmar',
+          },
+          {
+            value: 'KL',
             label: 'Malaysia',
             country: 'Malaysia',
           },
           {
-            value: 'PHI',
+            value: 'MN',
             label: 'Philippines',
             country: 'Philippines',
           },
           {
-            value: 'SING',
+            value: 'SG',
             label: 'Singapore',
             country: 'Singapore',
           },
           {
-            value: 'THAI',
+            value: 'BK',
             label: 'Thailand',
             country: 'Thailand',
           },
@@ -188,58 +224,112 @@ class CreateEmployee extends React.Component {
           },
         ],
         entCodeSelectDisabled: false,
-        entCodeValue: { value: 'VN1C', label: 'VN1C', country: 'Vietnam' },
+        entCodeValue: {
+          value: 'VN1C',
+          label: 'Deloitte Consulting Vietnam Co Ltd',
+          country: 'Vietnam',
+        },
         entCodeAllOptions: [
           {
-            value: 'GU1C',
-            label: 'GU1C',
-            country: 'Guam',
-          },
-          {
-            value: 'IN1C',
-            label: 'IN1C',
+            value: 'ID1C',
+            label: '(ID1C) PT Deloitte Consulting',
             country: 'Indonesia',
           },
           {
-            value: 'MA1C',
-            label: 'MA1C',
+            value: 'ID2C',
+            label: '(ID2C) PT DC Solutions',
+            country: 'Indonesia',
+          },
+          {
+            value: 'MM1C',
+            label: '(MM1C) Deloitte Consulting (Myanmar Limited)',
+            country: 'Myanmar',
+          },
+          {
+            value: 'MM2C',
+            label: '(MM2C) Deloitte Consulting (Myanmar Limited)',
+            country: 'Myanmar',
+          },
+          {
+            value: 'MY1C',
+            label: '(MY1C) Deloitte Consulting (SEA) Sdn Bhd',
+            country: 'Malaysia',
+          },
+          {
+            value: 'MY2C',
+            label: '(MY2C) Deloitte Consulting Malaysia Sdn Bhd',
+            country: 'Malaysia',
+          },
+          {
+            value: 'MY3C',
+            label: '(MY3C) DC Technology Solutions',
             country: 'Malaysia',
           },
           {
             value: 'PH1C',
-            label: 'PH1C',
+            label: '(PH1C) Deloitte & Touche Consulting Grp / ICS Pte Ltd ',
             country: 'Philippines',
           },
           {
             value: 'SG1C',
-            label: 'SG1C',
+            label: '(SG1C) Deloitte Consulting Pte Ltd',
+            country: 'Singapore',
+          },
+          {
+            value: 'BN1C',
+            label: '(BN1C) Deloitte Consulting Pte Ltd',
+            country: 'Brunei',
+          },
+          {
+            value: 'BN2C',
+            label: '(BN2C) Deloitte Consulting Pte Ltd',
+            country: 'Brunei',
+          },
+          {
+            value: 'SG2C',
+            label: '(SG2C) Deloitte Consulting / ICS Pte Ltd',
+            country: 'Singapore',
+          },
+          {
+            value: 'SG9C',
+            label: '(SG9C) Deloitte Consulting (SEA) Holdings Pte Ltd',
             country: 'Singapore',
           },
           {
             value: 'TH1C',
-            label: 'TH1C',
+            label: '(TH1C) Deloitte Consulting Limited',
+            country: 'Thailand',
+          },
+          {
+            value: 'TH2C',
+            label: '(TH2C) Deloitte Touche Tohmatsu Jaiyos Advisory Co., Ltd. ',
+            country: 'Thailand',
+          },
+          {
+            value: 'TH9C',
+            label: '(TH9C) Deloitte Holding Limited',
             country: 'Thailand',
           },
           {
             value: 'VN1C',
-            label: 'VN1C',
+            label: '(VN1C) Deloitte Consulting Vietnam Co Ltd',
             country: 'Vietnam',
           },
           {
             value: 'VN2C',
-            label: 'VN2C',
+            label: '(VN2C) Branch Deloitte Consulting Vietnam Co Ltd in Hanoi',
             country: 'Vietnam',
           },
         ],
         entCodeOptions: [
           {
             value: 'VN1C',
-            label: 'VN1C',
+            label: 'Deloitte Consulting Vietnam Co Ltd',
             country: 'Vietnam',
           },
           {
             value: 'VN2C',
-            label: 'VN2C',
+            label: 'Branch Deloitte Consulting Vietnam Co Ltd in Hanoi',
             country: 'Vietnam',
           },
         ],
@@ -249,16 +339,17 @@ class CreateEmployee extends React.Component {
     this.handleActiveClick = this.handleActiveClick.bind(this);
     this.handleRoleAdminClick = this.handleRoleAdminClick.bind(this);
     this.handleRoleProjManClick = this.handleRoleProjManClick.bind(this);
+    this.handlePasswordShow = this.handlePasswordShow.bind(this);
   }
 
   componentWillMount() {
-    if (!this.props.loggedIn && !Meteor.userId) {
+    if (!Meteor.userId()) {
       return this.props.history.push('/login');
     }
   }
 
   shouldComponentUpdate(nextProps) {
-    if (!nextProps.loggedIn && !Meteor.userId) {
+    if (!Meteor.userId()) {
       nextProps.history.push('/login');
       return false;
     }
@@ -286,6 +377,12 @@ class CreateEmployee extends React.Component {
         ...this.state.roles,
         projMan: !this.state.roles.projMan,
       },
+    });
+  }
+
+  handlePasswordShow() {
+    this.setState({
+      isPasswordShown: !this.state.isPasswordShown,
     });
   }
 
@@ -321,6 +418,7 @@ class CreateEmployee extends React.Component {
   render() {
     const { loggedIn } = this.props;
     const {
+      isPasswordShown,
       email,
       password,
       profile,
@@ -331,7 +429,10 @@ class CreateEmployee extends React.Component {
     } = this.state;
 
     if (Meteor.userId()) {
-      if (Roles.userIsInRole(Meteor.userId(), 'admin')) {
+      if (
+        Roles.userIsInRole(Meteor.userId(), 'superadmin') ||
+        Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
         loginRoles.admin = true;
       }
       if (Roles.userIsInRole(Meteor.userId(), 'projman')) {
@@ -392,17 +493,36 @@ class CreateEmployee extends React.Component {
                       {/* <!-- Password --> */}
                       <div className="form-group">
                         <label htmlFor="password">Password</label>
-                        <input
-                          id="password"
-                          type="password"
-                          className="form-control"
-                          name="password"
-                          value={password}
-                          onChange={e =>
-                            this.setState({ password: e.target.value })
-                          }
-                          required
-                        />
+                        <div className="input-group">
+                          <input
+                            id="password"
+                            type={isPasswordShown ? 'text' : 'password'}
+                            className="form-control"
+                            name="password"
+                            value={password}
+                            onChange={e =>
+                              this.setState({ password: e.target.value })
+                            }
+                            required
+                          />
+                          {/* <span className="password-strength-indicator" /> */}
+                          <div className="input-group-append">
+                            <button
+                              className="btn btn-outline-secondary"
+                              type="button"
+                              id="button-addon1"
+                              onClick={this.handlePasswordShow}
+                            >
+                              <span
+                                className={
+                                  isPasswordShown
+                                    ? 'fa fa-eye'
+                                    : 'fa fa-eye-slash'
+                                }
+                              />
+                            </button>
+                          </div>
+                        </div>
                       </div>
 
                       {/* <!-- First Name --> */}
@@ -686,7 +806,7 @@ class CreateEmployee extends React.Component {
                                 ...this.state.reactSelect,
                                 countryValue: selectedOption,
                                 baseSelectDisabled:
-                                  selectedOption.value !== 'Vietnam',
+                                  selectedOption.isBaseDisabled,
                                 baseOptions: _.where(
                                   reactSelect.baseAllOptions,
                                   {
@@ -700,7 +820,7 @@ class CreateEmployee extends React.Component {
                                   }
                                 ),
                                 entCodeSelectDisabled:
-                                  selectedOption.value !== 'Vietnam',
+                                  selectedOption.isEntCodeDisabled,
                                 entCodeOptions: _.where(
                                   reactSelect.entCodeAllOptions,
                                   {

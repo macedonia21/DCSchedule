@@ -22,13 +22,13 @@ class Login extends React.Component {
   }
 
   componentWillMount() {
-    if (this.props.loggedIn) {
+    if (Meteor.userId()) {
       return this.props.history.push('/report');
     }
   }
 
   shouldComponentUpdate(nextProps) {
-    if (nextProps.loggedIn) {
+    if (Meteor.userId()) {
       nextProps.history.push('/report');
       return false;
     }
@@ -84,7 +84,9 @@ class Login extends React.Component {
                     onChange={e => this.setState({ password: e.target.value })}
                     required
                   />
-                  <NavLink className="invisible" to="/recover-password">Forgot Password?</NavLink>
+                  <NavLink className="invisible" to="/recover-password">
+                    Forgot Password?
+                  </NavLink>
                 </div>
                 <div className="form-group no-margin">
                   <button

@@ -226,24 +226,15 @@ function getUnassignedEmployeesDetails(
   });
 }
 
-function getAssignedEmployeesDetails(
-  startDate,
-  endDate,
-  users,
-  inRangeAssignments,
-  projects
-) {
-  const assignerUsers = _.filter(users, user => {
+function getAssignedEmployeesDetails(users, inRangeAssignments, projects) {
+  const assignedUsers = _.filter(users, user => {
     return _.contains(
       _.uniq(_.pluck(inRangeAssignments, '_employeeId')),
       user._id
     );
   });
 
-  return _.map(assignerUsers, user => {
-    const startDateObj = moment(startDate);
-    const endDateObj = moment(endDate);
-
+  return _.map(assignedUsers, user => {
     return {
       ...user,
       inRangeAssignmentsOfUser: _.sortBy(
@@ -356,13 +347,13 @@ class Report extends React.Component {
   }
 
   componentWillMount() {
-    if (!this.props.loggedIn && !Meteor.userId) {
+    if (!Meteor.userId()) {
       return this.props.history.push('/login');
     }
   }
 
   shouldComponentUpdate(nextProps) {
-    if (!nextProps.loggedIn && !Meteor.userId) {
+    if (!Meteor.userId()) {
       nextProps.history.push('/login');
       return false;
     }
@@ -393,7 +384,10 @@ class Report extends React.Component {
     }
 
     if (Meteor.userId()) {
-      if (Roles.userIsInRole(Meteor.userId(), 'admin')) {
+      if (
+        Roles.userIsInRole(Meteor.userId(), 'superadmin') ||
+        Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
         loginRoles.admin = true;
       }
       if (Roles.userIsInRole(Meteor.userId(), 'projman')) {
@@ -519,8 +513,6 @@ class Report extends React.Component {
 
     // Assign Employee Detail
     const assignedUsersDetailsFull = getAssignedEmployeesDetails(
-      startDate,
-      endDate,
       users,
       inRangeAssignments,
       projects

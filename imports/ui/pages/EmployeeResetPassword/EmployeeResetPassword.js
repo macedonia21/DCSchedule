@@ -19,6 +19,8 @@ class EmployeeResetPassword extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isNewPasswordShown: false,
+      isConfirmPasswordShown: false,
       loginRoles: {
         admin: false,
         projMan: false,
@@ -27,20 +29,34 @@ class EmployeeResetPassword extends React.Component {
       retypeNewPass: '',
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleNewPasswordShow = this.handleNewPasswordShow.bind(this);
+    this.handleConfirmPasswordShow = this.handleConfirmPasswordShow.bind(this);
   }
 
   componentWillMount() {
-    if (!this.props.loggedIn && !Meteor.userId) {
+    if (!Meteor.userId()) {
       return this.props.history.push('/login');
     }
   }
 
   shouldComponentUpdate(nextProps) {
-    if (!nextProps.loggedIn && !Meteor.userId) {
+    if (!Meteor.userId()) {
       nextProps.history.push('/login');
       return false;
     }
     return true;
+  }
+
+  handleNewPasswordShow() {
+    this.setState({
+      isNewPasswordShown: !this.state.isNewPasswordShown,
+    });
+  }
+
+  handleConfirmPasswordShow() {
+    this.setState({
+      isConfirmPasswordShown: !this.state.isConfirmPasswordShown,
+    });
   }
 
   handleSubmit(e) {
@@ -80,14 +96,23 @@ class EmployeeResetPassword extends React.Component {
 
   render() {
     const { loggedIn, usersReady, user } = this.props;
-    const { loginRoles, newPass, retypeNewPass } = this.state;
+    const {
+      isNewPasswordShown,
+      isConfirmPasswordShown,
+      loginRoles,
+      newPass,
+      retypeNewPass,
+    } = this.state;
 
     if (!loggedIn) {
       return null;
     }
 
     if (Meteor.userId()) {
-      if (Roles.userIsInRole(Meteor.userId(), 'admin')) {
+      if (
+        Roles.userIsInRole(Meteor.userId(), 'superadmin') ||
+        Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
         loginRoles.admin = true;
       }
       if (Roles.userIsInRole(Meteor.userId(), 'projman')) {
@@ -141,17 +166,35 @@ class EmployeeResetPassword extends React.Component {
                       {/* <!-- New Password --> */}
                       <div className="form-group">
                         <label htmlFor="newpassword">New Password</label>
-                        <input
-                          id="newpassword"
-                          type="password"
-                          className="form-control"
-                          name="newpassword"
-                          value={newPass}
-                          onChange={e =>
-                            this.setState({ newPass: e.target.value })
-                          }
-                          required
-                        />
+                        <div className="input-group">
+                          <input
+                            id="newpassword"
+                            type={isNewPasswordShown ? 'text' : 'password'}
+                            className="form-control"
+                            name="newpassword"
+                            value={newPass}
+                            onChange={e =>
+                              this.setState({ newPass: e.target.value })
+                            }
+                            required
+                          />
+                          <div className="input-group-append">
+                            <button
+                              className="btn btn-outline-secondary"
+                              type="button"
+                              id="button-addon1"
+                              onClick={this.handleNewPasswordShow}
+                            >
+                              <span
+                                className={
+                                  isNewPasswordShown
+                                    ? 'fa fa-eye'
+                                    : 'fa fa-eye-slash'
+                                }
+                              />
+                            </button>
+                          </div>
+                        </div>
                       </div>
 
                       {/* <!-- Retype New Password --> */}
@@ -159,17 +202,35 @@ class EmployeeResetPassword extends React.Component {
                         <label htmlFor="newpasswordre">
                           Retype New Password
                         </label>
-                        <input
-                          id="newpasswordre"
-                          type="password"
-                          className="form-control"
-                          name="newpasswordre"
-                          value={retypeNewPass}
-                          onChange={e =>
-                            this.setState({ retypeNewPass: e.target.value })
-                          }
-                          required
-                        />
+                        <div className="input-group">
+                          <input
+                            id="newpasswordre"
+                            type={isConfirmPasswordShown ? 'text' : 'password'}
+                            className="form-control"
+                            name="newpasswordre"
+                            value={retypeNewPass}
+                            onChange={e =>
+                              this.setState({ retypeNewPass: e.target.value })
+                            }
+                            required
+                          />
+                          <div className="input-group-append">
+                            <button
+                              className="btn btn-outline-secondary"
+                              type="button"
+                              id="button-addon2"
+                              onClick={this.handleConfirmPasswordShow}
+                            >
+                              <span
+                                className={
+                                  isConfirmPasswordShown
+                                    ? 'fa fa-eye'
+                                    : 'fa fa-eye-slash'
+                                }
+                              />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

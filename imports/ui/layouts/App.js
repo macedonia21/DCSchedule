@@ -126,7 +126,9 @@ App.propTypes = {
 export default withTracker(() => {
   const userSub = Meteor.subscribe('user');
   const user = Meteor.user();
-  const isAdmin = Roles.userIsInRole(Meteor.userId(), 'admin');
+  const isAdmin =
+    Roles.userIsInRole(Meteor.userId(), 'superadmin') ||
+    Roles.userIsInRole(Meteor.userId(), 'admin');
   const isProjMan = Roles.userIsInRole(Meteor.userId(), 'projman');
   const userReady = userSub.ready() && !!user;
   const loggingIn = Meteor.loggingIn();

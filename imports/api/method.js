@@ -9,7 +9,10 @@ import Assignments from './assignments/assignments.js';
 if (Meteor.isServer) {
   Meteor.methods({
     'employee.create'(email, password, profile, disabled, roles) {
-      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+      if (
+        !Roles.userIsInRole(Meteor.userId(), 'superadmin') &&
+        !Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
         throw new Meteor.Error('Not authorized');
       }
 
@@ -65,7 +68,10 @@ if (Meteor.isServer) {
       }
     },
     'employee.update'(_id, profile, disabled, roles) {
-      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+      if (
+        !Roles.userIsInRole(Meteor.userId(), 'superadmin') &&
+        !Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
         throw new Meteor.Error('Not authorized');
       }
 
@@ -142,7 +148,10 @@ if (Meteor.isServer) {
       }
     },
     'employee.setPassword'(userId, newPassword) {
-      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+      if (
+        !Roles.userIsInRole(Meteor.userId(), 'superadmin') &&
+        !Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
         throw new Meteor.Error('Not authorized');
       }
 
@@ -156,7 +165,10 @@ if (Meteor.isServer) {
       }
     },
     'project.create'(project) {
-      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+      if (
+        !Roles.userIsInRole(Meteor.userId(), 'superadmin') &&
+        !Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
         throw new Meteor.Error('Not authorized');
       }
 
@@ -178,7 +190,10 @@ if (Meteor.isServer) {
       }
     },
     'project.update'(_id, project) {
-      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+      if (
+        !Roles.userIsInRole(Meteor.userId(), 'superadmin') &&
+        !Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
         throw new Meteor.Error('Not authorized');
       }
 
@@ -216,7 +231,10 @@ if (Meteor.isServer) {
       }
     },
     'assignment.create'(assignment) {
-      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+      if (
+        !Roles.userIsInRole(Meteor.userId(), 'superadmin') &&
+        !Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
         throw new Meteor.Error('Not authorized');
       }
 
@@ -240,7 +258,10 @@ if (Meteor.isServer) {
       }
     },
     'assignment.delete'(_id) {
-      if (!Roles.userIsInRole(Meteor.userId(), 'admin')) {
+      if (
+        !Roles.userIsInRole(Meteor.userId(), 'superadmin') &&
+        !Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
         throw new Meteor.Error('Not authorized');
       }
 

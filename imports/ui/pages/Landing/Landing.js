@@ -7,13 +7,13 @@ import './Landing.scss';
 
 class Landing extends React.Component {
   componentWillMount() {
-    if (this.props.loggedIn || Meteor.user()) {
+    if (Meteor.userId()) {
       return this.props.history.push('/report');
     }
   }
 
   shouldComponentUpdate(nextProps) {
-    if (nextProps.loggedIn || Meteor.user()) {
+    if (Meteor.userId()) {
       nextProps.history.push('/report');
       return false;
     }

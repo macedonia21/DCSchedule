@@ -108,4 +108,13 @@
     box-shadow: none;
     border-color: #ced4da;
   }
+
+  .password-strength-indicator {
+    position: absolute;
+    display: block;
+    width: 100%;
+    border: solid 3px red;
+    bottom: 0;
+    border-bottom-left-radius: 0.25em;
+  }
 }

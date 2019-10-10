@@ -33,13 +33,13 @@ class EmployeeList extends React.Component {
   }
 
   componentWillMount() {
-    if (!this.props.loggedIn && !Meteor.userId) {
+    if (!Meteor.userId()) {
       return this.props.history.push('/login');
     }
   }
 
   shouldComponentUpdate(nextProps) {
-    if (!nextProps.loggedIn && !Meteor.userId) {
+    if (!Meteor.userId()) {
       nextProps.history.push('/login');
       return false;
     }
@@ -71,7 +71,10 @@ class EmployeeList extends React.Component {
     } = this.state;
 
     if (Meteor.userId()) {
-      if (Roles.userIsInRole(Meteor.userId(), 'admin')) {
+      if (
+        Roles.userIsInRole(Meteor.userId(), 'superadmin') ||
+        Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
         loginRoles.admin = true;
       }
       if (Roles.userIsInRole(Meteor.userId(), 'projman')) {

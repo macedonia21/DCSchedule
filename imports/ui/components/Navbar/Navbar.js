@@ -67,7 +67,7 @@ const LoggedInNav = () => (
           className="dropdown-item"
           onClick={() => {
             NotificationManager.success('Logout', 'Success', 3000);
-            Meteor.logout();
+            setTimeout(Meteor.logout(), 100);
           }}
         >
           Logout
