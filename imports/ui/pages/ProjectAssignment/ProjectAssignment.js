@@ -270,20 +270,33 @@ class ProjectAssignment extends React.Component {
       newAssignment.endDate = project.endDate;
     }
 
-    const activeProjectAssignments = _.filter(
-      projectAssignments,
-      assignment => {
-        return _.contains(
-          _.map(users, user => {
-            return user._id;
+    const activeProjectAssignments = _.sortBy(
+      _.sortBy(
+        _.sortBy(
+          _.filter(projectAssignments, assignment => {
+            return _.contains(
+              _.map(users, usr => {
+                return usr._id;
+              }),
+              assignment._employeeId
+            );
           }),
-          assignment._employeeId
-        );
+          assignment3 => {
+            return assignment3._employeeId;
+          }
+        ),
+        assignment2 => {
+          return moment(assignment2.endDate);
+        }
+      ),
+      assignment1 => {
+        return moment(assignment1.startDate);
       }
     );
+    console.log(activeProjectAssignments);
 
     const pmUser = user
-      ? _.map([user], user => {
+      ? _.map([user], usr => {
           // Find today Assignment
           const todayAssignment = _.find(assignments, assignment => {
             const todayObj = moment();
@@ -305,7 +318,7 @@ class ProjectAssignment extends React.Component {
 
           // Find today Project
           return {
-            ...user,
+            ...usr,
             todayAssignment,
             todayAssignmentProject,
           };
@@ -356,13 +369,29 @@ class ProjectAssignment extends React.Component {
     }
 
     // Selects Component Options
-    const userSelectOptions = _.map(users, user => {
-      return {
-        value: user._id,
-        label: user.profile.fullName,
-        profile: user.profile,
-      };
-    });
+    const assignCurrentlyInProject = _.filter(
+      activeProjectAssignments,
+      assignment => {
+        const currentDateObj = moment();
+        const assignEndDateObj = moment(assignment.endDate);
+        return assignEndDateObj.isSameOrAfter(currentDateObj, 'day');
+      }
+    );
+    const usersCurrentlyInProject = _.uniq(
+      _.map(assignCurrentlyInProject, assignment => assignment._employeeId)
+    );
+    const userSelectOptions = _.map(
+      _.filter(users, usr => {
+        return !_.contains(usersCurrentlyInProject, usr._id);
+      }),
+      user => {
+        return {
+          value: user._id,
+          label: user.profile.fullName,
+          profile: user.profile,
+        };
+      }
+    );
 
     const projectSelectOptions = [
       {
@@ -852,17 +881,7 @@ export default withTracker(props => {
   const assignmentsSub = Meteor.subscribe('assignments.all'); // publication needs to be set on remote server
   const assignments = Assignments.find().fetch();
   const projectAssignments = project
-    ? _.sortBy(
-        _.sortBy(
-          _.where(assignments, { _projectId: project._id }),
-          assignment => {
-            return assignment.startDate;
-          }
-        ),
-        assignment => {
-          return assignment._employeeId;
-        }
-      )
+    ? _.where(assignments, { _projectId: project._id })
     : null;
   const assignmentsReady = assignmentsSub.ready() && !!projectAssignments;
 

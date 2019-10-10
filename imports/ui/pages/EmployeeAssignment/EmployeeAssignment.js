@@ -464,10 +464,10 @@ class EmployeeAssignment extends React.Component {
       },
     ];
 
-    const projectSelectOptions = _.map(projects, project => {
+    const projectSelectOptions = _.map(projects, proj => {
       return {
-        value: project._id,
-        label: project.projectName,
+        value: proj._id,
+        label: proj.projectName,
       };
     });
 
@@ -974,9 +974,17 @@ export default withTracker(props => {
   const assignmentsSub = Meteor.subscribe('assignments.all'); // publication needs to be set on remote server
   const assignments = Assignments.find().fetch();
   const employeeAssignments = user
-    ? _.sortBy(_.where(assignments, { _employeeId: user._id }), assignment => {
-        return assignment.startDate;
-      })
+    ? _.sortBy(
+        _.sortBy(
+          _.where(assignments, { _employeeId: user._id }),
+          assignment2 => {
+            return moment(assignment2.endDate);
+          }
+        ),
+        assignment1 => {
+          return moment(assignment1.startDate);
+        }
+      )
     : null;
   const project =
     projectsReady && employeeAssignments
