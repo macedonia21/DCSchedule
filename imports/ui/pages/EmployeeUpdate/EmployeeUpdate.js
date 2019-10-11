@@ -207,7 +207,7 @@ class EmployeeUpdate extends React.Component {
         entCodeSelectDisabled: false,
         entCodeValue: {
           value: 'VN1C',
-          label: 'Deloitte Consulting Vietnam Co Ltd',
+          label: '(VN1C) Deloitte Consulting Vietnam Co Ltd',
           country: 'Vietnam',
         },
         entCodeAllOptions: [
@@ -305,12 +305,12 @@ class EmployeeUpdate extends React.Component {
         entCodeOptions: [
           {
             value: 'VN1C',
-            label: 'Deloitte Consulting Vietnam Co Ltd',
+            label: '(VN1C) Deloitte Consulting Vietnam Co Ltd',
             country: 'Vietnam',
           },
           {
             value: 'VN2C',
-            label: 'Branch Deloitte Consulting Vietnam Co Ltd in Hanoi',
+            label: '(VN2C) Branch Deloitte Consulting Vietnam Co Ltd in Hanoi',
             country: 'Vietnam',
           },
         ],
