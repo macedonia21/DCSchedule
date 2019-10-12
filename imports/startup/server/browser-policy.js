@@ -16,7 +16,7 @@ allowImageOrigin.forEach(o => BrowserPolicy.content.allowImageOrigin(o));
 /**
  * allowed scripts
  */
-const allowScriptOrigin = ['www.gstatic.com'];
+const allowScriptOrigin = ['www.gstatic.com', 'maps.googleapis.com'];
 allowScriptOrigin.forEach(o => BrowserPolicy.content.allowScriptOrigin(o));
 
 /**

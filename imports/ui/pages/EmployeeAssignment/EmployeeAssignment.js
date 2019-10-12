@@ -62,6 +62,60 @@ function findEmployeeProjectFromAssignments(projects, employeeAssignments) {
   return returnProject;
 }
 
+function getImpactedAssignments(newAssignment, assignments) {
+  const newAssignStartDateObj = moment(newAssignment.startDate);
+  const newAssignEndDateObj = moment(newAssignment.endDate);
+  return newAssignment.percent === 100
+    ? _.map(
+        _.filter(assignments, assignment => {
+          const assignStartDateObj = moment(assignment.startDate);
+          const assignEndDateObj = moment(assignment.endDate);
+          return (
+            newAssignStartDateObj.isSameOrBefore(assignEndDateObj, 'day') &&
+            newAssignEndDateObj.isSameOrAfter(assignStartDateObj, 'day') &&
+            newAssignment._employeeId === assignment._employeeId &&
+            assignment.percent === 100
+          );
+        }),
+        impactedAssignment => {
+          const assignStartDateObj = moment(impactedAssignment.startDate);
+          const assignEndDateObj = moment(impactedAssignment.endDate);
+
+          let editFlag = 'U';
+          let { startDate } = impactedAssignment;
+          let { endDate } = impactedAssignment;
+
+          if (
+            newAssignStartDateObj.isSameOrBefore(assignStartDateObj, 'day') &&
+            newAssignEndDateObj.isSameOrAfter(assignEndDateObj, 'day')
+          ) {
+            editFlag = 'D';
+          } else if (
+            newAssignStartDateObj.isAfter(assignStartDateObj, 'day') &&
+            newAssignEndDateObj.isBefore(assignEndDateObj, 'day')
+          ) {
+          } else if (newAssignStartDateObj.isAfter(assignStartDateObj, 'day')) {
+            editFlag = 'U';
+            endDate = new Date(newAssignStartDateObj.subtract(1, 'days'));
+          } else if (newAssignEndDateObj.isBefore(assignEndDateObj, 'day')) {
+            editFlag = 'U';
+            startDate = new Date(newAssignEndDateObj.add(1, 'days'));
+          } else {
+            return null;
+          }
+
+          return {
+            ...impactedAssignment,
+            _id: impactedAssignment._id,
+            startDate,
+            endDate,
+            editFlag,
+          };
+        }
+      )
+    : [];
+}
+
 class EmployeeAssignment extends React.Component {
   constructor(props) {
     super(props);
@@ -243,15 +297,33 @@ class EmployeeAssignment extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
+    const { employeeAssignments } = this.props;
     const { newAssignment } = this.state;
-    Meteor.call('assignment.create', newAssignment, (err, res) => {
-      if (err) {
-        NotificationManager.error(`Cannot add: ${err.message}`, 'Error', 3000);
-      } else {
-        this.resetDefaultAssignment();
-        NotificationManager.success('New assignment is added', 'Success', 3000);
+    const impactedAssignments = getImpactedAssignments(
+      newAssignment,
+      employeeAssignments
+    );
+    Meteor.call(
+      'assignment.create',
+      newAssignment,
+      impactedAssignments,
+      (err, res) => {
+        if (err) {
+          NotificationManager.error(
+            `Cannot add: ${err.message}`,
+            'Error',
+            3000
+          );
+        } else {
+          this.resetDefaultAssignment();
+          NotificationManager.success(
+            'New assignment is added',
+            'Success',
+            3000
+          );
+        }
       }
-    });
+    );
   }
 
   handleDeleteAssignment(_id) {
@@ -784,87 +856,93 @@ class EmployeeAssignment extends React.Component {
                               className="collapse"
                               id="collapseProjAssignments"
                             >
-                              {_.map(employeeAssignments, assignment => {
-                                const assignedProject = _.findWhere(projects, {
-                                  _id: assignment._projectId,
-                                });
-                                return (
-                                  <div key={assignment._id}>
-                                    <hr />
-                                    <div className="row">
-                                      <div className="col-md-4 pb-2 pt-2 assign-name-text">
-                                        <NavLink
-                                          to={`/project/assignment/${
-                                            assignedProject._id
-                                          }`}
-                                        >
-                                          {assignedProject.projectName}
-                                        </NavLink>
-                                      </div>
-                                      <div className="col-md-2 pb-2 pt-2 assign-date-14-mt2">
-                                        {`${moment(assignment.startDate).format(
-                                          'MMM DD, YY'
-                                        )} - ${moment(
-                                          assignment.endDate
-                                        ).format('MMM DD, YY')}`}
-                                      </div>
-                                      <div className="col-md-1 pb-2 pt-2">
-                                        {`${assignment.percent}%`}
-                                      </div>
-                                      <div className="col-md-2 pb-2 pt-2">
-                                        {assignment.level === 'Member' &&
-                                        assignment.role === 'Member'
-                                          ? `${assignment.level}`
-                                          : assignment.level !== 'Member' &&
-                                            assignment.role !== 'Member'
-                                          ? `${assignment.level} & ${
-                                              assignment.role
-                                            }`
-                                          : assignment.level !== 'Member'
-                                          ? `${assignment.level}`
-                                          : assignment.role !== 'Member'
-                                          ? `${assignment.role}`
-                                          : ''}
-                                      </div>
-                                      <div className="col-md-2 pb-2 pt-2">
-                                        {assignment.talents
-                                          ? _.map(
-                                              assignment.talents,
-                                              talent => {
-                                                return (
-                                                  <span
-                                                    className="react-tagsinput-tag"
-                                                    key={talent}
-                                                  >
-                                                    {talent}
-                                                  </span>
-                                                );
-                                              }
-                                            )
-                                          : ''}
-                                      </div>
-                                      <div className="col-md-1 pb-2 pt-2">
-                                        {loginRoles.admin && (
-                                          <button
-                                            type="button"
-                                            className="close"
-                                            aria-label="Close"
-                                            onClick={() =>
-                                              this.handleDeleteAssignment(
-                                                assignment._id
-                                              )
-                                            }
+                              {_.map(
+                                employeeAssignments,
+                                (assignment, index) => {
+                                  const assignedProject = _.findWhere(
+                                    projects,
+                                    {
+                                      _id: assignment._projectId,
+                                    }
+                                  );
+                                  return (
+                                    <div key={assignment._id}>
+                                      {index > 0 && <hr />}
+                                      <div className="row">
+                                        <div className="col-md-4 pb-2 pt-2 assign-name-text">
+                                          <NavLink
+                                            to={`/project/assignment/${
+                                              assignedProject._id
+                                            }`}
                                           >
-                                            <span aria-hidden="true">
-                                              &times;
-                                            </span>
-                                          </button>
-                                        )}
+                                            {assignedProject.projectName}
+                                          </NavLink>
+                                        </div>
+                                        <div className="col-md-2 pb-2 pt-2 assign-date-14-mt2">
+                                          {`${moment(
+                                            assignment.startDate
+                                          ).format('MMM DD, YY')} - ${moment(
+                                            assignment.endDate
+                                          ).format('MMM DD, YY')}`}
+                                        </div>
+                                        <div className="col-md-1 pb-2 pt-2">
+                                          {`${assignment.percent}%`}
+                                        </div>
+                                        <div className="col-md-2 pb-2 pt-2">
+                                          {assignment.level === 'Member' &&
+                                          assignment.role === 'Member'
+                                            ? `${assignment.level}`
+                                            : assignment.level !== 'Member' &&
+                                              assignment.role !== 'Member'
+                                            ? `${assignment.level} & ${
+                                                assignment.role
+                                              }`
+                                            : assignment.level !== 'Member'
+                                            ? `${assignment.level}`
+                                            : assignment.role !== 'Member'
+                                            ? `${assignment.role}`
+                                            : ''}
+                                        </div>
+                                        <div className="col-md-2 pb-2 pt-2">
+                                          {assignment.talents
+                                            ? _.map(
+                                                assignment.talents,
+                                                talent => {
+                                                  return (
+                                                    <span
+                                                      className="react-tagsinput-tag"
+                                                      key={talent}
+                                                    >
+                                                      {talent}
+                                                    </span>
+                                                  );
+                                                }
+                                              )
+                                            : ''}
+                                        </div>
+                                        <div className="col-md-1 pb-2 pt-2">
+                                          {loginRoles.admin && (
+                                            <button
+                                              type="button"
+                                              className="close"
+                                              aria-label="Close"
+                                              onClick={() =>
+                                                this.handleDeleteAssignment(
+                                                  assignment._id
+                                                )
+                                              }
+                                            >
+                                              <span aria-hidden="true">
+                                                &times;
+                                              </span>
+                                            </button>
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                );
-                              })}
+                                  );
+                                }
+                              )}
                             </div>
                             <div
                               className="row"

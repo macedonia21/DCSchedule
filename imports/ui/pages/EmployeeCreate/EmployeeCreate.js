@@ -505,7 +505,6 @@ class CreateEmployee extends React.Component {
                             }
                             required
                           />
-                          {/* <span className="password-strength-indicator" /> */}
                           <div className="input-group-append">
                             <button
                               className="btn btn-outline-secondary"

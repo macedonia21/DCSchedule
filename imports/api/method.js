@@ -230,7 +230,7 @@ if (Meteor.isServer) {
         throw new Meteor.Error(e.message);
       }
     },
-    'assignment.create'(assignment) {
+    'assignment.create'(assignment, impactedAssignments) {
       if (
         !Roles.userIsInRole(Meteor.userId(), 'superadmin') &&
         !Roles.userIsInRole(Meteor.userId(), 'admin')
@@ -251,8 +251,54 @@ if (Meteor.isServer) {
         remark: String,
       });
 
+      check(
+        impactedAssignments,
+        Match.Where(impactedAssignments => {
+          _.each(impactedAssignments, eachAssignment => {
+            check(
+              eachAssignment,
+              Match.Maybe({
+                _id: Match.Maybe(String),
+                _employeeId: String,
+                _projectId: String,
+                startDate: Date,
+                endDate: Date,
+                availableDate: Date,
+                percent: Number,
+                level: String,
+                role: String,
+                talents: Match.Maybe([String]),
+                remark: Match.Maybe(String),
+                editFlag: String,
+              })
+            );
+          });
+          return true;
+        })
+      );
+
       try {
         Assignments.insert(assignment);
+
+        _.each(impactedAssignments, impactedAssignment => {
+          if (impactedAssignment.editFlag === 'I') {
+            Assignments.insert(impactedAssignment);
+          } else if (impactedAssignment.editFlag === 'U') {
+            Assignments.update(
+              { _id: impactedAssignment._id },
+              {
+                $set: {
+                  startDate: impactedAssignment.startDate,
+                  endDate: impactedAssignment.endDate,
+                },
+              }
+            );
+          } else if (impactedAssignment.editFlag === 'D') {
+            Assignments.remove({
+              _id: impactedAssignment._id,
+            });
+          }
+        });
       } catch (e) {
         throw new Meteor.Error(e.message);
       }

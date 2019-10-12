@@ -677,6 +677,47 @@ class Report extends React.Component {
                 </div>
               </div>
 
+              {/* <!-- Chart Cards - On Bench by Geo --> */}
+              {/* <div className="col-xs-12 col-sm-12 col-md-12 report-chart-card">
+                <div className="image-flip">
+                  <div className="mainflip">
+                    <div className="frontside">
+                      <div className="card">
+                        <div className="card-body text-center">
+                          <Chart
+                            width="auto"
+                            height="312px"
+                            chartType="GeoChart"
+                            loader={<div>Chart loading...</div>}
+                            data={[
+                              ['Country', 'Popularity', 'Area'],
+                              ['VN', 500, 1],
+                              ['TH', 600, 2],
+                              ['MY', 800, 3],
+                              ['SG', 300, 5],
+                              ['ID', 600, 4],
+                            ]}
+                            options={{
+                              region: '035',
+                              legend: {
+                                textStyle: { fontName: 'Roboto' },
+                              },
+                              tooltip: {
+                                textStyle: { fontName: 'Roboto' },
+                              },
+                            }}
+                            // Note: you will need to get a mapsApiKey for your project.
+                            // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
+                            mapsApiKey="AIzaSyBPOucYIW9dV9wsMCWhfav_3meDJu2zghs"
+                            rootProps={{ 'data-testid': '4' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> */}
+
               {/* <!-- Chart Cards - On Bench by Date --> */}
               <div className="col-xs-12 col-sm-12 col-md-12 report-chart-card">
                 <div className="image-flip">
@@ -756,7 +797,7 @@ class Report extends React.Component {
               </div>
 
               {/* <!-- Chart Cards - On Bench by Level --> */}
-              <div className="col-xs-12 col-sm-12 col-md-6 report-summary-card">
+              <div className="col-xs-12 col-sm-12 col-md-6 report-chart-card">
                 <div className="image-flip">
                   <div className="mainflip">
                     <div className="frontside">
@@ -823,10 +864,10 @@ class Report extends React.Component {
                             </div>
                           </form>
                           {unassignedUsersDetails &&
-                            _.map(unassignedUsersDetails, user => {
+                            _.map(unassignedUsersDetails, (user, index) => {
                               return (
                                 <div key={user._id}>
-                                  <hr />
+                                  {index > 0 && <hr />}
                                   <div className="row">
                                     <div className="col-md-3 pb-2 pt-2 assign-name-text">
                                       {(loginRoles.admin ||
@@ -929,10 +970,10 @@ class Report extends React.Component {
                             </div>
                           </form>
                           {assignedUsersDetails &&
-                            _.map(assignedUsersDetails, user => {
+                            _.map(assignedUsersDetails, (user, index1) => {
                               return (
                                 <div key={user._id}>
-                                  <hr />
+                                  {index1 > 0 && <hr />}
                                   <div className="row">
                                     <div className="col-md-3 pb-2 pt-2 assign-name-text">
                                       {(loginRoles.admin ||
@@ -961,84 +1002,86 @@ class Report extends React.Component {
                                         )}
                                     </div>
 
-                                    <div className="col-md-9 pb-2 pt-2 pl-0 pr-0">
+                                    <div className="col-md-9 pb-2 pt-2 pl-0">
                                       {user.inRangeAssignmentsOfUser &&
                                         _.map(
                                           user.inRangeAssignmentsOfUser,
-                                          assignment => {
+                                          (assignment, index2) => {
                                             return (
-                                              <div
-                                                className="row"
-                                                key={assignment._id}
-                                              >
-                                                <div className="col-md-3 pb-1 assign-name-text">
-                                                  {(loginRoles.admin ||
-                                                    loginRoles.projMan) && (
-                                                    <NavLink
-                                                      to={`/project/assignment/${
-                                                        assignment._projectId
-                                                      }`}
-                                                    >
-                                                      {assignment.projectName}
-                                                    </NavLink>
-                                                  )}
-                                                  {!loginRoles.admin &&
-                                                    !loginRoles.projMan && (
-                                                      <>
+                                              <div key={assignment._id}>
+                                                {index2 > 0 && <hr />}
+                                                <div className="row">
+                                                  <div className="col-md-3 pb-1 assign-name-text">
+                                                    {(loginRoles.admin ||
+                                                      loginRoles.projMan) && (
+                                                      <NavLink
+                                                        to={`/project/assignment/${
+                                                          assignment._projectId
+                                                        }`}
+                                                      >
                                                         {assignment.projectName}
-                                                      </>
+                                                      </NavLink>
                                                     )}
-                                                </div>
-                                                <div className="col-md-3 pb-1">
-                                                  {`${moment(
-                                                    assignment.startDate
-                                                  ).format(
-                                                    'MMM DD, YY'
-                                                  )} - ${moment(
-                                                    assignment.endDate
-                                                  ).format('MMM DD, YY')}`}
-                                                </div>
-                                                <div className="col-md-1 pb-1">
-                                                  <span className="percentage-14-pt1">
-                                                    {`${assignment.percent}%`}
-                                                  </span>
-                                                </div>
-                                                <div className="col-md-3 pb-1">
-                                                  {assignment.level ===
-                                                    'Member' &&
-                                                  assignment.role === 'Member'
-                                                    ? `${assignment.level}`
-                                                    : assignment.level !==
-                                                        'Member' &&
-                                                      assignment.role !==
+                                                    {!loginRoles.admin &&
+                                                      !loginRoles.projMan && (
+                                                        <>
+                                                          {
+                                                            assignment.projectName
+                                                          }
+                                                        </>
+                                                      )}
+                                                  </div>
+                                                  <div className="col-md-3 pb-1">
+                                                    {`${moment(
+                                                      assignment.startDate
+                                                    ).format(
+                                                      'MMM DD, YY'
+                                                    )} - ${moment(
+                                                      assignment.endDate
+                                                    ).format('MMM DD, YY')}`}
+                                                  </div>
+                                                  <div className="col-md-1 pb-1">
+                                                    <span className="percentage-14-pt1">
+                                                      {`${assignment.percent}%`}
+                                                    </span>
+                                                  </div>
+                                                  <div className="col-md-3 pb-1">
+                                                    {assignment.level ===
+                                                      'Member' &&
+                                                    assignment.role === 'Member'
+                                                      ? `${assignment.level}`
+                                                      : assignment.level !==
+                                                          'Member' &&
+                                                        assignment.role !==
+                                                          'Member'
+                                                      ? `${
+                                                          assignment.level
+                                                        } & ${assignment.role}`
+                                                      : assignment.level !==
                                                         'Member'
-                                                    ? `${assignment.level} & ${
-                                                        assignment.role
-                                                      }`
-                                                    : assignment.level !==
-                                                      'Member'
-                                                    ? `${assignment.level}`
-                                                    : assignment.role !==
-                                                      'Member'
-                                                    ? `${assignment.role}`
-                                                    : ''}
-                                                </div>
-                                                <div className="col-md-2 pb-1">
-                                                  {assignment.talents
-                                                    ? _.map(
-                                                        assignment.talents,
-                                                        talent => {
-                                                          return (
-                                                            <span
-                                                              className="react-tagsinput-tag"
-                                                              key={talent}
-                                                            >
-                                                              {talent}
-                                                            </span>
-                                                          );
-                                                        }
-                                                      )
-                                                    : ''}
+                                                      ? `${assignment.level}`
+                                                      : assignment.role !==
+                                                        'Member'
+                                                      ? `${assignment.role}`
+                                                      : ''}
+                                                  </div>
+                                                  <div className="col-md-2 pb-1">
+                                                    {assignment.talents
+                                                      ? _.map(
+                                                          assignment.talents,
+                                                          talent => {
+                                                            return (
+                                                              <span
+                                                                className="react-tagsinput-tag"
+                                                                key={talent}
+                                                              >
+                                                                {talent}
+                                                              </span>
+                                                            );
+                                                          }
+                                                        )
+                                                      : ''}
+                                                  </div>
                                                 </div>
                                               </div>
                                             );

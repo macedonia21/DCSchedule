@@ -17,8 +17,10 @@ class Login extends React.Component {
     this.state = {
       email: '',
       password: '',
+      isPasswordShown: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handlePasswordShow = this.handlePasswordShow.bind(this);
   }
 
   componentWillMount() {
@@ -35,6 +37,12 @@ class Login extends React.Component {
     return true;
   }
 
+  handlePasswordShow() {
+    this.setState({
+      isPasswordShown: !this.state.isPasswordShown,
+    });
+  }
+
   handleSubmit(e) {
     e.preventDefault();
     const { email, password } = this.state;
@@ -47,6 +55,8 @@ class Login extends React.Component {
   }
 
   render() {
+    const { isPasswordShown, email, password } = this.state;
+
     if (this.props.loggedIn) {
       return null;
     }
@@ -65,28 +75,46 @@ class Login extends React.Component {
                     type="email"
                     className="form-control"
                     name="email"
-                    value={this.state.email}
+                    value={email}
                     onChange={e => this.setState({ email: e.target.value })}
                     required
                   />
                 </div>
 
                 <div className="form-group">
-                  <div className="spread-container">
-                    <label htmlFor="password">Password</label>
+                  <label htmlFor="password">Password</label>
+                  <div className="input-group">
+                    <input
+                      id="password"
+                      type="password"
+                      className="form-control"
+                      name="password"
+                      value={password}
+                      onChange={e =>
+                        this.setState({ password: e.target.value })
+                      }
+                      required
+                    />
+                    <div className="input-group-append">
+                      <button
+                        className="btn btn-outline-secondary"
+                        type="button"
+                        id="button-addon1"
+                        onClick={this.handlePasswordShow}
+                      >
+                        <span
+                          className={
+                            isPasswordShown ? 'fa fa-eye' : 'fa fa-eye-slash'
+                          }
+                        />
+                      </button>
+                    </div>
                   </div>
-                  <input
-                    id="password"
-                    type="password"
-                    className="form-control"
-                    name="password"
-                    value={this.state.password}
-                    onChange={e => this.setState({ password: e.target.value })}
-                    required
-                  />
-                  <NavLink className="invisible" to="/recover-password">
-                    Forgot Password?
-                  </NavLink>
+                  {1 === 2 && (
+                    <NavLink className="invisible" to="/recover-password">
+                      Forgot Password?
+                    </NavLink>
+                  )}
                 </div>
                 <div className="form-group no-margin">
                   <button
