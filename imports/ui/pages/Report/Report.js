@@ -212,11 +212,11 @@ function getUnassignedEmployeesDetails(
       lastAssign: lastAssignment.endDate
         ? `On bench from ${moment(lastAssignment.endDate)
             .add(1, 'days')
-            .format('MMM DD, YYYY')}`
+            .format('MMM DD, YY')}`
         : 'No assignment before',
       nextAssign: nextAssignment.startDate
         ? `Next assignment ${moment(nextAssignment.startDate).format(
-            'MMM DD, YYYY'
+            'MMM DD, YY'
           )}`
         : 'Available',
       nextAssignTextClass: nextAssignment.startDate

@@ -18,6 +18,42 @@ import './Profile.scss';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-notifications/lib/notifications.css';
 
+function getPasswordStrength(newPass) {
+  const passwordStrength = {
+    className: 'progress-bar bg-danger',
+    width: '0%',
+  };
+  if (newPass.length === 0) {
+    passwordStrength.className = 'progress-bar bg-danger';
+    passwordStrength.width = '0%';
+  } else {
+    const strongRegex = new RegExp(
+      '^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$',
+      'g'
+    );
+    const mediumRegex = new RegExp(
+      '^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$',
+      'g'
+    );
+    const enoughRegex = new RegExp('(?=.{6,}).*', 'g');
+
+    if (!enoughRegex.test(newPass)) {
+      passwordStrength.width = '25%';
+    } else if (strongRegex.test(newPass)) {
+      passwordStrength.className = 'progress-bar bg-success';
+      passwordStrength.width = '100%';
+    } else if (mediumRegex.test(newPass)) {
+      passwordStrength.className = 'progress-bar bg-warning';
+      passwordStrength.width = '75%';
+    } else {
+      passwordStrength.className = 'progress-bar bg-warning';
+      passwordStrength.width = '50%';
+    }
+  }
+
+  return passwordStrength;
+}
+
 class Profile extends React.Component {
   constructor(props) {
     super(props);
@@ -319,11 +355,16 @@ class Profile extends React.Component {
       oldPass: '',
       newPass: '',
       retypeNewPass: '',
+      passwordStrength: {
+        className: 'progress-bar bg-danger',
+        width: '0%',
+      },
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleOldPasswordShow = this.handleOldPasswordShow.bind(this);
     this.handleNewPasswordShow = this.handleNewPasswordShow.bind(this);
     this.handleConfirmPasswordShow = this.handleConfirmPasswordShow.bind(this);
+    // this.handlePasswordStrength = this.handlePasswordStrength.bind(this);
   }
 
   componentWillMount() {
@@ -339,6 +380,12 @@ class Profile extends React.Component {
     }
     return true;
   }
+  //
+  // handlePasswordStrength(newPass) {
+  //   this.setState({
+  //
+  //   });
+  // }
 
   handleOldPasswordShow() {
     this.setState({
@@ -419,6 +466,7 @@ class Profile extends React.Component {
       oldPass,
       newPass,
       retypeNewPass,
+      passwordStrength,
     } = this.state;
 
     if (!loggedIn) {
@@ -809,7 +857,10 @@ class Profile extends React.Component {
                     {/* <!-- Second Col --> */}
                     <div className="col-md-4">
                       {/* <!-- New Password --> */}
-                      <div className="form-group">
+                      <div
+                        className="form-group"
+                        style={{ marginBottom: '5px' }}
+                      >
                         <label htmlFor="newpassword">New Password</label>
                         <div className="input-group">
                           <input
@@ -818,9 +869,14 @@ class Profile extends React.Component {
                             className="form-control"
                             name="newpassword"
                             value={newPass}
-                            onChange={e =>
-                              this.setState({ newPass: e.target.value })
-                            }
+                            onChange={e => {
+                              this.setState({
+                                newPass: e.target.value,
+                                passwordStrength: getPasswordStrength(
+                                  e.target.value
+                                ),
+                              });
+                            }}
                             required
                           />
                           <div className="input-group-append">
@@ -839,6 +895,19 @@ class Profile extends React.Component {
                               />
                             </button>
                           </div>
+                        </div>
+                        <div
+                          className="progress"
+                          style={{ height: '6px', marginTop: '5px' }}
+                        >
+                          <div
+                            className={passwordStrength.className}
+                            role="progressbar"
+                            style={{ width: passwordStrength.width }}
+                            aria-valuenow="75"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          />
                         </div>
                       </div>
                     </div>
