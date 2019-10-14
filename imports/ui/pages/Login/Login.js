@@ -86,7 +86,7 @@ class Login extends React.Component {
                   <div className="input-group">
                     <input
                       id="password"
-                      type="password"
+                      type={isPasswordShown ? 'text' : 'password'}
                       className="form-control"
                       name="password"
                       value={password}
