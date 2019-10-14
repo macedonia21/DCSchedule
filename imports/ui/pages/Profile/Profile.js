@@ -59,6 +59,14 @@ class Profile extends React.Component {
             value: 'SM',
             label: 'Senior Manager',
           },
+          {
+            value: 'D',
+            label: 'Director',
+          },
+          {
+            value: 'P',
+            label: 'Partner',
+          },
         ],
         empTypeValue: { value: 'Permanent', label: 'Permanent' },
         empTypeOptions: [
@@ -626,7 +634,7 @@ class Profile extends React.Component {
                             type="text"
                             className="form-control"
                             name="joblevel"
-                            value={user.profile.jobLevel}
+                            value=""
                             required
                             disabled
                           />

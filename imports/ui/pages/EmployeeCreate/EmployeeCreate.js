@@ -85,6 +85,14 @@ class CreateEmployee extends React.Component {
             value: 'SM',
             label: 'Senior Manager',
           },
+          {
+            value: 'D',
+            label: 'Director',
+          },
+          {
+            value: 'P',
+            label: 'Partner',
+          },
         ],
         empTypeValue: { value: 'Permanent', label: 'Permanent' },
         empTypeOptions: [
