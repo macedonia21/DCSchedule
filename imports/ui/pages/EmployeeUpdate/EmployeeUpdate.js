@@ -673,7 +673,7 @@ class EmployeeUpdate extends React.Component {
                           type="text"
                           className="form-control"
                           name="joblevel"
-                          value={user.profile.jobLevel}
+                          value={loginRoles.admin ? user.profile.jobLevel : ''}
                           onChange={e => {
                             this.setState({
                               isChanged: true,

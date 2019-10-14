@@ -1,13 +1,13 @@
 import React from 'react';
 const { Loader } = require('react-loaders');
 
-import './Spinner.scss';
+import './PulseLoader.scss';
 import 'loaders.css/src/animations/ball-grid-pulse.scss';
 
-const Spinner = () => (
-  <div className="login-spinner">
+const PulseLoader = () => (
+  <div className="div-loader">
     <Loader type="ball-grid-pulse" active />
   </div>
 );
 
-export default Spinner;
+export default PulseLoader;
