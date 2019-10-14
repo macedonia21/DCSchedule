@@ -843,8 +843,12 @@ class EmployeeUpdate extends React.Component {
                       <div className="form-group">
                         <label htmlFor="emptype">Employment Type</label>
                         <Select
-                          defaultValue={defaultEmpTypeOption}
-                          value={reactSelect.empTypeValue}
+                          defaultValue={
+                            loginRoles.admin ? defaultEmpTypeOption : null
+                          }
+                          value={
+                            loginRoles.admin ? reactSelect.empTypeValue : null
+                          }
                           options={reactSelect.empTypeOptions}
                           placeholder="Select Employment Type"
                           onChange={selectedOption => {
@@ -876,7 +880,7 @@ class EmployeeUpdate extends React.Component {
                           min={0}
                           className="form-control"
                           name="hpw"
-                          value={user.profile.hPW || 0}
+                          value={loginRoles.admin ? user.profile.hPW || 0 : ''}
                           onChange={e => {
                             this.setState({
                               isChanged: true,

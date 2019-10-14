@@ -919,7 +919,7 @@ class Report extends React.Component {
                                             talent => {
                                               return (
                                                 <span
-                                                  className="react-tagsinput-tag"
+                                                  className="react-tagsinput-tag mb-1"
                                                   key={talent}
                                                 >
                                                   {talent}
@@ -1011,7 +1011,7 @@ class Report extends React.Component {
                                               <div key={assignment._id}>
                                                 {index2 > 0 && <hr />}
                                                 <div className="row">
-                                                  <div className="col-md-3 pb-1 assign-name-text">
+                                                  <div className="col-md-3 assign-name-text">
                                                     {(loginRoles.admin ||
                                                       loginRoles.projMan) && (
                                                       <NavLink
@@ -1031,7 +1031,7 @@ class Report extends React.Component {
                                                         </>
                                                       )}
                                                   </div>
-                                                  <div className="col-md-3 pb-1">
+                                                  <div className="col-md-3">
                                                     {`${moment(
                                                       assignment.startDate
                                                     ).format(
@@ -1040,12 +1040,12 @@ class Report extends React.Component {
                                                       assignment.endDate
                                                     ).format('MMM DD, YY')}`}
                                                   </div>
-                                                  <div className="col-md-1 pb-1">
+                                                  <div className="col-md-1">
                                                     <span className="percentage-14-pt1">
                                                       {`${assignment.percent}%`}
                                                     </span>
                                                   </div>
-                                                  <div className="col-md-3 pb-1">
+                                                  <div className="col-md-3">
                                                     {assignment.level ===
                                                       'Member' &&
                                                     assignment.role === 'Member'
@@ -1065,14 +1065,14 @@ class Report extends React.Component {
                                                       ? `${assignment.role}`
                                                       : ''}
                                                   </div>
-                                                  <div className="col-md-2 pb-1">
+                                                  <div className="col-md-2">
                                                     {assignment.talents
                                                       ? _.map(
                                                           assignment.talents,
                                                           talent => {
                                                             return (
                                                               <span
-                                                                className="react-tagsinput-tag"
+                                                                className="react-tagsinput-tag mb-1"
                                                                 key={talent}
                                                               >
                                                                 {talent}
@@ -1189,7 +1189,14 @@ export default withTracker(() => {
   const projectsReady = projectsSub.ready() && !!projects;
 
   const usersSub = Meteor.subscribe('users.all'); // publication needs to be set on remote server
-  const users = Meteor.users.find({ disabled: { $in: [false, null] } }).fetch();
+  const users = Meteor.users
+    .find({
+      $and: [
+        { disabled: { $in: [false, null] } },
+        { 'profile.country': 'Vietnam' },
+      ],
+    })
+    .fetch();
   const usersReady = usersSub.ready() && !!users;
 
   const assignmentsSub = Meteor.subscribe('assignments.all'); // publication needs to be set on remote server
