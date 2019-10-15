@@ -81,10 +81,14 @@ body::-webkit-scrollbar-thumb {
 }
 
 .dropdown-toggle[aria-expanded="true"]:after {
-  -webkit-transform: rotate(180deg);
-  transform: rotate(180deg);
+  transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
 }
 .dropdown-toggle:after {
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
+  transition: .3s transform ease-in-out;
+  -webkit-transition: .3s transform ease-in-out;
+  border: none !important;
+  font-family: 'FontAwesome', sans-serif !important;
+  content: '\f0da' !important; // fa-caret-right
+  vertical-align: 0 !important;
 }
