@@ -241,9 +241,14 @@ class EmployeeAssignment extends React.Component {
           },
         ],
       },
+      editingAssignmentId: null,
+      editingStartDate: new Date(),
+      editingEndDate: new Date(),
+      isChanged: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDeleteAssignment = this.handleDeleteAssignment.bind(this);
+    this.handleUpdateAssignment = this.handleUpdateAssignment.bind(this);
     this.customFilter = this.customFilter.bind(this);
   }
 
@@ -340,6 +345,31 @@ class EmployeeAssignment extends React.Component {
     });
   }
 
+  handleUpdateAssignment(_id) {
+    const { editingStartDate, editingEndDate } = this.state;
+    Meteor.call(
+      'assignment.update',
+      _id,
+      editingStartDate,
+      editingEndDate,
+      (err, res) => {
+        if (err) {
+          NotificationManager.error(
+            `Cannot update: ${err.message}`,
+            'Error',
+            3000
+          );
+        } else {
+          this.setState({
+            editingAssignmentId: null,
+            isChanged: false,
+          });
+          NotificationManager.success('Assignment is updated', 'Success', 3000);
+        }
+      }
+    );
+  }
+
   render() {
     const {
       loggedIn,
@@ -357,6 +387,10 @@ class EmployeeAssignment extends React.Component {
       isDefaultSet,
       chartData,
       reactSelect,
+      editingAssignmentId,
+      editingStartDate,
+      editingEndDate,
+      isChanged,
     } = this.state;
 
     if (!loggedIn) {
@@ -467,16 +501,27 @@ class EmployeeAssignment extends React.Component {
                   assignment.startDate,
                   assignment.endDate
                 );
-                return _.map(dateRange, date => {
-                  return [
-                    new Date(
+                return _.map(
+                  // _.filter(dateRange, day => {
+                  //   const runningDay = new Date(
+                  //     day.getFullYear(),
+                  //     day.getMonth(),
+                  //     day.getDate()
+                  //   );
+                  //   return (
+                  //     runningDay.getDay() !== 0 && runningDay.getDay() !== 6
+                  //   );
+                  // }),
+                  dateRange,
+                  date => {
+                    const runningDate = new Date(
                       date.getFullYear(),
                       date.getMonth(),
                       date.getDate()
-                    ),
-                    assignment.percent,
-                  ];
-                });
+                    );
+                    return [runningDate, assignment.percent];
+                  }
+                );
               }),
               true
             ),
@@ -728,7 +773,7 @@ class EmployeeAssignment extends React.Component {
                                           id="talents"
                                           className="form-control"
                                           value={newAssignment.talents}
-                                          maxTags={3}
+                                          maxTags={4}
                                           onChange={tags =>
                                             this.setState({
                                               newAssignment: {
@@ -878,66 +923,168 @@ class EmployeeAssignment extends React.Component {
                                             {assignedProject.projectName}
                                           </NavLink>
                                         </div>
-                                        <div className="col-md-2 pb-2 pt-2 assign-date-14-mt2">
-                                          {`${moment(
-                                            assignment.startDate
-                                          ).format('MMM DD, YY')} - ${moment(
-                                            assignment.endDate
-                                          ).format('MMM DD, YY')}`}
-                                        </div>
-                                        <div className="col-md-1 pb-2 pt-2">
-                                          {`${assignment.percent}%`}
-                                        </div>
-                                        <div className="col-md-2 pb-2 pt-2">
-                                          {assignment.level === 'Member' &&
-                                          assignment.role === 'Member'
-                                            ? `${assignment.level}`
-                                            : assignment.level !== 'Member' &&
-                                              assignment.role !== 'Member'
-                                            ? `${assignment.level} & ${
-                                                assignment.role
-                                              }`
-                                            : assignment.level !== 'Member'
-                                            ? `${assignment.level}`
-                                            : assignment.role !== 'Member'
-                                            ? `${assignment.role}`
-                                            : ''}
-                                        </div>
-                                        <div className="col-md-2 pb-2 pt-2">
-                                          {assignment.talents
-                                            ? _.map(
-                                                assignment.talents,
-                                                talent => {
-                                                  return (
-                                                    <span
-                                                      className="react-tagsinput-tag"
-                                                      key={talent}
-                                                    >
-                                                      {talent}
-                                                    </span>
-                                                  );
-                                                }
-                                              )
-                                            : ''}
-                                        </div>
-                                        <div className="col-md-1 pb-2 pt-2">
-                                          {loginRoles.admin && (
-                                            <button
-                                              type="button"
-                                              className="close"
-                                              aria-label="Close"
-                                              onClick={() =>
-                                                this.handleDeleteAssignment(
-                                                  assignment._id
-                                                )
-                                              }
+
+                                        {assignment._id ===
+                                        editingAssignmentId ? (
+                                          <>
+                                            <div
+                                              className="col-md-7 pb-1 pt-1"
+                                              style={{ height: '33px' }}
                                             >
-                                              <span aria-hidden="true">
-                                                &times;
-                                              </span>
-                                            </button>
-                                          )}
-                                        </div>
+                                              <form className="form-inline">
+                                                <label htmlFor="startdate">
+                                                  Start Date
+                                                </label>
+                                                <DatePicker
+                                                  className="form-control assignment-edit-input ml-sm-2 mr-sm-2"
+                                                  selected={editingStartDate}
+                                                  onChange={date =>
+                                                    this.setState({
+                                                      isChanged: true,
+                                                      editingStartDate: date,
+                                                    })
+                                                  }
+                                                  maxDate={editingEndDate}
+                                                  dateFormat="MMM dd, yyyy"
+                                                />
+                                                <label htmlFor="enddate">
+                                                  End Date
+                                                </label>
+                                                <DatePicker
+                                                  className="form-control assignment-edit-input ml-sm-2 mr-sm-2"
+                                                  selected={editingEndDate}
+                                                  onChange={date =>
+                                                    this.setState({
+                                                      isChanged: true,
+                                                      editingEndDate: date,
+                                                    })
+                                                  }
+                                                  minDate={editingStartDate}
+                                                  dateFormat="MMM dd, yyyy"
+                                                />
+                                              </form>
+                                            </div>
+                                            <div className="col-md-1 pb-2 pt-2">
+                                              <button
+                                                type="button"
+                                                className="btn btn-sm assignment-small-button mr-2"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="Save"
+                                                onClick={() => {
+                                                  this.handleUpdateAssignment(
+                                                    assignment._id
+                                                  );
+                                                }}
+                                                disabled={!isChanged}
+                                              >
+                                                <span className="fa fa-check text-primary" />
+                                              </button>
+                                              <button
+                                                type="button"
+                                                className="btn btn-sm assignment-small-button"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="Cancel"
+                                                onClick={() => {
+                                                  this.setState({
+                                                    editingAssignmentId: null,
+                                                    isChanged: false,
+                                                  });
+                                                }}
+                                              >
+                                                <span className="fa fa-times text-secondary" />
+                                              </button>
+                                            </div>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <div className="col-md-2 pb-2 pt-2 assign-date-14-mt2">
+                                              {`${moment(
+                                                assignment.startDate
+                                              ).format(
+                                                'MMM DD, YY'
+                                              )} - ${moment(
+                                                assignment.endDate
+                                              ).format('MMM DD, YY')}`}
+                                            </div>
+                                            <div className="col-md-1 pb-2 pt-2">
+                                              {`${assignment.percent}%`}
+                                            </div>
+                                            <div className="col-md-2 pb-2 pt-2">
+                                              {assignment.level === 'Member' &&
+                                              assignment.role === 'Member'
+                                                ? `${assignment.level}`
+                                                : assignment.level !==
+                                                    'Member' &&
+                                                  assignment.role !== 'Member'
+                                                ? `${assignment.level} & ${
+                                                    assignment.role
+                                                  }`
+                                                : assignment.level !== 'Member'
+                                                ? `${assignment.level}`
+                                                : assignment.role !== 'Member'
+                                                ? `${assignment.role}`
+                                                : ''}
+                                            </div>
+                                            <div className="col-md-2 pb-2 pt-2">
+                                              {assignment.talents
+                                                ? _.map(
+                                                    assignment.talents,
+                                                    talent => {
+                                                      return (
+                                                        <span
+                                                          className="react-tagsinput-tag"
+                                                          key={talent}
+                                                        >
+                                                          {talent}
+                                                        </span>
+                                                      );
+                                                    }
+                                                  )
+                                                : ''}
+                                            </div>
+                                            <div className="col-md-1 pb-2 pt-2">
+                                              {loginRoles.admin && (
+                                                <>
+                                                  <button
+                                                    type="button"
+                                                    className="btn btn-sm assignment-small-button mr-2"
+                                                    data-toggle="tooltip"
+                                                    data-placement="top"
+                                                    title="Edit"
+                                                    onClick={() => {
+                                                      this.setState({
+                                                        editingAssignmentId:
+                                                          assignment._id,
+                                                        editingStartDate:
+                                                          assignment.startDate,
+                                                        editingEndDate:
+                                                          assignment.endDate,
+                                                      });
+                                                    }}
+                                                  >
+                                                    <span className="fa fa-calendar-o text-primary" />
+                                                  </button>
+                                                  <button
+                                                    type="button"
+                                                    className="btn btn-sm assignment-small-button"
+                                                    data-toggle="tooltip"
+                                                    data-placement="top"
+                                                    title="Delete"
+                                                    onClick={() =>
+                                                      this.handleDeleteAssignment(
+                                                        assignment._id
+                                                      )
+                                                    }
+                                                  >
+                                                    <span className="fa fa-trash-o text-danger" />
+                                                  </button>
+                                                </>
+                                              )}
+                                            </div>
+                                          </>
+                                        )}
                                       </div>
                                     </div>
                                   );

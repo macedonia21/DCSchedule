@@ -321,5 +321,32 @@ if (Meteor.isServer) {
         throw new Meteor.Error(e.message);
       }
     },
+    'assignment.update'(_id, startDate, endDate) {
+      if (
+        !Roles.userIsInRole(Meteor.userId(), 'superadmin') &&
+        !Roles.userIsInRole(Meteor.userId(), 'admin')
+      ) {
+        throw new Meteor.Error('Not authorized');
+      }
+
+      check(_id, String);
+      check(startDate, Date);
+      check(endDate, Date);
+
+      try {
+        Assignments.update(
+          { _id },
+          {
+            $set: {
+              startDate,
+              endDate,
+              availableDate: startDate,
+            },
+          }
+        );
+      } catch (e) {
+        throw new Meteor.Error(e.message);
+      }
+    },
   });
 }

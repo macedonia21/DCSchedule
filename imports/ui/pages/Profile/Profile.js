@@ -655,7 +655,7 @@ class Profile extends React.Component {
                             id="talents"
                             className="form-control form-control-disabled"
                             value={user.profile.talents}
-                            maxTags={3}
+                            maxTags={4}
                             disabled
                           />
                         </div>

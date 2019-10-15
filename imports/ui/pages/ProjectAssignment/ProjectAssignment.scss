@@ -29,16 +29,6 @@
       position: relative;
       margin-bottom: 30px;
     }
-
-    .form-control:hover {
-      border-color: hsl(0,0%,70%);
-    }
-    .form-control:hover:focus, .form-control.react-tagsinput--focused:hover{
-      border-color: #2684FF;
-    }
-    .form-control:hover:disabled {
-      border-color: #ced4da;
-    }
   }
 
   .react-datepicker-wrapper {
@@ -103,8 +93,46 @@
     }
   }
 
+  .form-control:hover {
+    border-color: hsl(0,0%,70%);
+  }
+  .form-control:hover:focus, .form-control.react-tagsinput--focused:hover{
+    border-color: #2684FF;
+  }
+  .form-control:hover:disabled {
+    border-color: #ced4da;
+  }
+
   .assign-date-14-mt2 {
     font-size: 14px;
     margin-top: 2px;
+  }
+
+  .assignment-dropdown {
+    height: 25px;
+  }
+  .assignment-dropdown-toggle {
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 1em;
+    line-height: 23px;
+  }
+
+  .dropdown-item {
+    cursor: pointer;
+  }
+
+  .assignment-small-button {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    padding: 0;
+    font-size: 22px;
+  }
+
+  .assignment-edit-input {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    height: 32px;
   }
 }

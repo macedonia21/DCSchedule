@@ -648,7 +648,7 @@ class CreateEmployee extends React.Component {
                           id="talents"
                           className="form-control"
                           value={profile.talents}
-                          maxTags={3}
+                          maxTags={4}
                           onChange={tags =>
                             this.setState({
                               profile: {

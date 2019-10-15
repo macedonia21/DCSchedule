@@ -638,7 +638,7 @@ class EmployeeUpdate extends React.Component {
                               : 'form-control form-control-disabled'
                           }
                           value={user.profile.talents}
-                          maxTags={3}
+                          maxTags={4}
                           onChange={tags => {
                             this.setState({
                               isChanged: true,
