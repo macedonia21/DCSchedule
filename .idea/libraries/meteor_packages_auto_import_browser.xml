@@ -9,6 +9,7 @@
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/es5-shim/4.8.0/web.browser/cordova.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/es5-shim/4.8.0/web.browser/import_globals.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/es5-shim/4.8.0/web.browser/export_globals.js" />
+        <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/edgee_slingshot/0.7.1/web.browser/packages/edgee_slingshot.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/ejson/1.1.0/web.browser/ejson.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/ejson/1.1.0/web.browser/custom_models_for_tests.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/ejson/1.1.0/web.browser/ejson_tests.js" />
@@ -299,6 +300,7 @@
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/es5-shim/4.8.0/web.browser/cordova.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/es5-shim/4.8.0/web.browser/import_globals.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/es5-shim/4.8.0/web.browser/export_globals.js" />
+      <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/edgee_slingshot/0.7.1/web.browser/packages/edgee_slingshot.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/ejson/1.1.0/web.browser/ejson.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/ejson/1.1.0/web.browser/custom_models_for_tests.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/ejson/1.1.0/web.browser/ejson_tests.js" />

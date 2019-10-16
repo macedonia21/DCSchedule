@@ -10,7 +10,10 @@ import { BrowserPolicy } from 'meteor/browser-policy-common';
 /**
  * allowed images
  */
-const allowImageOrigin = ['via.placeholder.com'];
+const allowImageOrigin = [
+  'via.placeholder.com',
+  'dcrs.s3-ap-southeast-1.amazonaws.com',
+];
 allowImageOrigin.forEach(o => BrowserPolicy.content.allowImageOrigin(o));
 
 /**

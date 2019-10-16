@@ -20,6 +20,9 @@ class EmployeeUpdate extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      avatar: {
+        srcImage: '',
+      },
       loginRoles: {
         admin: false,
         projMan: false,
@@ -327,6 +330,8 @@ class EmployeeUpdate extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleRoleAdminClick = this.handleRoleAdminClick.bind(this);
     this.handleRoleProjManClick = this.handleRoleProjManClick.bind(this);
+
+    this.handleAvatarUpload = this.handleAvatarUpload.bind(this);
   }
 
   componentWillMount() {
@@ -341,6 +346,35 @@ class EmployeeUpdate extends React.Component {
       return false;
     }
     return true;
+  }
+
+  handleAvatarUpload() {
+    const { user } = this.props;
+    const metaContext = { avatarId: user._id };
+    const uploader = new Slingshot.Upload('myImageUploads', metaContext);
+    uploader.send(
+      document.getElementById('customFile').files[0],
+      function(error, downloadUrl) {
+        // you can use refs if you like
+        if (error) {
+          // Log service detailed response
+          NotificationManager.error(
+            `Cannot upload: ${uploader.xhr.response}`,
+            'Error',
+            3000
+          );
+        } else {
+          // you will need this in the event the user hit the update button because it will remove the avatar url
+          this.setState({ avatar: { srcImage: downloadUrl }, isChanged: true });
+          user.profile.avatar = downloadUrl;
+          NotificationManager.success(
+            'Employee image is uploaded',
+            'Success',
+            3000
+          );
+        }
+      }.bind(this)
+    );
   }
 
   handleRoleAdminClick() {
@@ -394,7 +428,7 @@ class EmployeeUpdate extends React.Component {
 
   render() {
     const { loggedIn, usersReady, user } = this.props;
-    const { loginRoles, roles, isDefaultSet, reactSelect } = this.state;
+    const { loginRoles, roles, isDefaultSet, reactSelect, avatar } = this.state;
 
     if (Meteor.userId()) {
       if (
@@ -416,6 +450,8 @@ class EmployeeUpdate extends React.Component {
       if (Roles.userIsInRole(user._id, 'projman')) {
         roles.projMan = true;
       }
+
+      avatar.srcImage = user.profile.avatar;
     }
 
     const reactSelectStyle = {
@@ -986,15 +1022,103 @@ class EmployeeUpdate extends React.Component {
                     </div>
                   </div>
                   {loginRoles.admin && (
-                    <div className="form-group no-margin">
-                      <button
-                        type="submit"
-                        className="btn btn-primary btn-block mb-2"
-                        disabled={!this.state.isChanged}
-                      >
-                        Update
-                      </button>
-                    </div>
+                    <>
+                      <hr />
+                      <h1 className="card-title text-center">Upload Avatar</h1>
+
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="email">Employee Image</label>
+                            <div className="custom-file">
+                              <label
+                                className="custom-file-label"
+                                htmlFor="customFile"
+                              >
+                                Choose file
+                              </label>
+                              <input
+                                className="form-control"
+                                type="file"
+                                id="customFile"
+                                onChange={this.handleAvatarUpload}
+                              />
+                            </div>
+                            <p className="help-block">
+                              Image max restriction: 1MB, 512 x 512. Cropped:
+                              120 x 120
+                            </p>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div
+                            className="text-center"
+                            style={{ height: '124px', marginBottom: '1rem' }}
+                          >
+                            <div className="inline-avatar-block ml-1 mr-1">
+                              <span className="badge badge-pill badge-primary emp-img-badge">
+                                Assigning Project
+                              </span>
+
+                              <div className="img-wrap primary-border">
+                                <img
+                                  className="img-fluid"
+                                  src={
+                                    avatar.srcImage ||
+                                    '/img/avatar_placeholder.png'
+                                  }
+                                  alt="No image"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="inline-avatar-block ml-1 mr-1">
+                              <span className="badge badge-pill badge-danger emp-img-badge">
+                                Available
+                              </span>
+
+                              <div className="img-wrap danger-border">
+                                <img
+                                  className="img-fluid"
+                                  src={
+                                    avatar.srcImage ||
+                                    '/img/avatar_placeholder.png'
+                                  }
+                                  alt="No image"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="inline-avatar-block ml-1 mr-1">
+                              <span className="badge badge-pill badge-secondary emp-img-badge">
+                                Inactive
+                              </span>
+
+                              <div className="img-wrap secondary-border">
+                                <img
+                                  className="img-fluid img-fluid-disabled"
+                                  src={
+                                    avatar.srcImage ||
+                                    '/img/avatar_placeholder.png'
+                                  }
+                                  alt="No image"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="form-group no-margin">
+                        <button
+                          type="submit"
+                          className="btn btn-primary btn-block mb-2"
+                          disabled={!this.state.isChanged}
+                        >
+                          Update
+                        </button>
+                      </div>
+                    </>
                   )}
                 </form>
               )}

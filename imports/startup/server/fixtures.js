@@ -42,4 +42,29 @@ Meteor.startup(() => {
       Roles.addUsersToRoles(adminId, ['user', 'admin'], Roles.GLOBAL_GROUP);
     }
   }
+
+  Slingshot.createDirective('myImageUploads', Slingshot.S3Storage, {
+    AWSAccessKeyId: Meteor.settings.private.AWSAccessKeyId,
+    AWSSecretAccessKey: Meteor.settings.private.AWSSecretAccessKey,
+    bucket: 'dcrs',
+    acl: 'public-read',
+    region: Meteor.settings.private.region,
+    allowedFileTypes: ['image/png', 'image/jpeg', 'image/gif'],
+    maxSize: 1 * 512 * 512, // 1 MB (use null for unlimited).
+
+    authorize(file, metaContext) {
+      // Deny uploads if user is not logged in.
+      if (!this.userId) {
+        const message = 'Please login before posting files';
+        throw new Meteor.Error('Login Required', message);
+      }
+
+      return true;
+    },
+
+    key(file, metaContext) {
+      // User's image url with ._id attached:
+      return `${metaContext.avatarId}/${Date.now()}-${file.name}`;
+    },
+  });
 });

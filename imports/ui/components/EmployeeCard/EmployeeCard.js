@@ -13,7 +13,7 @@ const EmployeeCard = ({ user, isAdmin, isProjMan, zIndex }) => (
           {user && (
             <div className={user.disabled ? 'card disabled-card' : 'card'}>
               <div className="card-body text-center">
-                <p>
+                <p style={{ height: '120px' }}>
                   {user.todayAssignmentProject && (isAdmin || isProjMan) && (
                     <NavLink
                       to={`/project/assignment/${
@@ -57,11 +57,25 @@ const EmployeeCard = ({ user, isAdmin, isProjMan, zIndex }) => (
                       {user.disabled ? 'Inactive' : 'Available'}
                     </span>
                   )}
-                  <img
-                    className="img-fluid"
-                    src="/img/avatar_placeholder.png"
-                    alt="card image"
-                  />
+                  <span
+                    className={
+                      user.disabled
+                        ? 'img-wrap secondary-border'
+                        : user.todayAssignmentProject
+                        ? 'img-wrap primary-border'
+                        : 'img-wrap danger-border'
+                    }
+                  >
+                    <img
+                      className="img-fluid"
+                      src={
+                        user.profile.avatar
+                          ? user.profile.avatar
+                          : '/img/avatar_placeholder.png'
+                      }
+                      alt="Broken link"
+                    />
+                  </span>
                 </p>
 
                 <h4 className="card-title">

@@ -98,6 +98,7 @@ if (Meteor.isServer) {
         email: String,
         hPW: Number,
         _counsellorId: String,
+        avatar: Match.Maybe(String),
       });
       check(disabled, Match.Maybe(Boolean));
       check(roles, {
@@ -127,6 +128,7 @@ if (Meteor.isServer) {
               'profile.gender': profile.gender,
               'profile.talents': profile.talents,
               'profile.hPW': profile.hPW,
+              'profile.avatar': profile.avatar,
               disabled,
             },
           }
