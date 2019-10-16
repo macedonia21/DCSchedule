@@ -50,7 +50,7 @@ Meteor.startup(() => {
     acl: 'public-read',
     region: Meteor.settings.private.region,
     allowedFileTypes: ['image/png', 'image/jpeg', 'image/gif'],
-    maxSize: 1 * 512 * 512, // 1 MB (use null for unlimited).
+    maxSize: 1 * 1024 * 1024, // 1 MB (use null for unlimited).
 
     authorize(file, metaContext) {
       // Deny uploads if user is not logged in.
