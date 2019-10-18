@@ -7,15 +7,10 @@ import { Roles } from 'meteor/alanning:roles';
 // collection
 import Projects from '../../../api/projects/projects';
 
-// remote example (if using ddp)
-/*
-import Remote from '../../../api/remote/ddp';
-import Users from '../../../api/remote/users';
-*/
-
 // components
 import ProjectCard from '../../components/ProjectCard';
 import ProjectAddCard from '../../components/ProjectAddCard';
+import PulseLoader from '../../components/PulseLoader/PulseLoader';
 
 import './ProjectList.scss';
 
@@ -69,6 +64,9 @@ class ProjectList extends React.Component {
         <div className="container">
           <div className="row">
             <ProjectAddCard disabled={!loginRoles.admin} />
+
+            {!projectsReady && <PulseLoader />}
+
             {projectsReady &&
               _.map(
                 loginRoles.admin

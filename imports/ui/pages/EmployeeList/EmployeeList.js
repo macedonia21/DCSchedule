@@ -13,6 +13,7 @@ import Assignments from '../../../api/assignments/assignments';
 // components
 import EmployeeCard from '../../components/EmployeeCard';
 import EmployeeAddCard from '../../components/EmployeeAddCard';
+import PulseLoader from '../../components/PulseLoader/PulseLoader';
 
 import './EmployeeList.scss';
 
@@ -290,6 +291,10 @@ class EmployeeList extends React.Component {
                 </div>
               </div>
             </div>
+
+            {(!usersReady || !projectsReady || !assignmentsReady) && (
+              <PulseLoader />
+            )}
 
             {usersReady &&
               projectsReady &&

@@ -14,6 +14,7 @@ import Projects from '../../../api/projects/projects';
 import Assignments from '../../../api/assignments/assignments';
 
 // components
+import PulseLoader from '../../components/PulseLoader/PulseLoader';
 
 import './Report.scss';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -538,6 +539,11 @@ class Report extends React.Component {
     return (
       <div className="report-page">
         <h1 className="mb-4">Report</h1>
+
+        {(!usersReady || !projectsReady || !assignmentsReady) && (
+          <PulseLoader />
+        )}
+
         {projectsReady && usersReady && assignmentsReady && (
           <div className="container">
             <div className="row">
