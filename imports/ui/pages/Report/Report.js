@@ -506,9 +506,18 @@ class Report extends React.Component {
     let unassignedUsersDetails = unassignedUsersDetailsFull;
     if (filterUnassignedUsers) {
       unassignedUsersDetails = _.filter(unassignedUsersDetails, user => {
-        return user.profile.fullName
-          .toLowerCase()
-          .includes(filterUnassignedUsers.toLowerCase());
+        return (
+          user.profile.fullName
+            .toLowerCase()
+            .includes(filterUnassignedUsers.toLowerCase()) ||
+          _.some(
+            _.map(user.profile.talents, capaTag => {
+              return capaTag
+                .toLowerCase()
+                .includes(filterUnassignedUsers.toLowerCase());
+            })
+          )
+        );
       });
     }
 
@@ -521,9 +530,18 @@ class Report extends React.Component {
     let assignedUsersDetails = assignedUsersDetailsFull;
     if (filterAssignedUsers) {
       assignedUsersDetails = _.filter(assignedUsersDetails, user => {
-        return user.profile.fullName
-          .toLowerCase()
-          .includes(filterAssignedUsers.toLowerCase());
+        return (
+          user.profile.fullName
+            .toLowerCase()
+            .includes(filterAssignedUsers.toLowerCase()) ||
+          _.some(
+            _.map(user.profile.talents, capaTag => {
+              return capaTag
+                .toLowerCase()
+                .includes(filterAssignedUsers.toLowerCase());
+            })
+          )
+        );
       });
     }
 
@@ -1008,7 +1026,7 @@ class Report extends React.Component {
                                         )}
                                     </div>
 
-                                    <div className="col-md-9 pb-2 pt-2 pl-0">
+                                    <div className="col-md-9 pb-2 pt-2">
                                       {user.inRangeAssignmentsOfUser &&
                                         _.map(
                                           user.inRangeAssignmentsOfUser,

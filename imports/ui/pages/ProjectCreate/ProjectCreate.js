@@ -170,7 +170,10 @@ class ProjectCreate extends React.Component {
 
     return (
       <section className="create-employee-page">
-        <div className="card mx-auto" style={{ maxWidth: '28rem' }}>
+        <div
+          className="card mx-auto"
+          style={{ width: '28rem', maxWidth: '80%' }}
+        >
           <div className="card-header">
             <div className="card-body">
               <h1 className="card-title text-center">Create Project</h1>
@@ -232,7 +235,7 @@ class ProjectCreate extends React.Component {
                         <Select
                           value={reactSelect.pmIdValue}
                           options={pmIdSelectOptions}
-                          placeholder="Select Project Manager"
+                          placeholder="Select PM"
                           onChange={selectedOption => {
                             this.setState({
                               newAssignment: {
@@ -252,6 +255,20 @@ class ProjectCreate extends React.Component {
                           styles={reactSelectStyle}
                           valueKey="value"
                           labelKey="label"
+                          formatOptionLabel={({ profile, label }) => (
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                              }}
+                            >
+                              {label}
+                              &nbsp;
+                              <span className="badge badge-pill badge-warning">
+                                {profile.posTitle}
+                              </span>
+                            </div>
+                          )}
                         />
                       </div>
 

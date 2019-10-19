@@ -111,7 +111,10 @@ const Navbar = ({ loggedIn, isAdmin, isProjMan }) => (
   <nav className="navbar navbar-expand-lg navbar-light">
     <Status loggedIn={loggedIn} isAdmin={isAdmin} isProjMan={isProjMan} />
     <span className="navbar-brand" href="#">
-      <NavLink to="/">DC Resource Schedule</NavLink>
+      <NavLink to="/">
+        <span className="d-none d-sm-block">DC Resource Schedule</span>
+        <span className="d-block d-sm-none">DCRS</span>
+      </NavLink>
     </span>
     <button
       className="navbar-toggler"

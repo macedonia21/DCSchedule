@@ -135,4 +135,12 @@
     padding-bottom: 1px;
     height: 32px;
   }
+
+  .title-wrap {
+    max-width: 75%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: inline-flex;
+  }
 }

@@ -533,7 +533,7 @@ class ProjectAssignment extends React.Component {
     }
     return (
       <div className="project-assignment-page">
-        <h1 className="mb-4">
+        <h1 className="mb-4 text-center">
           {projectsReady ? `Project ${project.projectName}` : `Project`}
         </h1>
         <div className="container">
@@ -570,7 +570,9 @@ class ProjectAssignment extends React.Component {
                                 aria-expanded="false"
                                 aria-controls="collapseNewAssign"
                               >
-                                New Assignment
+                                <span className="title-wrap">
+                                  New Assignment
+                                </span>
                               </h1>
                               <div className="collapse" id="collapseNewAssign">
                                 <form onSubmit={this.handleSubmit}>
@@ -600,9 +602,7 @@ class ProjectAssignment extends React.Component {
                                             });
                                           }}
                                           filterOption={this.customFilter}
-                                          styles={{
-                                            control: reactSelectStyle.control,
-                                          }}
+                                          styles={reactSelectStyle}
                                           valueKey="value"
                                           labelKey="label"
                                           formatOptionLabel={({
@@ -847,7 +847,9 @@ class ProjectAssignment extends React.Component {
                               aria-expanded="false"
                               aria-controls="collapseProjAssignments"
                             >
-                              Project Assignments
+                              <span className="title-wrap">
+                                Project Assignments
+                              </span>
                             </h1>
                             <div
                               className="collapse"

@@ -541,7 +541,7 @@ class Profile extends React.Component {
                 aria-expanded="false"
                 aria-controls="collapseProfile"
               >
-                Employee Profile
+                <span className="title-wrap">Employee Profile</span>
               </h1>
               <div className="collapse" id="collapseProfile">
                 {usersReady && (

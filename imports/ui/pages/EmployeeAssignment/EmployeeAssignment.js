@@ -602,7 +602,7 @@ class EmployeeAssignment extends React.Component {
 
     return (
       <div className="employee-assignment-page">
-        <h1 className="mb-4">
+        <h1 className="mb-4 text-center">
           {user ? `Assign ${user.profile.fullName}` : `Assign`}
         </h1>
         <div className="container">
@@ -639,7 +639,9 @@ class EmployeeAssignment extends React.Component {
                                 aria-expanded="false"
                                 aria-controls="collapseNewAssign"
                               >
-                                New Assignment
+                                <span className="title-wrap">
+                                  New Assignment
+                                </span>
                               </h1>
                               <div className="collapse" id="collapseNewAssign">
                                 <form onSubmit={this.handleSubmit}>
@@ -895,7 +897,9 @@ class EmployeeAssignment extends React.Component {
                               aria-expanded="false"
                               aria-controls="collapseProjAssignments"
                             >
-                              Employee Assignments
+                              <span className="title-wrap">
+                                Employee Assignments
+                              </span>
                             </h1>
                             <div
                               className="collapse"
@@ -929,7 +933,7 @@ class EmployeeAssignment extends React.Component {
                                           <>
                                             <div
                                               className="col-md-7 pb-1 pt-1"
-                                              style={{ height: '33px' }}
+                                              style={{ minHeight: '33px' }}
                                             >
                                               <form className="form-inline">
                                                 <label htmlFor="startdate">

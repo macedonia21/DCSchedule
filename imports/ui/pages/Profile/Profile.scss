@@ -119,4 +119,12 @@
   .form-control-disabled:hover {
     border-color: #ced4da !important;
   }
+
+  .title-wrap {
+    max-width: 75%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: inline-flex;
+  }
 }
