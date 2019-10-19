@@ -255,7 +255,12 @@ class ProjectAssignment extends React.Component {
     if (
       option.data.profile.fullName
         .toLowerCase()
-        .includes(searchText.toLowerCase())
+        .includes(searchText.toLowerCase()) ||
+      _.some(
+        _.map(option.data.profile.talents, capaTag => {
+          return capaTag.toLowerCase().includes(searchText.toLowerCase());
+        })
+      )
     ) {
       return true;
     }
@@ -486,16 +491,21 @@ class ProjectAssignment extends React.Component {
     const usersCurrentlyInProject = _.uniq(
       _.map(assignCurrentlyInProject, assignment => assignment._employeeId)
     );
-    const userSelectOptions = _.map(
-      _.filter(users, usr => {
-        return !_.contains(usersCurrentlyInProject, usr._id);
-      }),
-      user => {
-        return {
-          value: user._id,
-          label: user.profile.fullName,
-          profile: user.profile,
-        };
+    const userSelectOptions = _.sortBy(
+      _.map(
+        _.filter(users, usr => {
+          return !_.contains(usersCurrentlyInProject, usr._id);
+        }),
+        user => {
+          return {
+            value: user._id,
+            label: user.profile.fullName,
+            profile: user.profile,
+          };
+        }
+      ),
+      filterUser => {
+        return filterUser.profile.fullName;
       }
     );
 
@@ -590,9 +600,28 @@ class ProjectAssignment extends React.Component {
                                             });
                                           }}
                                           filterOption={this.customFilter}
-                                          styles={reactSelectStyle}
+                                          styles={{
+                                            control: reactSelectStyle.control,
+                                          }}
                                           valueKey="value"
                                           labelKey="label"
+                                          formatOptionLabel={({
+                                            profile,
+                                            label,
+                                          }) => (
+                                            <div
+                                              style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                              }}
+                                            >
+                                              {label}
+                                              &nbsp;
+                                              <span className="badge badge-pill badge-warning">
+                                                {profile.posTitle}
+                                              </span>
+                                            </div>
+                                          )}
                                         />
                                       </div>
 
@@ -853,7 +882,7 @@ class ProjectAssignment extends React.Component {
                                           <>
                                             <div
                                               className="col-md-7 pb-1 pt-1"
-                                              style={{ height: '33px' }}
+                                              style={{ minHeight: '33px' }}
                                             >
                                               <form className="form-inline">
                                                 <label htmlFor="startdate">

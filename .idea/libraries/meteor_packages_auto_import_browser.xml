@@ -278,10 +278,8 @@
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/base64/1.0.11/web.browser/base64_test.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/base64/1.0.11/web.browser/base64.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/lacosta_method-hooks/1.5.4/web.browser/src/method-hooks-mixin.js" />
-        <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/force-ssl-common/1.1.0/web.browser/force_ssl_tests.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/lmieulet_meteor-coverage/2.0.2/web.browser/assets/sorter.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/promise-tests.js" />
-        <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/force-ssl-common/1.1.0/web.browser/force_ssl_common.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/lmieulet_meteor-coverage/2.0.2/web.browser/assets/base.css" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/modern.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/server.js" />
@@ -290,10 +288,8 @@
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/client.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/lmieulet_meteor-coverage/2.0.2/web.browser/assets/vendor/prettify.css" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/extensions.js" />
-        <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/force-ssl/1.1.0/web.browser/force_ssl_server.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/lmieulet_meteor-coverage/2.0.2/web.browser/client/methods.js" />
         <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/legacy.js" />
-        <item url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/force-ssl/1.1.0/web.browser/force_ssl_both.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
@@ -573,10 +569,8 @@
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/base64/1.0.11/web.browser/base64_test.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/base64/1.0.11/web.browser/base64.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/lacosta_method-hooks/1.5.4/web.browser/src/method-hooks-mixin.js" />
-      <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/force-ssl-common/1.1.0/web.browser/force_ssl_tests.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/lmieulet_meteor-coverage/2.0.2/web.browser/assets/sorter.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/promise-tests.js" />
-      <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/force-ssl-common/1.1.0/web.browser/force_ssl_common.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/lmieulet_meteor-coverage/2.0.2/web.browser/assets/base.css" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/modern.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/server.js" />
@@ -585,10 +579,8 @@
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/client.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/lmieulet_meteor-coverage/2.0.2/web.browser/assets/vendor/prettify.css" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/extensions.js" />
-      <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/force-ssl/1.1.0/web.browser/force_ssl_server.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/lmieulet_meteor-coverage/2.0.2/web.browser/client/methods.js" />
       <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/promise/0.11.2/web.browser/legacy.js" />
-      <root url="file://C:/Users/seaadmin/AppData/Local/.meteor/packages/force-ssl/1.1.0/web.browser/force_ssl_both.js" />
     </CLASSES>
     <SOURCES />
   </library>
