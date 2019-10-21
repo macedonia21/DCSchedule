@@ -63,7 +63,7 @@ class Login extends React.Component {
 
     return (
       <section className="login-page">
-        <div className="card mx-auto" style={{ maxWidth: '28rem' }}>
+        <div className="card mx-auto" style={{ width: '28rem', maxWidth: '80%' }}>
           <div className="card-header">
             <div className="card-body">
               <h1 className="card-title text-center">Login</h1>

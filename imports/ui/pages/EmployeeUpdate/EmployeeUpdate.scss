@@ -156,4 +156,17 @@
     -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
     filter: grayscale(100%);
   }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-image: none;
+    cursor: pointer;
+    font-size: 1em;
+    color: #6c757d;
+  }
+
+  .carousel-control-prev-icon:hover,
+  .carousel-control-next-icon:hover {
+    color: hsl(0,0%,60%);
+  }
 }

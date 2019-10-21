@@ -1055,55 +1055,91 @@ class EmployeeUpdate extends React.Component {
                             className="text-center"
                             style={{ height: '124px', marginBottom: '1rem' }}
                           >
-                            <div className="inline-avatar-block ml-1 mr-1">
-                              <span className="badge badge-pill badge-primary emp-img-badge">
-                                Assigning Project
-                              </span>
+                            <div
+                              id="carouselExampleControls"
+                              className="carousel slide"
+                              data-ride="carousel"
+                            >
+                              <div className="carousel-inner">
+                                <div className="carousel-item active">
+                                  <div className="inline-avatar-block ml-1 mr-1">
+                                    <span className="badge badge-pill badge-primary emp-img-badge">
+                                      Assigning Project
+                                    </span>
 
-                              <div className="img-wrap primary-border">
-                                <img
-                                  className="img-fluid"
-                                  src={
-                                    avatar.srcImage ||
-                                    '/img/avatar_placeholder.png'
-                                  }
-                                  alt="No image"
-                                />
+                                    <div className="img-wrap primary-border">
+                                      <img
+                                        className="img-fluid"
+                                        src={
+                                          avatar.srcImage ||
+                                          '/img/avatar_placeholder.png'
+                                        }
+                                        alt="No image"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="carousel-item">
+                                  <div className="inline-avatar-block ml-1 mr-1">
+                                    <span className="badge badge-pill badge-danger emp-img-badge">
+                                      Available
+                                    </span>
+
+                                    <div className="img-wrap danger-border">
+                                      <img
+                                        className="img-fluid"
+                                        src={
+                                          avatar.srcImage ||
+                                          '/img/avatar_placeholder.png'
+                                        }
+                                        alt="No image"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="carousel-item">
+                                  <div className="inline-avatar-block ml-1 mr-1">
+                                    <span className="badge badge-pill badge-secondary emp-img-badge">
+                                      Inactive
+                                    </span>
+
+                                    <div className="img-wrap secondary-border">
+                                      <img
+                                        className="img-fluid img-fluid-disabled"
+                                        src={
+                                          avatar.srcImage ||
+                                          '/img/avatar_placeholder.png'
+                                        }
+                                        alt="No image"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-
-                            <div className="inline-avatar-block ml-1 mr-1">
-                              <span className="badge badge-pill badge-danger emp-img-badge">
-                                Available
-                              </span>
-
-                              <div className="img-wrap danger-border">
-                                <img
-                                  className="img-fluid"
-                                  src={
-                                    avatar.srcImage ||
-                                    '/img/avatar_placeholder.png'
-                                  }
-                                  alt="No image"
+                              <a
+                                className="carousel-control-prev"
+                                href="#carouselExampleControls"
+                                role="button"
+                                data-slide="prev"
+                              >
+                                <span
+                                  className="carousel-control-prev-icon fa fa-angle-left"
+                                  aria-hidden="true"
                                 />
-                              </div>
-                            </div>
-
-                            <div className="inline-avatar-block ml-1 mr-1">
-                              <span className="badge badge-pill badge-secondary emp-img-badge">
-                                Inactive
-                              </span>
-
-                              <div className="img-wrap secondary-border">
-                                <img
-                                  className="img-fluid img-fluid-disabled"
-                                  src={
-                                    avatar.srcImage ||
-                                    '/img/avatar_placeholder.png'
-                                  }
-                                  alt="No image"
+                                <span className="sr-only">Previous</span>
+                              </a>
+                              <a
+                                className="carousel-control-next"
+                                href="#carouselExampleControls"
+                                role="button"
+                                data-slide="next"
+                              >
+                                <span
+                                  className="carousel-control-next-icon fa fa-angle-right"
+                                  aria-hidden="true"
                                 />
-                              </div>
+                                <span className="sr-only">Next</span>
+                              </a>
                             </div>
                           </div>
                         </div>
